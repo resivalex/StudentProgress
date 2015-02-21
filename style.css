@@ -189,15 +189,30 @@ a:hover {
     display: none;
 }
 
-.radio-toolbar label {
+.radio-toolbar {
+    margin: 0 auto;
+}
+
+.radio-toolbar div {
+    background-color: #CCCCFF;
+}
+
+.radio-toolbar label[for] {
     display: inline-block;
     background-color: #CCCCFF;
     padding: 2px 5px;
-    width: 200px;
+    width: 100%;
 }
 
 .radio-toolbar input[type="radio"]:checked + label {
     background-color: #AAAAFF;
+    color: black;
+    font-weight: bold;
+}
+
+.right_note {
+    background-color: #AAAAFF;
+    float: right;
     color: black;
     font-weight: bold;
 }

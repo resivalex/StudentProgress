@@ -280,3 +280,41 @@ function setFields() {
     $("input[name='login']").val("admin");
     $("input[name='password']").val("patented");
 }
+
+function selectToolClick(sender) {
+    $(sender).parent().children().last().slideToggle();
+}
+
+function addLesson() {
+    var radios = $("input").filter("[type='radio']:checked");
+    var group_id = radios.filter("[name='group_id']:checked").val();
+    var subject_id = radios.filter("[name='subject_id']:checked").val();
+    var auditory_id = radios.filter("[name='auditory_id']:checked").val();
+    var teacher_id = radios.filter("[name='teacher_id']:checked").val();
+    var month = radios.filter("[name='month']:checked").val();
+    var day = radios.filter("[name='day']:checked").val();
+    var hour = radios.filter("[name='hour']:checked").val();
+    var minute = radios.filter("[name='minute']:checked").val();
+    var datetime = "2013-" + month + "-" + day + " " + hour + ":" + minute + ":00";
+    var query = "INSERT INTO lessons ";
+    query += "(group_id, subject_id, auditory_id, teacher_id, time) ";
+    query += "VALUES ('"+group_id+"', '"+subject_id+"', '"+auditory_id+"', '"+teacher_id+"', '"+datetime+"')";
+    modifyQuery(query, {}, function(response) {
+        showMessage(response);
+        if ($.parseJSON(response) === false) {
+            showMessage("Неудача");
+            showMessage(query);
+        } else {
+            showMessage("Добавлено");
+            var select_query = "SELECT groups.name AS groups_name, subjects.name AS subject_name, ";
+            select_query += "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id "
+            select_query += "FROM lessons "
+            select_query += "JOIN groups ON (group_id = groups.id) "
+            select_query += "JOIN subjects ON (subject_id = subjects.id) "
+            select_query += "JOIN auditories ON (auditory_id = auditories.id) "
+            select_query += "JOIN users ON (teacher_id = users.id)";
+
+            loadRemovableTable('lessons', 'schedule', select_query);
+        }
+    });
+}

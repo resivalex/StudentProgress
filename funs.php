@@ -13,11 +13,20 @@ function custom_select($name, $values, $names) {
     return $select;
 }
 
+// инструмент для выбора одного из нескольких доступных вариантов
 function select_tool($title, $name, $arr) {
     $result = fs("div");
     $result->setAttribute("class", "radio-toolbar");
-    $result->setAttribute("style", "float:left;margin:3px");
-    $result->appendChild(fs("p", $title));
+    // заголовок
+    $top = fs("div");
+    $top->setAttribute("style", "border-style: solid; border-width: 1px; border-color: #444444");
+    $top_title = fs("label", $title);
+    $top->appendChild($top_title);
+    $top->setAttribute("onclick", "selectToolClick(this)");
+    $result->appendChild($top);
+    // переключатели
+    $box = fs("div");
+    $box->setAttribute("style", "display: none;");
     foreach ($arr as $line) {
         $cells = array_values($line);
         $radio = fs("input");
@@ -25,14 +34,24 @@ function select_tool($title, $name, $arr) {
         $radio->setAttribute("name", $name);
         $radio->setAttribute("value", $cells[0]);
         $radio->setAttribute("id", $name."_".$cells[0]);
-        if (!isset($first)) $first = $radio;
-        $result->appendChild($radio);
+        if (!isset($first)) {
+            $first = $radio;
+            $top_label = fs("label", $cells[1]);
+            $top_label->setAttribute("class", "right_note");
+            $top->appendChild($top_label);
+        }
+        $box->appendChild($radio);
         $label = fs("label", $cells[1]);
+        $label->setAttribute("onclick", "$(this).parent().parent().find('.right_note').html($(this).html());$(this).parent().slideUp();");
         $label->setAttribute("for", $name."_".$cells[0]);
-        $result->appendChild($label);
-        $result->appendChild(brfs());
+        if (!isset($first_label)) $first_label = $label;
+        $box->appendChild($label);
+        $box->appendChild(brfs());
     }
-    if (isset($first)) $first->setAttribute("checked", "true");
+    $result->appendChild($box);
+    if (isset($first)) {
+        $first->setAttribute("checked", "true");
+    }
     return $result;
 }
 
