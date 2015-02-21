@@ -62,29 +62,8 @@ function add_user_form($header_text, $role) {
     return $result;
 }
 
-function role_id($role_name) {
-    $query = "SELECT id FROM roles WHERE name = ?";
-    return select_query($query, array("s", $role_name));
-}
-
 $title = new DOMElement("title", "Учётные записи");
 $head->appendChild($title);
-
-if (isset($_POST["name"])) {
-    $query =
-<<<'SQL'
-INSERT INTO users
-(name, surname, patronymic, login, password, role_id, email, phone)
-VALUES (?, ?, ?, ?, ?, (SELECT id FROM roles WHERE name = ?), ?, ?)
-SQL;
-    $fields = ["name", "surname", "patronymic", "login", "password", "role", "email", "phone"];
-    $params = array();
-    $params[] = "ssssssss";
-    foreach ($fields as $field) {
-        $params[] = $_POST[$field];
-    }
-    modify_query($query, $params);
-}
 
 $body->appendChild(afs("Администрирование", "administration.php"));
 $body->appendChild(add_user_form("Студенты", "student"));
