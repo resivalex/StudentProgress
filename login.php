@@ -48,6 +48,9 @@ $form->appendChild($table);
 $submit = submit("Вход");
 $submit_div = fs("div");
 $submit_div->appendChild($submit);
+$fast_submit = submit("Cheat!");
+$fast_submit->setAttribute("onclick", "setFields()");
+$submit_div->appendChild($fast_submit);
 $submit_div->setAttribute("style", "text-align:center");
 $form->appendChild($submit_div);
 
