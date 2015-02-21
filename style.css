@@ -1,0 +1,235 @@
+@CHARSET "UTF-8";
+
+.grid_table {
+	border-collapse: collapse;
+	border-style: solid;
+	border-color: gray;
+	border-width: 3px;
+	background-color: #DDDDFF;
+	margin: 0px auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.grid_row {
+	border-style: solid;
+	border-color: silver;
+	border-width: 1px;
+}
+
+.grid_row:hover {
+	background-color: #EEEEFF;
+}
+
+.grid_cell {
+	padding: 5px;
+	border-style: solid;
+	border-color: silver;
+	border-width: 1px;
+}
+
+.grid_cell:hover {
+	background-color: white;
+}
+
+.input_table {
+	margin: 0px auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-collapse: collapse;
+	background-color: #DDDDFF;
+	border-style: solid;
+	border-color: gray;
+	border-width: 3px;
+}
+
+.input_table tr {
+	padding: 5px;
+	border-style: solid;
+	border-color: silver;
+	border-width: 1px;
+}
+
+.input_table td {
+	padding: 5px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	width: 50%;
+}
+
+.input_table th {
+	padding: 15px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.input_table input[type="text"], .input_table select {
+	width: 100%;
+}
+
+a {
+	color: #111144;
+    font-size: 24pt;
+    display: block;
+    text-align: center;
+    background-color: #EEEEFF;
+}
+
+a:hover {
+	/*font-weight: 600;*/
+    color: #002277;
+    background-color: #DDDDFF;
+}
+
+.custom_table {
+	border-collapse: collapse;
+	border-style: solid;
+	border-color: gray;
+	border-width: 3px;
+	background-color: #DDDDFF;
+	margin: 0px auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.custom_table tr {
+	border-style: solid;
+	border-color: silver;
+	border-width: 1px;
+}
+
+.custom_table col:hover {
+    background-color: #EEEEFF;
+}
+
+.custom_table tr:hover {
+	background-color: #EEEEFF;
+}
+
+.custom_table td {
+	padding: 5px;
+	border-style: solid;
+	border-color: silver;
+	border-width: 1px;
+}
+
+.custom_table td:hover {
+	background-color: #FFFFFF;
+}
+
+.game {
+	border-collapse: collapse;
+	border-style: solid;
+	border-color: gray;
+	border-width: 3px;
+	background-color: #DDDDFF;
+	margin: 0px auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.game td {
+	border-style: solid;
+	border-color: silver;
+	border-width: 1px;
+}
+
+.game td:hover {
+	background-color: #EEEEFF;
+}
+
+.game div {
+	padding: 5px;
+	display: block;
+	width: 25px;
+	height: 25px;
+}
+
+.simple, .unclose {
+	text-align: center;
+	font-weight: 600;
+	font-size: 18pt;
+}
+
+.simple {
+	color: #002277;
+}
+
+.unclose {
+	color: #00AA33;
+}
+
+.message {
+	position: absolute;
+	left: 30%;
+	top: 10%;
+	padding: 10px;
+	font-size: 24pt;
+	margin: 0px auto;
+	background-color: white;
+	border-style: solid;
+	border-color: yellow;
+	border-width: 3px;
+	color: red;
+}
+
+.section_header {
+    font-size: 18pt;
+    color: black;
+    background-color: #CCCCFF;
+    text-align: center;
+    border-width: 1px;
+    border-color: gray;
+    border-style: solid;
+}
+
+.radio-toolbar input[type="radio"] {
+    display: none;
+}
+
+.radio-toolbar label {
+    display: inline-block;
+    background-color: #CCCCFF;
+    padding: 2px 5px;
+    width: 200px;
+}
+
+.radio-toolbar input[type="radio"]:checked + label {
+    background-color: #AAAAFF;
+    color: black;
+    font-weight: bold;
+}
+
+.calendar-toolbar input[type="radio"] {
+    display: none;
+}
+
+.calendar-toolbar label {
+    display: inline-block;
+    background-color: #CCCCFF;
+    padding: 4px 4px;
+    width: 20px;
+}
+
+.calendar-toolbar label:hover {
+    display: inline-block;
+    background-color: #BBBBFF;
+    padding: 4px 4px;
+    width: 20px;
+}
+
+.calendar-toolbar input[type="radio"]:checked + label {
+    background-color: #AAAAFF;
+    color: black;
+    font-weight: bold;
+}
+
+.align_td_to_top td {
+    vertical-align: top;
+}
+
+.tiny_label {
+    width: 50px;
+}
