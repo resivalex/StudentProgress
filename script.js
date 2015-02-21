@@ -190,13 +190,20 @@ function loadRemovableTable(table_name, id_name, query) {
                 del.value = "Удалить";
                 $(del).click(function() {
                     del.setAttribute("disabled", "true");
+                    var tr = del;
+                    while ((tr.tagName).toUpperCase() != "TR") {
+                        tr = tr.parentNode;
+                    }
+                    $(tr).fadeTo(500, 0.5);
                     modifyQuery("DELETE FROM " + table_name + " WHERE id = " + id, {}, function(response) {
                         del.removeAttribute("disabled");
                         if ($.parseJSON(response) === false) {
+                            $(tr).fadeTo(500, 1.0);
                             showMessage("Неудача");
-                            del.style.color = "#FF8888";
+                            del.style.color = "#BBBBBB";
                         } else {
                             showMessage("Удалено");
+                            $(tr).fadeTo(200, 0.0);
                             loadRemovableTable(table_name, id_name, query);
                         }
                     });

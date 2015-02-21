@@ -41,7 +41,7 @@ SQL;
 $query =
 <<<SQL
 SELECT groups.name AS groups_name, subjects.name AS subject_name,
-  auditories.name AS auditory_name, users.surname AS user_name, time
+  auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id
 FROM lessons
 JOIN groups ON (group_id = groups.id)
 JOIN subjects ON (subject_id = subjects.id)
@@ -49,8 +49,15 @@ JOIN auditories ON (auditory_id = auditories.id)
 JOIN users ON (teacher_id = users.id)
 SQL;
 
+$query = str_replace("\n", " ", $query);
+$query = str_replace("\r", " ", $query);
+
 $body->appendChild(afs("Расписание", "schedule.php"));
-$body->appendChild(custom_grid_table(transverse(select_query($query))));
+$div = fs("div");
+$div->setAttribute("id", "schedule");
+$script = fs("script", "loadRemovableTable('lessons', 'schedule', '$query')");
+$div->appendChild($script);
+$body->appendChild($div);
 $body->setAttribute("onload", "loadCalendar(2013,1)");
 
 $form = formfs("edit_schedule.php");
