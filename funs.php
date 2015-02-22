@@ -19,9 +19,11 @@ function select_tool($title, $name, $arr) {
     $result->setAttribute("class", "radio-toolbar");
     // заголовок
     $top = fs("div");
-    $top->setAttribute("style", "border-style: solid; border-width: 1px; border-color: #444444");
+    $top->setAttribute("style", "border-style: outset; border-width: 1px; border-color: #8888AA; height: 30px;");
     $top_title = fs("label", $title);
+    $top_title->setAttribute("style", "margin-top:5px; margin-left:5px;");
     $top->appendChild($top_title);
+    $sep = fs("div");
     $top->setAttribute("onclick", "selectToolClick(this)");
     $result->appendChild($top);
     // переключатели
@@ -38,6 +40,7 @@ function select_tool($title, $name, $arr) {
             $first = $radio;
             $top_label = fs("label", $cells[1]);
             $top_label->setAttribute("class", "right_note");
+            $top_label->setAttribute("style", "margin-top:5px; margin-right:5px;");
             $top->appendChild($top_label);
         }
         $box->appendChild($radio);
@@ -70,6 +73,10 @@ function select(DOMDocument $document, $query, $name, $value, $title) {
 
 function get_id($row) {
     return $row['id'];
+}
+
+function get_pairs($query) {
+    return transverse(select_query($query));
 }
 
 function get_name($row) {

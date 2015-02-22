@@ -2,10 +2,6 @@
 
 include_once("template.php");
 
-function get_pairs($query) {
-    return transverse(select_query($query));
-}
-
 function interval_pairs($from, $to, $step) {
     $result = array();
     while ($from <= $to) {
@@ -58,48 +54,72 @@ $div->setAttribute("id", "schedule");
 $script = fs("script", "loadRemovableTable('lessons', 'schedule', '$query')");
 $div->appendChild($script);
 $body->appendChild($div);
-$body->setAttribute("onload", "loadCalendar(2013,1)");
+//$body->setAttribute("onload", "loadCalendar(2013,1)");
 
 $select_div = fs("div");
-$select_group = select_tool("Группа" ,"group_id", get_pairs("SELECT id, name FROM groups ORDER BY name"));
-$select_group->setAttribute("style", "width: 40%");
-$select_subject = select_tool("Предмет" ,"subject_id", get_pairs("SELECT id, name FROM subjects ORDER BY name"));
-$select_subject->setAttribute("style", "width: 40%");
-$select_auditory = select_tool("Аудитория", "auditory_id", get_pairs("SELECT id, name FROM auditories ORDER BY name"));
-$select_auditory->setAttribute("style", "width: 40%");
-$select_teacher = select_tool("Преподаватель" ,"teacher_id",
-    get_pairs("SELECT teachers.id, users.surname FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname"));
-$select_teacher->setAttribute("style", "width: 40%");
-$select_div->appendChild($select_group);
+//$select_group = select_tool("Группа" ,"group_id", get_pairs("SELECT id, name FROM groups ORDER BY name"));
+//$select_group->setAttribute("style", "width: 40%");
+//$select_subject = select_tool("Предмет" ,"subject_id", get_pairs("SELECT id, name FROM subjects ORDER BY name"));
+//$select_subject->setAttribute("style", "width: 40%");
+//$select_auditory = select_tool("Аудитория", "auditory_id", get_pairs("SELECT id, name FROM auditories ORDER BY name"));
+//$select_auditory->setAttribute("style", "width: 40%");
+//$select_teacher = select_tool("Преподаватель" ,"teacher_id",
+//    get_pairs("SELECT teachers.id, users.surname FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname"));
+//$select_teacher->setAttribute("style", "width: 40%");
+//$select_div->appendChild($select_group);
+//$select_div->appendChild(brfs());
+//$select_div->appendChild($select_subject);
+//$select_div->appendChild(brfs());
+//$select_div->appendChild($select_auditory);
+//$select_div->appendChild(brfs());
+//$select_div->appendChild($select_teacher);
+
+// фильтр для занития
+function lesson_filter($id) {
+    $res = fs("div");
+    $res->setAttribute("id", $id);
+    $res->setAttribute("style", "width: 40%; margin-left: auto; margin-right: auto;");
+    return $res;
+}
+
+$script = fs("script", "onEditScheduleLoad()");
+$body->appendChild($script);
+$select_div->appendChild(lesson_filter("select_teacher"));
 $select_div->appendChild(brfs());
-$select_div->appendChild($select_subject);
+$select_div->appendChild(lesson_filter("select_subject"));
 $select_div->appendChild(brfs());
-$select_div->appendChild($select_auditory);
+$select_div->appendChild(lesson_filter("select_group"));
 $select_div->appendChild(brfs());
-$select_div->appendChild($select_teacher);
+$select_div->appendChild(lesson_filter("select_auditory"));
+
 
 $month_pairs = [
     [1, "январь"], [2, "февраль"], [3, "март"], [4, "апрель"],
     [5, "май"], [6, "июнь"], [7, "июль"], [8, "август"],
     [9, "сентябрь"], [10, "октябрь"], [11, "ноябрь"], [12, "декабрь"]
 ];
-$month_select_tool = select_tool("Месяц", "month", $month_pairs);
-$month_select_tool->setAttribute("style", "width: 150px; margin-right: 10px;");
-$labels = $month_select_tool->getElementsByTagName("label");
-$num = 0;
-foreach ($labels as $label) {
-    /** @var $label DOMElement */
-    if ($num > 0) {
-        $label->setAttribute("onclick", $label->getAttribute("onclick")."loadCalendar(2013,".$num.");");
-    }
-    $num++;
-}
+
+$select_month = fs("div");
+$select_month->setAttribute("id", "select_month");
+$select_month->setAttribute("style", "width: 150px; margin-right: 10px;");
+$select_div->appendChild($select_month);
+
+
+$select_hour = fs("div");
+$select_hour->setAttribute("id", "select_hour");
+//$select_month->setAttribute("style", "width: 150px; margin-right: 10px;");
+$select_div->appendChild($select_hour);
+
+$select_minute = fs("div");
+$select_minute->setAttribute("id", "select_minute");
+//$select_month->setAttribute("style", "width: 150px; margin-right: 10px;");
+$select_div->appendChild($select_minute);
+
+
 $day_select_tool = fs("div");
 $day_select_tool->setAttribute("id", "day_select_tool");
 $day_select_tool->setAttribute("class", "calendar-toolbar");
-$hour_select_tool = select_tool("Часы", "hour", interval_pairs(7, 18, 1));
-$minute_select_tool = select_tool("Минуты", "minute", interval_pairs(0, 55, 5));
-$items = [[$month_select_tool, $day_select_tool, $hour_select_tool, $minute_select_tool]];
+$items = [[$select_month, $day_select_tool, $select_hour, $select_minute]];
 $time_table = simple_grid_table($items);
 $time_table->setAttribute("class", "align_td_to_top");
 $time_table->setAttribute("style", "margin-left: auto; margin-right: auto;");
