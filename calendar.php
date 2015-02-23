@@ -2,8 +2,8 @@
 include("funs.php");
 $document = new DOMDocument();
 $arr = array();
-$year = $_GET["y"];
-$month = $_GET["m"];
+$year = $_POST["y"];
+$month = $_POST["m"];
 $cur = new DateTime();
 $cur->setDate($year, $month, 1);
 $arr[] = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];

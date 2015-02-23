@@ -22,77 +22,8 @@ function open_card(row, column) {
 	frm.submit();
 }
 
-function simpleAJAX(id, address, params, readyFunc) {
-    if (window.XMLHttpRequest) {
-        xmlHttp = new XMLHttpRequest();
-    } else {
-        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            if (id != '') {
-                document.getElementById(id).innerHTML = xmlHttp.responseText;
-            }
-            if (readyFunc) readyFunc(xmlHttp.responseText);
-        }
-    }
-    for (i = 0; i < params.length; i++) {
-        address += (i == 0? '?' : '&') + params[i][0] + '=' + params[i][1];
-    }
-    xmlHttp.open("GET", address, true);
-    xmlHttp.send();
-}
-
-function simpleAJAX2(id, address, params) {
-    if (window.XMLHttpRequest) {
-        xmlHttp2 = new XMLHttpRequest();
-    } else {
-        xmlHttp2 = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlHttp2.onreadystatechange = function() {
-        if (xmlHttp2.readyState == 4 && xmlHttp2.status == 200) {
-            if (id != '') {
-                document.getElementById(id).innerHTML = xmlHttp2.responseText;
-            }
-        }
-    }
-    for (i = 0; i < params.length; i++) {
-        address += (i == 0? '?' : '&') + params[i][0] + '=' + params[i][1];
-    }
-    xmlHttp2.open("GET", address, true);
-    xmlHttp2.send();
-}
-
 function loadCalendar(year, month) {
-    simpleAJAX('day_select_tool', 'calendar.php', [['y', year], ['m', month]]);
-}
-
-function loadLesson(lesson_id) {
-    simpleAJAX('lesson_judging', 'lesson_judging.php', [['lesson_id', lesson_id]]);
-}
-
-function loadStudentProgress(lesson_id, student_id) {
-    simpleAJAX('student_judging', 'student_judging.php', [['lesson_id', lesson_id], ['student_id', student_id]]);
-}
-
-function addMarkFact(lesson_id, student_id) {
-    simpleAJAX('', 'add_mark_fact.php', [['lesson_id', lesson_id], ['student_id', student_id]]);
-}
-
-function checkedRadio(name) {
-    var inputs = document.getElementsByTagName('input');
-    var value;
-    for (var i = 0; i < inputs.length; i++) {
-        if (inputs[i].type === 'radio' && inputs[i].name == name && inputs[i].checked) {
-            // get value, set checked flag or do whatever you need to
-            value = inputs[i].value;
-        }
-    }
-    return value;
-}
-
-function addMark(lesson_id, student_id, mark_type) {
-    simpleAJAX2('debug', 'add_mark.php', [['lesson_id', lesson_id], ['student_id', student_id], ['mark_type', mark_type]]);
+    $("#day_select_tool").load("calendar.php", {"y":year, "m":month});
 }
 
 // показать временное сообщение
@@ -374,6 +305,18 @@ function fillToId(id, text) {
 }
 
 function onMarksLoad() {
+    function loadStudentList(group_id) {
+        query = "SELECT users.id AS id, users.surname AS name FROM lessons ";
+        query += "JOIN students ON lessons.group_id = students.group_id ";
+        query += "JOIN users ON users.id = students.id ";
+        query += "WHERE lessons.id = "+$("#lesson_id input[type='radio']:checked").val()+" ORDER BY name";
+        selectQuery(query, {}, function(response) {
+            $("#judging").children().remove();
+            $("#judging").append(getTableFromJSON(response));
+            $("#judging").children().addClass("custom_table");
+        });
+    }
+
     function loadLessons(group_id) {
         query = "SELECT lessons.id AS id, concat(name, ' | ', time) AS name FROM lessons ";
         query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
@@ -381,7 +324,15 @@ function onMarksLoad() {
         query += "lessons.subject_id = "+$("#subject_id input[type='radio']:checked").val()+" AND ";
         query += "lessons.group_id = "+group_id+" ORDER BY name";
         selectQuery(query, {}, function(response) {
+            $("#select_auditory_time").children().remove();
             $("#select_auditory_time").append(selectTool("Аудитория | Время", "lesson_id", $.parseJSON(response)));
+            $("#lesson_id").ready(function() {
+                loadStudentList($("#lesson_id input[type='radio']:checked").val());
+            });
+            $("#lesson_id label[for]").click(function() {
+                $("#judging").children().remove();
+                loadStudentList($("#"+this.getAttribute("for")).val());
+            });
         });
     }
 
@@ -390,20 +341,24 @@ function onMarksLoad() {
         query += "WHERE lessons.subject_id = "+subject_id+" AND ";
         query += "lessons.teacher_id = "+$("#teacher_id input[type='radio']:checked").val()+" ORDER BY name";
         selectQuery(query, {}, function(response) {
+            $("#select_group").children().remove();
             $("#select_group").append(selectTool("Группа", "group_id", $.parseJSON(response)))
             $("#group_id").ready(function() {
                 loadLessons($("#group_id input[type='radio']:checked").val());
             });
             $("#group_id label[for]").click(function() {
                 $("#select_auditory_time").children().remove();
+                $("#judging").children().remove();
                 loadLessons($("#"+this.getAttribute("for")).val());
-            })
+            });
         })
     }
+
     function loadSubjects(teacher_id) {
         query = "SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) ";
         query += "WHERE lessons.teacher_id = "+teacher_id+" ORDER BY name";
         selectQuery(query, {}, function(response) {
+            $("#select_subject").children().remove();
             $("#select_subject").append(selectTool("Дисциплина", "subject_id", $.parseJSON(response)));
             $("#subject_id").ready(function() {
                 loadGroups($("#subject_id input[type='radio']:checked").val());
@@ -411,13 +366,16 @@ function onMarksLoad() {
             $("#subject_id label[for]").click(function() {
                 $("#select_group").children().remove();
                 $("#select_auditory_time").children().remove();
+                $("#judging").children().remove();
                 loadGroups($("#"+this.getAttribute("for")).val());
-            })
+            });
         });
     }
+
     $("body").ready(function() {
         var query = "SELECT teachers.id, users.surname FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
         selectQuery(query, {}, function(response) {
+            $("#select_teacher").children().remove();
             $("#select_teacher").append(selectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
             $("#teacher_id").ready(function() {
                 loadSubjects($("#teacher_id input[type='radio']:checked").val());
@@ -426,6 +384,7 @@ function onMarksLoad() {
                 $("#select_subject").children().remove();
                 $("#select_group").children().remove();
                 $("#select_auditory_time").children().remove();
+                $("#judging").children().remove();
                 loadSubjects($("#"+this.getAttribute("for")).val());
             });
         });
