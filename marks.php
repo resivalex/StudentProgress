@@ -29,6 +29,9 @@ $body->appendChild(brfs());
 $judging_div = fs("div");
 $judging_div->setAttribute("id", "judging");
 $body->appendChild($judging_div);
+$mark_div = fs("div");
+$mark_div->setAttribute("id", "mark");
+$body->appendChild($mark_div);
 
 echo $document->saveHTML();
 ?>
