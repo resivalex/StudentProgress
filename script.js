@@ -368,6 +368,7 @@ function onMarksLoad() {
 
     function removeStudentList() {
         $("#student_id").remove();
+        removeMark();
     }
 
     function removeMark() {
@@ -376,7 +377,7 @@ function onMarksLoad() {
 
     function loadMark() {
         removeMark();
-        query = "SELECT mark_history.id, mark_types.name, mark_history.comment FROM marks ";
+        query = "SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks ";
         query += "JOIN mark_history ON marks.id = mark_history.mark_id ";
         query += "JOIN mark_types ON mark_history.mark_type_id = mark_types.id ";
         query += "JOIN students ON marks.student_id = students.id ";
@@ -385,13 +386,54 @@ function onMarksLoad() {
         query += "lessons.id = "+$("#lesson_id").data("value")+" ORDER by mark_history.id DESC";
         selectQuery(query, {}, function(response) {
             if ($("#student_id").data("value") != undefined) {
-                showMessage($.parseJSON(response).id.length? "Есть отметки!" : "Отметок нет.");
+                if ($.parseJSON(response).id.length == 0) {
+                    response = "{\"message\": [\"Отметок нет!\"]}";
+                }
                 removeMark();
                 var table = getTableFromJSON(response);
                 table.className = "custom_table";
                 $("#mark").append(table);
+                query = "SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name";
+                selectQuery(query, {}, function (response) {
+                    var select_mark = selectTool("Отметка", "mark_type_id", $.parseJSON(response));
+                    var mark_table = document.createElement("table");
+                    var tr = document.createElement("tr");
+                    mark_table.appendChild(tr);
+                    mark_table.style.width = "100%";
+                    mark_table.style.borderCollapse = "collapse";
+                    mark_table.style.borderWidth = "0";
+                    $(select_mark).find(".item").each(function () {
+                        var td = document.createElement("td");
+                        tr.appendChild(td);
+                        $(td).append(this);
+                    });
+                    $(select_mark).find(".box").append(mark_table);
+                    select_mark.style.width = "150px";
+                    select_mark.style.marginLeft = select_mark.style.marginRight = "auto";
+                    var comment_table = getTableFromJSON("{\"c\":[\"\"]}");
+                    comment_table.className = "custom_table";
+                    var comment_area = document.createElement("textarea");
+                    comment_area.value = "без комментариев";
+                    comment_area.id = "comment_area";
+                    $(comment_table).find("td").append(comment_area);
+                    $("#mark").append(select_mark).append(comment_table);
+                    var button = document.createElement("input");
+                    button.type = "button";
+                    button.style.display = "block";
+                    button.style.marginLeft = button.style.marginRight = "auto";
+                    button.value = "Добавить / Исправить";
+                    $("#mark").append(button);
+                    $(button).click(function() {
+                        query = "CALL add_mark("+$("#student_id").data("value")+","+$("#lesson_id").data("value")+",";
+                        query += $("#mark_type_id").data("value")+",'"+$("#comment_area").val()+"')";
+                        modifyQuery(query, {}, function(response) {
+                            loadMark();
+                        });
+                    });
+                });
             }
         });
+
     }
 
     function loadStudentList(group_id) {
@@ -403,9 +445,9 @@ function onMarksLoad() {
         selectQuery(query, {}, function(response) {
             removeStudentList();
             var select_student = selectTool("Студенты", "student_id", $.parseJSON(response));
-            select_student.style.width = "50%";
-            select_student.style.marginLeft = "auto";
-            select_student.style.marginRight = "auto";
+            //select_student.style.width = "50%";
+            //select_student.style.marginLeft = "auto";
+            //select_student.style.marginRight = "auto";
             $("#judging").append(select_student);
             $("student_id").ready(function() {
                 loadMark();
@@ -536,6 +578,9 @@ function onEditScheduleLoad() {
         };
         $("#select_month").append(slidedSelectTool("Месяц", "month", month_names));
         loadCalendar(2013, 1);
+        $("#month .item").click(function() {
+            loadCalendar(2013, $(this).data("value"));
+        })
         $("#month label[for]").click(function() {
             id = this.getAttribute("for");
             loadCalendar(2013, $("#"+id).val());
