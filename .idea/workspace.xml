@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c4c63f6c-22a7-4397-b49c-2012de3815c8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/marks.php" afterPath="$PROJECT_DIR$/marks.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/script.js" afterPath="$PROJECT_DIR$/script.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/style.css" afterPath="$PROJECT_DIR$/style.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="StudentProgress.iws" />
@@ -35,11 +33,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="script.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="script.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/script.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2628" max-vertical-offset="5372">
-              <caret line="402" column="46" selection-start-line="402" selection-start-column="46" selection-end-line="402" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.4373928" vertical-offset="2601" max-vertical-offset="5491">
+              <caret line="390" column="42" selection-start-line="390" selection-start-column="42" selection-end-line="390" selection-end-column="42" />
               <folding>
                 <element signature="n#!!block;n#getTableFromJSON#0" expanded="false" />
                 <element signature="n#!!block;n#selectQuery#0" expanded="false" />
@@ -58,63 +56,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="calendar.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/calendar.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="331" max-vertical-offset="901">
-              <caret line="15" column="37" selection-start-line="15" selection-start-column="37" selection-end-line="15" selection-end-column="37" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="marks.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/marks.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="59" max-vertical-offset="731">
-              <caret line="32" column="32" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="edit_schedule.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/edit_schedule.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1793" max-vertical-offset="2465">
-              <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
-              <folding>
-                <marker date="1424636325121" expanded="true" signature="888:1222" placeholder="SELECT group..." />
-                <marker date="1424636325121" expanded="true" signature="1702:1743" placeholder="SELECT id, n..groups..." />
-                <marker date="1424636325121" expanded="true" signature="1870:1913" placeholder="SELECT id, n..subjects..." />
-                <marker date="1424636325121" expanded="true" signature="2046:2091" placeholder="SELECT id, n..auditories..." />
-                <marker date="1424636325121" expanded="true" signature="2233:2336" placeholder="SELECT teach..teachers..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="funs.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/funs.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="8874">
-              <caret line="45" column="34" selection-start-line="45" selection-start-column="34" selection-end-line="45" selection-end-column="34" />
-              <folding>
-                <marker date="1424606090764" expanded="true" signature="3225:3275" placeholder="SELECT id, s..students..." />
-                <marker date="1424606090764" expanded="true" signature="3967:4009" placeholder="SELECT numbe..courses..." />
-                <marker date="1424606090764" expanded="true" signature="4522:4754" placeholder="SELECT lesso..lessons..." />
-                <marker date="1424606090764" expanded="true" signature="4891:4922" placeholder="SELECT id, n..mark_types..." />
-                <marker date="1424606090764" expanded="true" signature="7134:7427" placeholder="SELECT teach..teachings..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="style.css" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/style.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.511745" vertical-offset="2261" max-vertical-offset="4284">
-              <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+            <state vertical-scroll-proportion="-14.730769" vertical-offset="161" max-vertical-offset="731">
+              <caret line="32" column="38" selection-start-line="32" selection-start-column="38" selection-end-line="32" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -348,7 +294,13 @@
       <option name="project" value="LOCAL" />
       <updated>1424690868910</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="переписал инструмент для выбора одного из нескольких вариантов">
+      <created>1424725189994</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1424725189994</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -381,7 +333,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32978722" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17700455" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29666162" sideWeight="0.6704" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24051593" sideWeight="0.6704" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32744783" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -441,7 +393,8 @@
     <MESSAGE value="ajax в добавлении занятий" />
     <MESSAGE value="ajax в фильтрах для отметок" />
     <MESSAGE value="настроил взаимосвязь фильтров занятий" />
-    <option name="LAST_COMMIT_MESSAGE" value="настроил взаимосвязь фильтров занятий" />
+    <MESSAGE value="переписал инструмент для выбора одного из нескольких вариантов" />
+    <option name="LAST_COMMIT_MESSAGE" value="переписал инструмент для выбора одного из нескольких вариантов" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -457,7 +410,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3110" max-vertical-offset="4301">
           <caret line="199" column="13" selection-start-line="199" selection-start-column="13" selection-end-line="199" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -794,13 +746,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="8874">
           <caret line="45" column="34" selection-start-line="45" selection-start-column="34" selection-end-line="45" selection-end-column="34" />
-          <folding>
-            <marker date="1424606090764" expanded="true" signature="3225:3275" placeholder="SELECT id, s..students..." />
-            <marker date="1424606090764" expanded="true" signature="3967:4009" placeholder="SELECT numbe..courses..." />
-            <marker date="1424606090764" expanded="true" signature="4522:4754" placeholder="SELECT lesso..lessons..." />
-            <marker date="1424606090764" expanded="true" signature="4891:4922" placeholder="SELECT id, n..mark_types..." />
-            <marker date="1424606090764" expanded="true" signature="7134:7427" placeholder="SELECT teach..teachings..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -815,13 +760,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1793" max-vertical-offset="2465">
           <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
-          <folding>
-            <marker date="1424636325121" expanded="true" signature="888:1222" placeholder="SELECT group..." />
-            <marker date="1424636325121" expanded="true" signature="1702:1743" placeholder="SELECT id, n..groups..." />
-            <marker date="1424636325121" expanded="true" signature="1870:1913" placeholder="SELECT id, n..subjects..." />
-            <marker date="1424636325121" expanded="true" signature="2046:2091" placeholder="SELECT id, n..auditories..." />
-            <marker date="1424636325121" expanded="true" signature="2233:2336" placeholder="SELECT teach..teachers..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -833,18 +771,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.511745" vertical-offset="2261" max-vertical-offset="4284">
+          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/marks.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="59" max-vertical-offset="731">
-          <caret line="32" column="32" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
+        <state vertical-scroll-proportion="-14.730769" vertical-offset="161" max-vertical-offset="731">
+          <caret line="32" column="38" selection-start-line="32" selection-start-column="38" selection-end-line="32" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/script.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2628" max-vertical-offset="5372">
-          <caret line="402" column="46" selection-start-line="402" selection-start-column="46" selection-end-line="402" selection-end-column="46" />
+        <state vertical-scroll-proportion="0.4373928" vertical-offset="2601" max-vertical-offset="5491">
+          <caret line="390" column="42" selection-start-line="390" selection-start-column="42" selection-end-line="390" selection-end-column="42" />
           <folding>
             <element signature="n#!!block;n#getTableFromJSON#0" expanded="false" />
             <element signature="n#!!block;n#selectQuery#0" expanded="false" />
@@ -859,14 +804,6 @@
             <element signature="e#8956#9000#0" expanded="false" />
             <element signature="n#!!block;n#progression#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.511745" vertical-offset="2261" max-vertical-offset="4284">
-          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>

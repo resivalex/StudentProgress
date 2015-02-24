@@ -375,14 +375,21 @@ function onMarksLoad() {
     }
 
     function loadMark() {
-        query = "SELECT marks.id FROM marks ";
+        removeMark();
+        query = "SELECT mark_history.id, mark_types.name, mark_history.comment FROM marks ";
+        query += "JOIN mark_history ON marks.id = mark_history.mark_id ";
+        query += "JOIN mark_types ON mark_history.mark_type_id = mark_types.id ";
         query += "JOIN students ON marks.student_id = students.id ";
         query += "JOIN lessons ON marks.lesson_id = lessons.id ";
         query += "WHERE students.id = "+$("#student_id").data("value")+" AND ";
-        query += "lessons.id = "+$("#lesson_id").data("value");
+        query += "lessons.id = "+$("#lesson_id").data("value")+" ORDER by mark_history.id DESC";
         selectQuery(query, {}, function(response) {
             if ($("#student_id").data("value") != undefined) {
                 showMessage($.parseJSON(response).id.length? "Есть отметки!" : "Отметок нет.");
+                removeMark();
+                var table = getTableFromJSON(response);
+                table.className = "custom_table";
+                $("#mark").append(table);
             }
         });
     }
