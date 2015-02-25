@@ -58,11 +58,18 @@ function showMessage(message_text) {
     layer.prepend($temp);
 }
 
-function getTableFromJSON(text) {
-    text = jQuery.parseJSON(text);
-
+function getTable(text, with_header) {
     var table = document.createElement("table");
     var tr = [];
+    if (with_header) {
+        var htr = document.createElement("tr");
+        for (var i in text) {
+            var th = document.createElement("th");
+            th.innerHTML = i;
+            htr.appendChild(th);
+        }
+        table.appendChild(htr);
+    }
     for (var i in text) {
         for (var j = 0; j < text[i].length; j++) {
             tr[j] = document.createElement("tr");
@@ -78,6 +85,11 @@ function getTableFromJSON(text) {
         }
     }
     return table;
+
+}
+
+function getTableFromJSON(text) {
+    return getTable($.parseJSON(text));
 }
 
 function selectQuery(query, params, fun) {
@@ -587,5 +599,72 @@ function onEditScheduleLoad() {
         });
         $("#select_hour").append(slidedSelectTool("Часы", "hour", {id: progression(7, 18, 1), name: progression(7, 18, 1)}));
         $("#select_minute").append(slidedSelectTool("Минуты", "minute", {id: progression(0, 55, 5), name: progression(0, 55, 5)}));
+    });
+}
+
+function sortableTable(params) {
+    var table = getTable(params, true);
+    $(table).find("th").each(function(index) {
+        var button = document.createElement("input");
+        button.type = "button";
+        button.value = this.innerHTML;
+        button.style.width = "100%";
+        this.innerHTML = "";
+        this.appendChild(button);
+        index++;
+        $(this).click(function() {
+            var tds = $(table).find("tr td:nth-child("+index+")").get();
+            var ord = [];
+            for (var i = 0; i < tds.length; i++) ord.push(i);
+            for (var i = 0; i < tds.length; i++) {
+                for (var j = i + 1; j < tds.length; j++) {
+                    if (tds[ord[i]].innerHTML > tds[ord[j]].innerHTML) {
+                        var temp = ord[i];
+                        ord[i] = ord[j];
+                        ord[j] = temp;
+                    }
+                }
+            }
+            var trs = $(table).find("tr:has(td)").get();
+            for (var i = 0; i < tds.length; i++) {
+                $(table).append(trs[ord[i]]);
+            }
+        });
+    });
+    return table;
+}
+
+function onScheduleForTeacherLoad() {
+    function loadSchedule() {
+        query = "SELECT subjects.name AS subject_name, groups.name AS group_name, ";
+        query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
+        query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
+        query += "JOIN groups ON (lessons.group_id = groups.id) ";
+        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
+        query += "WHERE teacher_id = "+$("#teacher_id").data("value")+" ";
+        query += "ORDER BY subjects.name, groups.name, auditories.name, lessons.time";
+
+        selectQuery(query, {}, function(response) {
+            $("#schedule_table").children().remove();
+            var table = sortableTable($.parseJSON(response));
+            table.className = "custom_table";
+            $("#schedule_table").append(table);
+        })
+    }
+
+    $("body").ready(function () {
+        query = "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name ";
+        query += "FROM teachers ";
+        query += "JOIN users ON teachers.id = users.id ";
+        query += "ORDER BY name";
+        selectQuery(query, {}, function(response) {
+            $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
+            $("#teacher_id").ready(function() {
+                loadSchedule();
+            });
+            $("#teacher_id .item").click(function() {
+                loadSchedule();
+            });
+        })
     });
 }
