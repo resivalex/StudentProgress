@@ -256,67 +256,6 @@ function addLesson() {
     });
 }
 
-//function selectTool(title, name, params) {
-//    var tool = document.createElement("div");
-//
-//    tool.className = "radio-toolbar";
-//    tool.id = name;
-//    var top = document.createElement("div");
-//    var box = document.createElement("div");
-//    top.style.borderStyle = "outset";
-//    top.style.borderWidth = "1px";
-//    top.style.borderColor = "#8888AA";
-//    top.style.height = "30px";
-//    var top_title = document.createElement("label");
-//    top_title.innerHTML = title;
-//    top_title.style.marginTop = "5px";
-//    top_title.style.marginLeft = "5px";
-//    top.appendChild(top_title);
-//    $(top).click(function() {
-//        $(box).slideToggle();
-//    });
-//    tool.appendChild(top);
-//    box.style.display = "none";
-//    var first = null;
-//    var top_label = document.createElement("label");
-//    var props = [];
-//    for (var i in params) {
-//        props.push(i);
-//    }
-//    for (var i = 0; i < params[props[0]].length; i++) {
-//        var radio = document.createElement("input");
-//        radio.type = "radio";
-//        radio.name = name;
-//        radio.value = params[props[0]][i];
-//        radio.id = name+"_"+params[props[0]][i];
-//        if (first == null) {
-//            first = radio;
-//            top_label.innerHTML = params[props[1]][i];
-//            top_label.className = "right_note";
-//            top_label.style.marginTop = "5px";
-//            top_label.style.marginRight = "5px";
-//            top.appendChild(top_label);
-//        }
-//        box.appendChild(radio);
-//        var label = document.createElement("label");
-//        $(label).click(function() {
-//            $(top_label).html($(this).html());
-//            $(box).slideUp();
-//        });
-//        label.innerHTML = params[props[1]][i];
-//        label.setAttribute("for", radio.id);
-//        box.appendChild(label);
-//        box.appendChild(document.createElement("br"));
-//    }
-//    top_title.innerHTML += " (" + params[props[0]].length + ")";
-//    tool.appendChild(box);
-//    if (first != null) {
-//        first.checked = true;
-//    }
-//
-//    return tool;
-//}
-
 function selectTool(title, id, params) {
     function div(class_name) {
         var res = document.createElement("div");
@@ -616,15 +555,11 @@ function sortableTable(params) {
             var tds = $(table).find("tr td:nth-child("+index+")").get();
             var ord = [];
             for (var i = 0; i < tds.length; i++) ord.push(i);
-            for (var i = 0; i < tds.length; i++) {
-                for (var j = i + 1; j < tds.length; j++) {
-                    if (tds[ord[i]].innerHTML > tds[ord[j]].innerHTML) {
-                        var temp = ord[i];
-                        ord[i] = ord[j];
-                        ord[j] = temp;
-                    }
-                }
-            }
+            ord.sort(function (a, b) {
+                if (tds[a].innerHTML > tds[b].innerHTML) return 1;
+                if (tds[a].innerHTML < tds[b].innerHTML) return -1;
+                return 0;
+            });
             var trs = $(table).find("tr:has(td)").get();
             for (var i = 0; i < tds.length; i++) {
                 $(table).append(trs[ord[i]]);
@@ -636,6 +571,7 @@ function sortableTable(params) {
 
 function onScheduleForTeacherLoad() {
     function loadSchedule() {
+        $("#schedule_table").children().remove();
         query = "SELECT subjects.name AS subject_name, groups.name AS group_name, ";
         query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
         query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
@@ -648,14 +584,20 @@ function onScheduleForTeacherLoad() {
             $("#schedule_table").children().remove();
             var table = sortableTable($.parseJSON(response));
             table.className = "custom_table";
+            var ths = $(table).find("input[type='button']").get();
+            var titles = ["Дисциплина", "Группа", "Аудитория", "Время"];
+            for (var i = 0; i < 4; i++) {
+                ths[i].value = titles[i];
+            }
             $("#schedule_table").append(table);
-        })
+        });
     }
 
     $("body").ready(function () {
-        query = "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name ";
+        query = "SELECT DISTINCT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name ";
         query += "FROM teachers ";
         query += "JOIN users ON teachers.id = users.id ";
+        query += "JOIN lessons ON teachers.id = lessons.teacher_id ";
         query += "ORDER BY name";
         selectQuery(query, {}, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
@@ -665,6 +607,50 @@ function onScheduleForTeacherLoad() {
             $("#teacher_id .item").click(function() {
                 loadSchedule();
             });
+        });
+    });
+}
+
+function onScheduleForStudentLoad() {
+    function loadSchedule() {
+        $("#schedule_table").children().remove();
+        query = "SELECT subjects.name AS subject_name, "
+        query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, ";
+        query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
+        query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
+        query += "JOIN teachers ON (lessons.teacher_id = teachers.id) ";
+        query += "JOIN users ON (teachers.id = users.id) ";
+        query += "JOIN groups ON (lessons.group_id = groups.id) ";
+        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
+        query += "WHERE groups.id = "+$("#group_id").data("value")+" ";
+        query += "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time";
+
+        selectQuery(query, {}, function(response) {
+            $("#schedule_table").children().remove();
+            var table = sortableTable($.parseJSON(response));
+            table.className = "custom_table";
+            var ths = $(table).find("input[type='button']").get();
+            var titles = ["Дисциплина", "Преподаватель", "Аудитория", "Время"];
+            for (var i = 0; i < 4; i++) {
+                ths[i].value = titles[i];
+            }
+            $("#schedule_table").append(table);
+        });
+    }
+
+    $("body").ready(function () {
+        query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
+        query += "JOIN lessons ON (groups.id = lessons.group_id) ";
+        query += "ORDER BY groups.name";
+        selectQuery(query, {}, function (response) {
+            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
+            $("#group_id").ready(function () {
+                loadSchedule();
+            });
+            $("#group_id .item").click(function () {
+                loadSchedule();
+            });
         })
     });
 }
+

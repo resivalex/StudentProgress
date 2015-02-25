@@ -2,7 +2,7 @@
 
 include_once("template.php");
 
-$head->appendChild(fs("title", "Редактирование расписания"));
+$head->appendChild(fs("title", "Расписание для преподавателя"));
 
 function id_div($id) {
     $div = fs("div");
@@ -10,9 +10,18 @@ function id_div($id) {
     return $div;
 }
 
+$body->appendChild(afs("Расписание", "schedule.php"));
+
+// скрипт
 $body->appendChild(fs("script", "onScheduleForTeacherLoad()"));
-$body->appendChild(id_div("select_teacher"));
+
+// выбор преподавателя
+$select_teacher = id_div("select_teacher");
+$select_teacher->setAttribute("style", "width: 40%; margin-left: auto; margin-right: auto;");
+$body->appendChild($select_teacher);
 $body->appendChild(brfs());
+
+// таблица с расписанием
 $body->appendChild(id_div("schedule_table"));
 
 echo $document->saveHTML();

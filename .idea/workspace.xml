@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c4c63f6c-22a7-4397-b49c-2012de3815c8" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/edit_schedule.php" afterPath="$PROJECT_DIR$/edit_schedule.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/schedule_for_student.php" afterPath="$PROJECT_DIR$/schedule_for_student.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/schedule_for_teacher.php" afterPath="$PROJECT_DIR$/schedule_for_teacher.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/script.js" afterPath="$PROJECT_DIR$/script.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/style.css" afterPath="$PROJECT_DIR$/style.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="StudentProgress.iws" />
@@ -34,24 +37,74 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="script.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="script.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/script.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.79588336" vertical-offset="6472" max-vertical-offset="7752">
-              <caret line="627" column="53" selection-start-line="627" selection-start-column="53" selection-end-line="627" selection-end-column="53" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2964" max-vertical-offset="3995">
+              <caret line="573" column="14" selection-start-line="573" selection-start-column="14" selection-end-line="573" selection-end-column="14" />
               <folding>
                 <element signature="n#!!block;n#selectQuery#0" expanded="false" />
                 <element signature="n#!!block;n#modifyQuery#0" expanded="false" />
                 <element signature="n#!!block;n#splitSelectQueryFromParams#0" expanded="false" />
+                <element signature="n#!!block;n#loadRemovableTable#0" expanded="false" />
                 <element signature="n#!!block;n#addToTable#0" expanded="false" />
                 <element signature="n#!!block;n#addToUsers#0" expanded="false" />
                 <element signature="e#6967#7361#0" expanded="false" />
                 <element signature="n#!!block;n#setFields#0" expanded="false" />
-                <element signature="n#!!block;n#addLesson#0" expanded="false" />
-                <element signature="e#9266#9310#0" expanded="false" />
+                <element signature="n#!!block;n#selectTool#0" expanded="false" />
+                <element signature="n#!!block;n#onMarksLoad#0" expanded="false" />
                 <element signature="n#!!block;n#progression#0" expanded="false" />
                 <element signature="n#!!block;n#slidedSelectTool#0" expanded="false" />
                 <element signature="n#!!block;n#onEditScheduleLoad#0" expanded="false" />
+                <element signature="n#!!block;n#onScheduleForStudentLoad#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="template.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/template.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="586" max-vertical-offset="1190">
+              <caret line="60" column="28" selection-start-line="60" selection-start-column="28" selection-end-line="60" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="schedule_for_student.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/schedule_for_student.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="238" max-vertical-offset="578">
+              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="edit_schedule.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/edit_schedule.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1666">
+              <caret line="20" column="20" selection-start-line="20" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+              <folding>
+                <marker date="1424894143517" expanded="true" signature="117:451" placeholder="SELECT group..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="funs.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/funs.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="6162" max-vertical-offset="8874">
+              <caret line="394" column="8" selection-start-line="394" selection-start-column="8" selection-end-line="394" selection-end-column="8" />
+              <folding>
+                <marker date="1424606090764" expanded="true" signature="3225:3275" placeholder="SELECT id, s..students..." />
+                <marker date="1424606090764" expanded="true" signature="3967:4009" placeholder="SELECT numbe..courses..." />
+                <marker date="1424606090764" expanded="true" signature="4522:4754" placeholder="SELECT lesso..lessons..." />
+                <marker date="1424606090764" expanded="true" signature="4891:4922" placeholder="SELECT id, n..mark_types..." />
+                <marker date="1424606090764" expanded="true" signature="7134:7427" placeholder="SELECT teach..teachings..." />
               </folding>
             </state>
           </provider>
@@ -60,18 +113,18 @@
       <file leaf-file-name="schedule_for_teacher.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/schedule_for_teacher.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="408">
-              <caret line="12" column="63" selection-start-line="12" selection-start-column="63" selection-end-line="12" selection-end-column="63" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="561">
+              <caret line="12" column="54" selection-start-line="12" selection-start-column="54" selection-end-line="12" selection-end-column="54" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="style.css" pinned="false" current-in-tab="false">
+      <file leaf-file-name="style.css" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2261" max-vertical-offset="4284">
-              <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.34228188" vertical-offset="1071" max-vertical-offset="4284">
+              <caret line="75" column="3" selection-start-line="75" selection-start-column="3" selection-end-line="75" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -80,8 +133,8 @@
       <file leaf-file-name="marks.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/marks.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="382" max-vertical-offset="1020">
-              <caret line="48" column="26" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="26" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="127" max-vertical-offset="1020">
+              <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -101,7 +154,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/delete_from_table.php" />
-        <option value="$PROJECT_DIR$/template.php" />
         <option value="$PROJECT_DIR$/jquery_test.php" />
         <option value="$PROJECT_DIR$/all_tables.php" />
         <option value="$PROJECT_DIR$/select_query.php" />
@@ -113,13 +165,15 @@
         <option value="$PROJECT_DIR$/accounts.php" />
         <option value="$PROJECT_DIR$/login.php" />
         <option value="$PROJECT_DIR$/funs.php" />
-        <option value="$PROJECT_DIR$/edit_schedule.php" />
         <option value="$PROJECT_DIR$/calendar.php" />
-        <option value="$PROJECT_DIR$/style.css" />
         <option value="$PROJECT_DIR$/marks.php" />
         <option value="$PROJECT_DIR$/queries.php" />
-        <option value="$PROJECT_DIR$/schedule_for_teacher.php" />
+        <option value="$PROJECT_DIR$/template.php" />
         <option value="$PROJECT_DIR$/script.js" />
+        <option value="$PROJECT_DIR$/edit_schedule.php" />
+        <option value="$PROJECT_DIR$/schedule_for_student.php" />
+        <option value="$PROJECT_DIR$/schedule_for_teacher.php" />
+        <option value="$PROJECT_DIR$/style.css" />
       </list>
     </option>
   </component>
@@ -252,9 +306,6 @@
       <BehatRunner />
       <method />
     </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
-      <method />
-    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
       <node-options />
       <gulpfile />
@@ -262,6 +313,9 @@
       <arguments />
       <pass-parent-envs>true</pass-parent-envs>
       <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
       <method />
     </configuration>
     <configuration default="false" name="StudentProgress" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" browser="53e2f627-b1a7-4dfa-bfa7-5b83cc034776" server_name="XAMPP">
@@ -340,7 +394,13 @@
       <option name="project" value="LOCAL" />
       <updated>1424808477307</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="добавлена таблица с сортировкой по столбцам">
+      <created>1424868421957</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1424868421957</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -373,22 +433,22 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32978722" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17700455" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19591528" sideWeight="0.6704" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1860817" sideWeight="0.6704" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32744783" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32852563" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.38844302" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Repositories" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25320512" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3456" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -409,9 +469,9 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2632375" sideWeight="0.6704" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3456" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3456" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -437,7 +497,8 @@
     <MESSAGE value="select для получения истории отметок" />
     <MESSAGE value="реализовано добавление отметок" />
     <MESSAGE value="добавлено пару sql файлов" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавлено пару sql файлов" />
+    <MESSAGE value="добавлена таблица с сортировкой по столбцам" />
+    <option name="LAST_COMMIT_MESSAGE" value="добавлена таблица с сортировкой по столбцам" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -449,13 +510,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="425">
-          <caret line="9" column="54" selection-start-line="9" selection-start-column="54" selection-end-line="9" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/add_mark_fact.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="357">
@@ -471,15 +525,17 @@
             <element signature="n#!!block;n#selectQuery#0" expanded="false" />
             <element signature="n#!!block;n#modifyQuery#0" expanded="false" />
             <element signature="n#!!block;n#splitSelectQueryFromParams#0" expanded="false" />
+            <element signature="n#!!block;n#loadRemovableTable#0" expanded="false" />
             <element signature="n#!!block;n#addToTable#0" expanded="false" />
             <element signature="n#!!block;n#addToUsers#0" expanded="false" />
             <element signature="e#6967#7361#0" expanded="false" />
             <element signature="n#!!block;n#setFields#0" expanded="false" />
-            <element signature="n#!!block;n#addLesson#0" expanded="false" />
-            <element signature="e#9266#9310#0" expanded="false" />
+            <element signature="n#!!block;n#selectTool#0" expanded="false" />
+            <element signature="n#!!block;n#onMarksLoad#0" expanded="false" />
             <element signature="n#!!block;n#progression#0" expanded="false" />
             <element signature="n#!!block;n#slidedSelectTool#0" expanded="false" />
             <element signature="n#!!block;n#onEditScheduleLoad#0" expanded="false" />
+            <element signature="n#!!block;n#onScheduleForStudentLoad#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -555,15 +611,17 @@
             <element signature="n#!!block;n#selectQuery#0" expanded="false" />
             <element signature="n#!!block;n#modifyQuery#0" expanded="false" />
             <element signature="n#!!block;n#splitSelectQueryFromParams#0" expanded="false" />
+            <element signature="n#!!block;n#loadRemovableTable#0" expanded="false" />
             <element signature="n#!!block;n#addToTable#0" expanded="false" />
             <element signature="n#!!block;n#addToUsers#0" expanded="false" />
             <element signature="e#6967#7361#0" expanded="false" />
             <element signature="n#!!block;n#setFields#0" expanded="false" />
-            <element signature="n#!!block;n#addLesson#0" expanded="false" />
-            <element signature="e#9266#9310#0" expanded="false" />
+            <element signature="n#!!block;n#selectTool#0" expanded="false" />
+            <element signature="n#!!block;n#onMarksLoad#0" expanded="false" />
             <element signature="n#!!block;n#progression#0" expanded="false" />
             <element signature="n#!!block;n#slidedSelectTool#0" expanded="false" />
             <element signature="n#!!block;n#onEditScheduleLoad#0" expanded="false" />
+            <element signature="n#!!block;n#onScheduleForStudentLoad#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -757,24 +815,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/funs.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="8874">
-          <caret line="45" column="34" selection-start-line="45" selection-start-column="34" selection-end-line="45" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jquery-2.1.3.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5077187" vertical-offset="59782" max-vertical-offset="156383">
           <caret line="3546" column="4" selection-start-line="3546" selection-start-column="4" selection-end-line="3546" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/edit_schedule.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1793" max-vertical-offset="2465">
-          <caret line="116" column="0" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -785,41 +829,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2261" max-vertical-offset="4284">
-          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/template.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.05964912" vertical-offset="0" max-vertical-offset="1190">
-          <caret line="2" column="16" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/queries.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.32807016" vertical-offset="0" max-vertical-offset="9163">
           <caret line="11" column="23" selection-start-line="11" selection-start-column="23" selection-end-line="11" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/marks.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="382" max-vertical-offset="1020">
-          <caret line="48" column="26" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/schedule_for_teacher.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="408">
-          <caret line="12" column="63" selection-start-line="12" selection-start-column="63" selection-end-line="12" selection-end-column="63" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -830,24 +843,90 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/marks.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="127" max-vertical-offset="1020">
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/template.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="586" max-vertical-offset="1190">
+          <caret line="60" column="28" selection-start-line="60" selection-start-column="28" selection-end-line="60" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/script.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.79588336" vertical-offset="6472" max-vertical-offset="7752">
-          <caret line="627" column="53" selection-start-line="627" selection-start-column="53" selection-end-line="627" selection-end-column="53" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2964" max-vertical-offset="3995">
+          <caret line="573" column="14" selection-start-line="573" selection-start-column="14" selection-end-line="573" selection-end-column="14" />
           <folding>
             <element signature="n#!!block;n#selectQuery#0" expanded="false" />
             <element signature="n#!!block;n#modifyQuery#0" expanded="false" />
             <element signature="n#!!block;n#splitSelectQueryFromParams#0" expanded="false" />
+            <element signature="n#!!block;n#loadRemovableTable#0" expanded="false" />
             <element signature="n#!!block;n#addToTable#0" expanded="false" />
             <element signature="n#!!block;n#addToUsers#0" expanded="false" />
             <element signature="e#6967#7361#0" expanded="false" />
             <element signature="n#!!block;n#setFields#0" expanded="false" />
-            <element signature="n#!!block;n#addLesson#0" expanded="false" />
-            <element signature="e#9266#9310#0" expanded="false" />
+            <element signature="n#!!block;n#selectTool#0" expanded="false" />
+            <element signature="n#!!block;n#onMarksLoad#0" expanded="false" />
             <element signature="n#!!block;n#progression#0" expanded="false" />
             <element signature="n#!!block;n#slidedSelectTool#0" expanded="false" />
             <element signature="n#!!block;n#onEditScheduleLoad#0" expanded="false" />
+            <element signature="n#!!block;n#onScheduleForStudentLoad#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/funs.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6162" max-vertical-offset="8874">
+          <caret line="394" column="8" selection-start-line="394" selection-start-column="8" selection-end-line="394" selection-end-column="8" />
+          <folding>
+            <marker date="1424606090764" expanded="true" signature="3225:3275" placeholder="SELECT id, s..students..." />
+            <marker date="1424606090764" expanded="true" signature="3967:4009" placeholder="SELECT numbe..courses..." />
+            <marker date="1424606090764" expanded="true" signature="4522:4754" placeholder="SELECT lesso..lessons..." />
+            <marker date="1424606090764" expanded="true" signature="4891:4922" placeholder="SELECT id, n..mark_types..." />
+            <marker date="1424606090764" expanded="true" signature="7134:7427" placeholder="SELECT teach..teachings..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/edit_schedule.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1666">
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding>
+            <marker date="1424894143517" expanded="true" signature="117:451" placeholder="SELECT group..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/schedule_for_student.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="238" max-vertical-offset="578">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/schedule_for_teacher.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="561">
+          <caret line="12" column="54" selection-start-line="12" selection-start-column="54" selection-end-line="12" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34228188" vertical-offset="1071" max-vertical-offset="4284">
+          <caret line="75" column="3" selection-start-line="75" selection-start-column="3" selection-end-line="75" selection-end-column="3" />
+          <folding />
         </state>
       </provider>
     </entry>

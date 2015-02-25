@@ -2,37 +2,7 @@
 
 include_once("template.php");
 
-function interval_pairs($from, $to, $step) {
-    $result = array();
-    while ($from <= $to) {
-        $result[] = [$from, $from];
-        $from += $step;
-    }
-    return $result;
-}
-
 $head->appendChild(fs("title", "Редактирование расписания"));
-
-if (isset($_POST["group_id"])) {
-    $group_id = $_POST["group_id"];
-    $subject_id = $_POST["subject_id"];
-    $auditory_id = $_POST["auditory_id"];
-    $teacher_id = $_POST["teacher_id"];
-    $month = $_POST["month"];
-    $day = $_POST["day"];
-    $hour = $_POST["hour"];
-    $minute = $_POST["minute"];
-    $datetime = "2013-".$month."-".$day." ".$hour.":".$minute.":00";
-
-    $query =
-<<<"SQL"
-INSERT INTO lessons
-(group_id, subject_id, auditory_id, teacher_id, time)
-VALUES
-('$group_id', '$subject_id', '$auditory_id', '$teacher_id', '$datetime')
-SQL;
-    modify_query($query);
-}
 
 $query =
 <<<SQL
@@ -54,25 +24,8 @@ $div->setAttribute("id", "schedule");
 $script = fs("script", "loadRemovableTable('lessons', 'schedule', '$query')");
 $div->appendChild($script);
 $body->appendChild($div);
-//$body->setAttribute("onload", "loadCalendar(2013,1)");
 
 $select_div = fs("div");
-//$select_group = select_tool("Группа" ,"group_id", get_pairs("SELECT id, name FROM groups ORDER BY name"));
-//$select_group->setAttribute("style", "width: 40%");
-//$select_subject = select_tool("Предмет" ,"subject_id", get_pairs("SELECT id, name FROM subjects ORDER BY name"));
-//$select_subject->setAttribute("style", "width: 40%");
-//$select_auditory = select_tool("Аудитория", "auditory_id", get_pairs("SELECT id, name FROM auditories ORDER BY name"));
-//$select_auditory->setAttribute("style", "width: 40%");
-//$select_teacher = select_tool("Преподаватель" ,"teacher_id",
-//    get_pairs("SELECT teachers.id, users.surname FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname"));
-//$select_teacher->setAttribute("style", "width: 40%");
-//$select_div->appendChild($select_group);
-//$select_div->appendChild(brfs());
-//$select_div->appendChild($select_subject);
-//$select_div->appendChild(brfs());
-//$select_div->appendChild($select_auditory);
-//$select_div->appendChild(brfs());
-//$select_div->appendChild($select_teacher);
 
 // фильтр для занития
 function lesson_filter($id) {
