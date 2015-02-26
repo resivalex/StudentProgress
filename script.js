@@ -58,6 +58,10 @@ function showMessage(message_text) {
     layer.prepend($temp);
 }
 
+function OK() {
+    showMessage("OK");
+}
+
 function getTable(text, with_header) {
     var table = document.createElement("table");
     var tr = [];
@@ -389,16 +393,12 @@ function onMarksLoad() {
 
     function loadStudentList(group_id) {
         removeStudentList();
-        query = "SELECT users.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM lessons ";
+        query = "SELECT students.id AS id, full_name(students.id) AS name FROM lessons ";
         query += "JOIN students ON lessons.group_id = students.group_id ";
-        query += "JOIN users ON users.id = students.id ";
         query += "WHERE lessons.id = "+$("#lesson_id").data("value")+" ORDER BY name";
         selectQuery(query, {}, function(response) {
             removeStudentList();
             var select_student = selectTool("Студенты", "student_id", $.parseJSON(response));
-            //select_student.style.width = "50%";
-            //select_student.style.marginLeft = "auto";
-            //select_student.style.marginRight = "auto";
             $("#judging").append(select_student);
             $("student_id").ready(function() {
                 loadMark();
@@ -462,7 +462,11 @@ function onMarksLoad() {
     }
 
     function loadTeachers() {
-        var query = "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
+        var query = "SELECT DISTINCT teachers.id, ";
+        query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name ";
+        query += "FROM teachers ";
+        query += "JOIN users ON teachers.id = users.id ";
+        query += "JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name";
 
         selectQuery(query, {}, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
@@ -654,3 +658,102 @@ function onScheduleForStudentLoad() {
     });
 }
 
+function csvDownloadForm() {
+    const table_selector = "table:not(:has(table))";
+
+    function onSelection() {
+        $("body").data("table_selection", true);
+        $("#download_button").val("Выберите таблицу");
+        $("body").on("mouseenter", table_selector, onMouseEnter);
+        $("body").on("mouseleave", table_selector, onMouseLeave);
+        $("body").on("click", table_selector, onTableClickInSelection);
+    }
+
+    function offSelection() {
+        $("body").data("table_selection", false);
+        $("#download_button").val("Сохранить в .csv");
+        $("body").off("mouseenter", table_selector, onMouseEnter);
+        $("body").off("mouseleave", table_selector, onMouseLeave);
+        $("body").off("click", table_selector, onTableClickInSelection);
+    }
+
+    const selection_style = [["border-style", "solid"], ["border-width", "3px"], ["border-color", "red"]];
+
+    function onMouseEnter() {
+        function changeStyleProperty(el, prop, val) {
+            $(el).data(prop, el.style.getPropertyValue(prop));
+            $(el).css(prop, val);
+        }
+        for (var i = 0; i < selection_style.length; i++) {
+            changeStyleProperty(this, selection_style[i][0], selection_style[i][1]);
+        }
+    }
+
+    function onMouseLeave() {
+        function restoreStyleProperty(el, prop) {
+            var val = $(el).data(prop);
+            if (val == undefined) {
+                el.style.removeProperty(prop);
+            } else {
+                $(el).css(prop, $(el).data(prop));
+            }
+        }
+        for (var i = 0; i < selection_style.length; i++) {
+            restoreStyleProperty(this, selection_style[i][0]);
+        }
+    }
+
+    function onTableClickInSelection() {
+        offSelection();
+
+        function restoreStyleProperty(el, prop) {
+            var val = $(el).data(prop);
+            if (val == undefined) {
+                el.style.removeProperty(prop);
+            } else {
+                $(el).css(prop, $(el).data(prop));
+            }
+        }
+        restoreStyleProperty(this, "border-style");
+        restoreStyleProperty(this, "border-width");
+        restoreStyleProperty(this, "border-color");
+
+        var tab_array = [];
+        $(this).find("tr:has(td)").each(function () {
+            tab_array.push([]);
+            var tds = $(this).find("td").get();
+            for (var i = 0; i < tds.length; i++) {
+                tab_array[tab_array.length - 1].push($(tds[i]).text());
+            }
+        });
+        $("#json_container").val("{\"table\":"+JSON.stringify(tab_array)+"}");
+        $("#csv_form").submit();
+    }
+    var form = document.createElement("form");
+    form.id = "csv_form";
+    form.acceptCharset = "utf-8";
+    form.method = "post";
+    form.action = "download_csv.php";
+    form.style.position = "absolute";
+    form.style.right = 0;
+    form.style.top = 0;
+    var hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = "table";
+    hidden.id = "json_container";
+    form.appendChild(hidden);
+    var download = document.createElement("input");
+    download.id = "download_button";
+    download.type = "button";
+    download.value = "Сохранить в .csv";
+    $(download).click(function () {
+        if ($("body").data("table_selection")) {
+            offSelection();
+        } else {
+            onSelection();
+        }
+    });
+    form.appendChild(download);
+
+    return form;
+}

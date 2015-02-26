@@ -60,6 +60,8 @@ $script->setAttribute("src", "script.js");
 $script->setAttribute("charset", "UTF-8");
 $head->appendChild($script);
 
+$body->appendChild(fs("script", "$('body').append(csvDownloadForm())"));
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
 echo "\n";
 ?> 

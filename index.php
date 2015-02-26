@@ -15,5 +15,11 @@ $body->appendChild(afs("Отчёты", "reports.php"));
 $body->appendChild(brfs());
 $body->appendChild(afs("*", "cards.php"));
 
+$body->appendChild(brfs());
+$form = formfs("download_csv.php");
+$form->appendChild(hidden("table", "{\"table\":[[\"a\", 5],[\"b\", 6]]}"));
+$form->appendChild(submit("Download .csv"));
+$body->appendChild($form);
+
 //$body->appendChild(brfs());
 echo $document->saveHTML();

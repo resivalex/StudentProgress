@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Фев 24 2015 г., 21:01
+-- Время создания: Фев 26 2015 г., 09:52
 -- Версия сервера: 5.5.27
 -- Версия PHP: 5.4.7
 
@@ -52,6 +52,14 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `proc_OUT`(OUT var1 VARCHAR(100))
 BEGIN  
     SET var1 = 'This is a test';  
+END$$
+
+--
+-- Функции
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `full_name`(par_user_id INT) RETURNS varchar(155) CHARSET utf8
+BEGIN
+  RETURN (SELECT concat(surname, ' ', name, ' ', patronymic) FROM users WHERE id = par_user_id);
 END$$
 
 DELIMITER ;
@@ -180,7 +188,7 @@ CREATE TABLE IF NOT EXISTS `marks` (
   PRIMARY KEY (`id`),
   KEY `lesson_id` (`lesson_id`),
   KEY `student_id` (`student_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=36 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
 
 --
 -- Дамп данных таблицы `marks`
@@ -192,7 +200,8 @@ INSERT INTO `marks` (`id`, `student_id`, `lesson_id`) VALUES
 (3, 4, 7),
 (33, 1, 7),
 (34, 3, 12),
-(35, 4, 12);
+(35, 4, 12),
+(36, 16, 15);
 
 -- --------------------------------------------------------
 
@@ -209,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `mark_history` (
   PRIMARY KEY (`id`),
   KEY `mark_type_id` (`mark_type_id`),
   KEY `mark_id` (`mark_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
 
 --
 -- Дамп данных таблицы `mark_history`
@@ -234,7 +243,9 @@ INSERT INTO `mark_history` (`id`, `mark_type_id`, `mark_id`, `time`, `comment`) 
 (16, 5, 34, '2015-02-24 19:47:21', 'теперь можно ставить прогулы'),
 (17, 3, 34, '2015-02-24 19:48:30', 'без комментариев'),
 (18, 2, 34, '2015-02-24 19:58:10', 'длиииииииииииииииииииииииииииииииииииииииииииииииииииииииинный коментарий......................'),
-(19, 4, 35, '2015-02-24 19:58:43', 'подготовился!');
+(19, 4, 35, '2015-02-24 19:58:43', 'подготовился!'),
+(20, 2, 36, '2015-02-24 20:03:44', 'Имеет представление. Не более.'),
+(21, 3, 36, '2015-02-24 20:03:59', 'без комментариев');
 
 -- --------------------------------------------------------
 
