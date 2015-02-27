@@ -11,18 +11,18 @@ function select_div($id) {
     return $div;
 }
 
-$body->appendChild(afs("Отметки", "marks.php"));
-
 // скрипт
 $body->appendChild(fs("script", "onMarksForStudentLoad()"));
 
 // выбор студента
 $body->appendChild(select_div("select_group"));
 $body->appendChild(brfs());
+$body->appendChild(select_div("select_student"));
+$body->appendChild(brfs());
 
 // таблица с расписанием
-$schedule_table = fs("div");
-$schedule_table->setAttribute("id", "schedule_table");
-$body->appendChild($schedule_table);
+$marks_table = fs("div");
+$marks_table->setAttribute("id", "marks_table");
+$body->appendChild($marks_table);
 
 echo $document->saveHTML();

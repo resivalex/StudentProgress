@@ -11,8 +11,6 @@ function select_div($id) {
     return $div;
 }
 
-$body->appendChild(afs("Расписание", "schedule.php"));
-
 // скрипт
 $body->appendChild(fs("script", "onScheduleForStudentLoad()"));
 

@@ -53,7 +53,6 @@ function add_info_form($header, $table_name, $params) {
 }
 
 $head->appendChild(fs("title", "Редактировать таблицы"));
-$body->appendChild(afs("Администрирование", "administration.php"));
 $body->appendChild(add_info_form("Аудитории", "auditories", [["Название", "name"], ["Описание", "description"]]));
 $body->appendChild(add_info_form("Дисциплины", "subjects", [["Название", "name"], ["Описание", "description"]]));
 $body->appendChild(add_info_form("Группы", "groups", [["Название", "name"], ["Курс", "course"]]));

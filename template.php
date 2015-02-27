@@ -42,6 +42,13 @@ $link->setAttribute("type", "text/css");
 $link->setAttribute("href", "style.css");
 $head->appendChild($link);
 
+// jquery ui css
+$link = $document->createElement("link");
+$link->setAttribute("rel", "stylesheet");
+$link->setAttribute("type", "text/css");
+$link->setAttribute("href", "jquery-ui-1.11.3.custom/jquery-ui.css");
+$head->appendChild($link);
+
 $icon_link = $document->createElement("link");
 $icon_link->setAttribute("rel", "shortcut icon");
 $icon_link->setAttribute("type", "image/png");
@@ -54,13 +61,23 @@ $script->setAttribute("src", "jquery-2.1.3.js");
 $script->setAttribute("charset", "UTF-8");
 $head->appendChild($script);
 
+// jquery ui script
+$script = $document->createElement("script");
+$script->setAttribute("type", "text/javascript");
+$script->setAttribute("src", "jquery-ui-1.11.3.custom/jquery-ui.js");
+$script->setAttribute("charset", "UTF-8");
+$head->appendChild($script);
+
+// my script
 $script = $document->createElement("script");
 $script->setAttribute("type", "text/javascript");
 $script->setAttribute("src", "script.js");
 $script->setAttribute("charset", "UTF-8");
 $head->appendChild($script);
 
-$body->appendChild(fs("script", "$('body').append(csvDownloadForm())"));
+if (isset($_SESSION["username"])) {
+    $body->appendChild(fs("script", "$('body').append(navigationMenu())"));
+}
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
 echo "\n";

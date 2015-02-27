@@ -1,5 +1,60 @@
 @CHARSET "UTF-8";
 
+.navigation_div {
+    width: 100%;
+    height: 50px;
+    background-color: #AAAAFF;
+    margin-bottom: 5px;
+}
+
+.navigation_menu, .navigation_menu ul {
+    list-style: none;
+    background-color: #EEEEFF;
+    margin: 0;
+    padding: 0;
+}
+
+.navigation_menu p {
+    margin: 0;
+    padding-top: 15px;
+    vertical-align: bottom;
+    padding-left: 30px;
+    padding-right: 30px;
+    height: 35px;
+}
+
+.navigation_menu a:hover {
+    color: black;
+}
+
+.navigation_menu a {
+    font-weight: bold;
+    color: #444455;
+}
+
+.navigation_menu > li {
+    float: left;
+    /*position: relative;*/
+    margin: 0;
+    background-color: #AAAAFF;
+}
+
+.navigation_menu li :hover, .navigation_menu .active {
+    background-color: #8888FF;
+}
+
+.navigation_menu li ul {
+    position: absolute;
+    background-color: #8888FF;
+}
+
+.navigation_menu li li {
+    display: none;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 .grid_table {
 	border-collapse: collapse;
 	border-style: solid;
@@ -67,20 +122,6 @@
 
 .input_table input[type="text"], .input_table select {
 	width: 100%;
-}
-
-a {
-	color: #111144;
-    /*font-size: 24pt;*/
-    /*display: block;*/
-    /*text-align: center;*/
-    background-color: #EEEEFF;
-}
-
-a:hover {
-	/*font-weight: 600;*/
-    color: #002277;
-    background-color: #DDDDFF;
 }
 
 .custom_table {

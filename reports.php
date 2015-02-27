@@ -5,9 +5,6 @@ include_once("template.php");
 $title = $document->createElement("title", "Отчёты");
 $head->appendChild($title);
 
-$body->appendChild(afs("На главную", "index.php"));
-$body->appendChild(brfs());
-
 $query =
 <<<SQL
 SELECT COUNT(*) AS mark_count

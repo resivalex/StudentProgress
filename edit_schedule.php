@@ -18,7 +18,6 @@ SQL;
 $query = str_replace("\n", " ", $query);
 $query = str_replace("\r", " ", $query);
 
-$body->appendChild(afs("Расписание", "schedule.php"));
 $div = fs("div");
 $div->setAttribute("id", "schedule");
 $script = fs("script", "loadRemovableTable('lessons', 'schedule', '$query')");

@@ -400,7 +400,7 @@ function onMarksForTeacherLoad() {
             removeStudentList();
             var select_student = selectTool("Студенты", "student_id", $.parseJSON(response));
             $("#judging").append(select_student);
-            $("student_id").ready(function() {
+            $("#student_id").ready(function() {
                 loadMark();
             });
             $("#student_id .item").click(function() {
@@ -734,9 +734,6 @@ function csvDownloadForm() {
     form.acceptCharset = "utf-8";
     form.method = "post";
     form.action = "download_csv.php";
-    form.style.position = "absolute";
-    form.style.right = 0;
-    form.style.top = 0;
     var hidden = document.createElement("input");
     hidden.type = "hidden";
     hidden.name = "table";
@@ -759,44 +756,195 @@ function csvDownloadForm() {
 }
 
 function onMarksForStudentLoad() {
-    function loadSchedule() {
-        $("#schedule_table").children().remove();
-        query = "SELECT subjects.name AS subject_name, "
-        query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, ";
-        query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
-        query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
-        query += "JOIN teachers ON (lessons.teacher_id = teachers.id) ";
-        query += "JOIN users ON (teachers.id = users.id) ";
-        query += "JOIN groups ON (lessons.group_id = groups.id) ";
-        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
-        query += "WHERE groups.id = "+$("#group_id").data("value")+" ";
-        query += "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time";
+    function loadMarks() {
+        $("#marks_table").children().remove();
+        query = "SELECT marks.id, subjects.name, full_name(teachers.id) AS teacher_name, mark_history.time, ";
+        query += "mark_types.short_name, mark_history.comment FROM mark_history ";
+        query += "JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) ";
+        query += "AS last_marks ON mark_history.id = last_marks.id ";
+        query += "JOIN mark_types ON mark_history.mark_type_id = mark_types.id ";
+        query += "JOIN marks ON mark_history.mark_id = marks.id ";
+        query += "JOIN students ON marks.student_id = students.id ";
+        query += "JOIN lessons ON marks.lesson_id = lessons.id ";
+        query += "JOIN subjects ON lessons.subject_id = subjects.id ";
+        query += "JOIN teachers ON lessons.teacher_id = teachers.id ";
+        query += "WHERE students.id = "+$("#student_id").data("value")+" ";
+        query += "ORDER BY mark_history.time";
 
         selectQuery(query, {}, function(response) {
-            $("#schedule_table").children().remove();
+            $("#marks_table").children().remove();
             var table = sortableTable($.parseJSON(response));
             table.className = "custom_table";
             var ths = $(table).find("input[type='button']").get();
-            var titles = ["Дисциплина", "Преподаватель", "Аудитория", "Время"];
-            for (var i = 0; i < 4; i++) {
+            var titles = ["#", "Предмет", "Преподаватель", "Дата", "Отметка", "Комментарий"];
+            for (var i = 0; i < titles.length; i++) {
                 ths[i].value = titles[i];
             }
-            $("#schedule_table").append(table);
+            $("#marks_table").append(table);
+        });
+    }
+
+    function loadStudents(group_id) {
+        $("#select_student").children().remove();
+        $("#marks_table").children().remove();
+        query = "SELECT students.id AS id, full_name(students.id) AS name FROM students ";
+        query += "JOIN groups ON students.group_id = groups.id ";
+        query += "WHERE groups.id = "+$("#group_id").data("value")+" ORDER BY name";
+        selectQuery(query, {}, function(response) {
+            $("#select_student").children().remove();
+            var select_student = slidedSelectTool("Студенты", "student_id", $.parseJSON(response));
+            $("#select_student").append(select_student);
+            $("#student_id").ready(function() {
+                loadMarks();
+            });
+            $("#student_id").on("click", ".item", function() {
+                loadMarks();
+            });
         });
     }
 
     $("body").ready(function () {
         query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
-        query += "JOIN lessons ON (groups.id = lessons.group_id) ";
+        query += "JOIN students ON (groups.id = students.group_id) ";
         query += "ORDER BY groups.name";
         selectQuery(query, {}, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
             $("#group_id").ready(function () {
-                loadSchedule();
+                loadStudents();
             });
-            $("#group_id .item").click(function () {
-                loadSchedule();
+            $("#group_id").on("click", ".item", function() {
+                loadStudents();
             });
-        })
+        });
     });
+}
+
+function navigationMenu() {
+    var menu_structure = {
+        "categories": [
+            {
+                "title": "Администрирование",
+                "content": [
+                    {
+                        "title": "Учётные записи",
+                        "url": "accounts.php"
+                    },
+                    {
+                        "title": "Редактировать таблицы",
+                        "url": "edit_tables.php"
+                    },
+                    {
+                        "title": "Резервирование",
+                        "url": "reservation.php"
+                    },
+                    {
+                        "title": "Все таблицы",
+                        "url": "all_tables.php"
+                    }
+                ]
+            },
+            {
+                "title": "Расписание",
+                "content": [
+                    {
+                        "title": "Для преподавателя",
+                        "url": "schedule_for_teacher.php"
+                    },
+                    {
+                        "title": "Для студента",
+                        "url": "schedule_for_student.php"
+                    },
+                    {
+                        "title": "Редактировать расписание",
+                        "url": "edit_schedule.php"
+                    }
+                ]
+            },
+            {
+                "title": "Отметки",
+                "content": [
+                    {
+                        "title": "Для преподавателя",
+                        "url": "marks_for_teacher.php"
+                    },
+                    {
+                        "title": "Для студента",
+                        "url": "marks_for_student.php"
+                    }
+                ]
+            },
+            {
+                "title": "Отчёты",
+                "content": [
+                    {
+                        "title": "Количество отметок",
+                        "url": "reports.php"
+                    }
+                ]
+            },
+            {
+                "title": "Пользователь",
+                "content": [
+                    {
+                        "title": "Выйти",
+                        "url": "logout.php"
+                    }
+                ]
+            }
+        ]
+    };
+
+    var div = document.createElement("div");
+    div.className = "navigation_div";
+    var menu = document.createElement("ul");
+    div.appendChild(menu);
+    menu.className = "navigation_menu";
+    $(menu).mouseenter(function() {$(menu).data("over_menu", true)});
+    $(menu).mouseleave(function() {$(menu).data("over_menu", false)});
+    $(menu).on("click", ">li", function() {
+        if ($(this).hasClass("active")) {
+            $(".navigation_menu li li").css("display", "none");
+            $(".navigation_menu > li").removeClass("active");
+        } else {
+            $(".navigation_menu li li").css("display", "none");
+            $(".navigation_menu > li").removeClass("active");
+            $("li", this).css("display", "block");
+            $(this).addClass("active");
+        }
+    });
+    $(document).click(function () {
+        if ($(menu).data("over_menu")) {
+            ;
+        } else {
+            $(".navigation_menu li li").css("display", "none");
+            $(".navigation_menu > li").removeClass("active");
+        }
+    });
+    for (var i = 0; i < menu_structure.categories.length; i++) {
+        var category = menu_structure.categories[i];
+        var cat_li = document.createElement("li");
+        menu.appendChild(cat_li);
+        var p = document.createElement("p");
+        p.textContent = category.title;
+        cat_li.appendChild(p);
+        var cat_ul = document.createElement("ul");
+        cat_li.appendChild(cat_ul);
+        for (var j = 0; j < category.content.length; j++) {
+            var content = category.content[j];
+            var a = document.createElement("a");
+            a.textContent = content.title;
+            a.href = content.url;
+            var link = document.createElement("li");
+            link.appendChild(a);
+            cat_ul.appendChild(link);
+        }
+    }
+    csv_download_form = csvDownloadForm();
+    $("#download_button", csv_download_form).css("position", "absolute");
+    $("#download_button", csv_download_form).css("right", "20px");
+    $("#download_button", csv_download_form).css("top", "20px");
+
+    div.appendChild(csv_download_form);
+
+    return div;
 }

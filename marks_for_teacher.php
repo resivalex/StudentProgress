@@ -5,9 +5,6 @@ include_once("template.php");
 $title = $document->createElement("title", "Отметки");
 $head->appendChild($title);
 
-$body->appendChild(afs("Отметки", "marks.php"));
-$body->appendChild(brfs());
-
 // фильтр для занития
 function lesson_filter($id) {
     $res = fs("div");

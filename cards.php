@@ -4,11 +4,7 @@
 	define("N", "8");
 	
 	$head->appendChild($document->createElement("title", "Карточки"));
-	
-	$a = $document->createElement("a", "На главную");
-	$a->setAttribute("href", "index.php");
-	$body->appendChild($a);
-	
+
 	$form = post_form($document, "cards.php");
 	$body->appendChild($form);
 	

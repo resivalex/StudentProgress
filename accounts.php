@@ -65,7 +65,6 @@ function add_user_form($header_text, $role) {
 $title = new DOMElement("title", "Учётные записи");
 $head->appendChild($title);
 
-$body->appendChild(afs("Администрирование", "administration.php"));
 $body->appendChild(add_user_form("Студенты", "student"));
 $body->appendChild(add_user_form("Преподаватели", "teacher"));
 $body->appendChild(add_user_form("Начальники", "chief"));
