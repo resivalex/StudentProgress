@@ -305,7 +305,7 @@ function selectTool(title, id, params) {
     return tool;
 }
 
-function onMarksLoad() {
+function onMarksForTeacherLoad() {
     function removeSubjects() {
         $("#subject_id").remove();
         removeGroups();
@@ -677,7 +677,7 @@ function csvDownloadForm() {
         $("body").off("click", table_selector, onTableClickInSelection);
     }
 
-    const selection_style = [["border-style", "solid"], ["border-width", "3px"], ["border-color", "red"]];
+    const selection_style = [["border-style", "solid"], ["border-width", "3.013px"], ["border-color", "red"]];
 
     function onMouseEnter() {
         function changeStyleProperty(el, prop, val) {
@@ -756,4 +756,47 @@ function csvDownloadForm() {
     form.appendChild(download);
 
     return form;
+}
+
+function onMarksForStudentLoad() {
+    function loadSchedule() {
+        $("#schedule_table").children().remove();
+        query = "SELECT subjects.name AS subject_name, "
+        query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, ";
+        query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
+        query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
+        query += "JOIN teachers ON (lessons.teacher_id = teachers.id) ";
+        query += "JOIN users ON (teachers.id = users.id) ";
+        query += "JOIN groups ON (lessons.group_id = groups.id) ";
+        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
+        query += "WHERE groups.id = "+$("#group_id").data("value")+" ";
+        query += "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time";
+
+        selectQuery(query, {}, function(response) {
+            $("#schedule_table").children().remove();
+            var table = sortableTable($.parseJSON(response));
+            table.className = "custom_table";
+            var ths = $(table).find("input[type='button']").get();
+            var titles = ["Дисциплина", "Преподаватель", "Аудитория", "Время"];
+            for (var i = 0; i < 4; i++) {
+                ths[i].value = titles[i];
+            }
+            $("#schedule_table").append(table);
+        });
+    }
+
+    $("body").ready(function () {
+        query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
+        query += "JOIN lessons ON (groups.id = lessons.group_id) ";
+        query += "ORDER BY groups.name";
+        selectQuery(query, {}, function (response) {
+            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
+            $("#group_id").ready(function () {
+                loadSchedule();
+            });
+            $("#group_id .item").click(function () {
+                loadSchedule();
+            });
+        })
+    });
 }

@@ -1,32 +1,49 @@
 <?php
-	include_once("template.php");
-	include_once("funs.php");
-	
-	$title = $document->createElement("title", "Добавить отметку");
-	$head->appendChild($title);
-	
-	$a = $document->createElement("a", "На главную");
-	$a->setAttribute("href", "index.php");
-	$body->appendChild($a);
-	
-	$form = post_form($document, "add_mark.php");
-	$body->appendChild($form);
-		
-	$text = array("Студент", "Занятие", "Отметка");
-	$input = array();
-	$input[] = select_student($document);
-	$input[] = select_teaching($document);
-	$input[] = select_mark_type($document);
-	$table = input_form($document, "Введите информацию об отметку", $text, $input, "Добавить отметку");
-	$form->appendChild($table);
-			
-	if (isset($_POST['student_id'])) {
-		$student_id = $_POST['student_id'];
-		$teaching_id = $_POST['teaching_id'];
-		$mark_type_id = $_POST['mark_type_id'];
-		$query = "INSERT INTO marks (student_id, teaching_id, mark_type_id) VALUES ('$student_id', '$teaching_id', '$mark_type_id')";
-		mysql_query($query);
-	}
-	
-	echo $document->saveHTML();
-?>
+
+include("queries.php");
+
+$lesson_id = $_GET["lesson_id"];
+$student_id = $_GET["student_id"];
+$mark_type = $_GET["mark_type"];
+
+$query =
+<<<"SQL"
+SELECT COUNT(*) AS records
+FROM marks
+WHERE lesson_id = $lesson_id AND student_id = $student_id
+SQL;
+
+$result = select_query($query);
+
+if ($result['records'][0] == 0) {
+    $query =
+<<<"SQL"
+INSERT INTO marks
+(lesson_id, student_id)
+VALUES
+($lesson_id, $student_id)
+SQL;
+
+    modify_query($query);
+}
+
+$query =
+<<<"SQL"
+SELECT id
+FROM marks
+WHERE lesson_id = $lesson_id AND student_id = $student_id
+SQL;
+
+$result = select_query($query);
+
+$mark_id = $result['id'][0];
+
+$query =
+<<<"SQL"
+INSERT INTO mark_history
+(mark_type_id, mark_id, time, comment)
+VALUES
+($mark_type, $mark_id, NOW(), 'alpha')
+SQL;
+
+modify_query($query);
