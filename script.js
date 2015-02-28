@@ -28,16 +28,15 @@ function loadCalendar(year, month) {
 
 // показать временное сообщение
 function showMessage(message_text) {
-    layer = $("#message_layer");
-    if (layer.size() == 0) {
-        layer = document.createElement("div");
-        layer.setAttribute("id", "message_layer");
-        $("body").append(layer);
-        layer = $("#message_layer");
-        layer.css({"z-index": 100, "position": "fixed", "bottom": "0px", "left": "0px", "width": "30%",
+    if (document.getElementById("message_layer") == undefined) {
+        div = document.createElement("div");
+        div.setAttribute("id", "message_layer");
+        $("body").append(div);
+        $(div).css({"z-index": 100, "position": "fixed", "bottom": "0px", "left": "0px", "width": "30%",
             "text-align": "center", "background-color": "white", "opacity": "0.9"});
     }
-    txt = document.createElement("p");
+    var $layer = $("#message_layer");
+    var txt = document.createElement("p");
     txt.style.fontWeight = 600;
     var $temp = $(txt);
     $temp.html(message_text);
@@ -55,7 +54,7 @@ function showMessage(message_text) {
         $temp.slideUp(400, function() {$temp.remove();});
     });
 
-    layer.prepend($temp);
+    $layer.prepend($temp);
 }
 
 function OK() {
@@ -67,22 +66,22 @@ function getTable(text, with_header) {
     var tr = [];
     if (with_header) {
         var htr = document.createElement("tr");
-        for (var i in text) {
+        for (i in text) {
             var th = document.createElement("th");
             th.innerHTML = i;
             htr.appendChild(th);
         }
         table.appendChild(htr);
     }
-    for (var i in text) {
-        for (var j = 0; j < text[i].length; j++) {
+    for (i in text) {
+        for (j = 0; j < text[i].length; j++) {
             tr[j] = document.createElement("tr");
             table.appendChild(tr[j]);
         }
-        break;
+        if (text[i].length) break;
     }
-    for (var i = 0; i < tr.length; i++) {
-        for (var j in text) {
+    for (i = 0; i < tr.length; i++) {
+        for (j in text) {
             var td = document.createElement("td");
             td.innerHTML = text[j][i];
             tr[i].appendChild(td);
@@ -123,7 +122,7 @@ function loadRemovableTable(table_name, id_name, query) {
         var table = getTableFromJSON(response);
         table.className = "custom_table";
         $(table).children().each(function(index, element) {
-            $(element).find(":last").each(function(index, element) {
+            $(":last", element).each(function(index, element) {
                 var id = element.innerHTML;
                 element.innerHTML = "";
                 var del = document.createElement("input");
@@ -159,16 +158,16 @@ function loadRemovableTable(table_name, id_name, query) {
 // добавляет строку в базу данных на странице edit_tables
 function addToTable(table_name, params) {
     var query = "INSERT INTO " + table_name + " (" + params[0];
-    for (var i = 1; i < params.length; i++) {
+    for (i = 1; i < params.length; i++) {
         query += ", " + params[i];
     }
     query += ") VALUES (?";
-    for (var i = 1; i < params.length; i++) {
+    for (i = 1; i < params.length; i++) {
         query += ", ?";
     }
     query += ")";
     var qparams = [""];
-    for (var i = 0; i < params.length; i++) {
+    for (i = 0; i < params.length; i++) {
         qparams[0] += "s";
         qparams.push(document.getElementById(table_name + "_" + params[i]).value);
     }
@@ -192,14 +191,14 @@ function addToUsers(role_name) {
     var params = [];
     params.push("ssssssss");
     var block = $("." + role_name);
-    params.push(block.find("input[name='name']").val());
-    params.push(block.find("input[name='surname']").val());
-    params.push(block.find("input[name='patronymic']").val());
-    params.push(block.find("input[name='login']").val());
-    params.push(block.find("input[name='password']").val());
+    params.push($("input[name='name']", block).val());
+    params.push($("input[name='surname']", block).val());
+    params.push($("input[name='patronymic']", block).val());
+    params.push($("input[name='login']", block).val());
+    params.push($("input[name='password']", block).val());
     params.push(role_name);
-    params.push(block.find("input[name='email']").val());
-    params.push(block.find("input[name='phone']").val());
+    params.push($("input[name='email']", block).val());
+    params.push($("input[name='phone']", block).val());
 
     modifyQuery(query, params, function(response) {
         showMessage(response);
@@ -227,7 +226,6 @@ function setFields() {
 
 // добавляет занятие на странице edit_schedule.php
 function addLesson() {
-    showMessage($("#teacher_id").data("value"));
     var group_id = $("#group_id").data("value");
     var subject_id = $("#subject_id").data("value");
     var auditory_id = $("#auditory_id").data("value");
@@ -248,11 +246,11 @@ function addLesson() {
         } else {
             showMessage("Добавлено");
             var select_query = "SELECT groups.name AS groups_name, subjects.name AS subject_name, ";
-            select_query += "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id "
-            select_query += "FROM lessons "
-            select_query += "JOIN groups ON (group_id = groups.id) "
-            select_query += "JOIN subjects ON (subject_id = subjects.id) "
-            select_query += "JOIN auditories ON (auditory_id = auditories.id) "
+            select_query += "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id ";
+            select_query += "FROM lessons ";
+            select_query += "JOIN groups ON (group_id = groups.id) ";
+            select_query += "JOIN subjects ON (subject_id = subjects.id) ";
+            select_query += "JOIN auditories ON (auditory_id = auditories.id) ";
             select_query += "JOIN users ON (teacher_id = users.id)";
 
             loadRemovableTable('lessons', 'schedule', select_query);
@@ -278,10 +276,10 @@ function selectTool(title, id, params) {
     tool.appendChild(top);
     tool.appendChild(box);
     var props = [];
-    for (var i in params) {
+    for (i in params) {
         props.push(i);
     }
-    for (var i = 0; i < params[props[0]].length; i++) {
+    for (i = 0; i < params[props[0]].length; i++) {
         var item = div("item");
         $(item).data("value", params[props[0]][i]);
         $(item).addClass("item");
@@ -357,12 +355,12 @@ function onMarksForTeacherLoad() {
                     mark_table.style.width = "100%";
                     mark_table.style.borderCollapse = "collapse";
                     mark_table.style.borderWidth = "0";
-                    $(select_mark).find(".item").each(function () {
+                    $(".item", select_mark).each(function () {
                         var td = document.createElement("td");
                         tr.appendChild(td);
                         $(td).append(this);
                     });
-                    $(select_mark).find(".box").append(mark_table);
+                    $(".box", select_mark).append(mark_table);
                     select_mark.style.width = "150px";
                     select_mark.style.marginLeft = select_mark.style.marginRight = "auto";
                     var comment_table = getTableFromJSON("{\"c\":[\"\"]}");
@@ -370,16 +368,15 @@ function onMarksForTeacherLoad() {
                     var comment_area = document.createElement("textarea");
                     comment_area.value = "без комментариев";
                     comment_area.id = "comment_area";
-                    $(comment_table).find("td").append(comment_area);
-                    $("#mark").append(select_mark).append(comment_table);
+                    $("td", comment_table).append(comment_area);
                     var button = document.createElement("input");
                     button.type = "button";
                     button.style.display = "block";
                     button.style.marginLeft = button.style.marginRight = "auto";
                     button.value = "Добавить / Исправить";
-                    $("#mark").append(button);
+                    $("#mark").append(select_mark).append(comment_table).append(button);
                     $(button).click(function() {
-                        query = "CALL add_mark("+$("#student_id").data("value")+","+$("#lesson_id").data("value")+",";
+                        var query = "CALL add_mark("+$("#student_id").data("value")+","+$("#lesson_id").data("value")+",";
                         query += $("#mark_type_id").data("value")+",'"+$("#comment_area").val()+"')";
                         modifyQuery(query, {}, function(response) {
                             loadMark();
@@ -400,12 +397,7 @@ function onMarksForTeacherLoad() {
             removeStudentList();
             var select_student = selectTool("Студенты", "student_id", $.parseJSON(response));
             $("#judging").append(select_student);
-            $("#student_id").ready(function() {
-                loadMark();
-            });
-            $("#student_id .item").click(function() {
-                loadMark();
-            })
+            $("#student_id").ready(loadMark).on("click", ".item", loadMark);
         });
     }
 
@@ -417,12 +409,11 @@ function onMarksForTeacherLoad() {
         query += "lessons.subject_id = "+$("#subject_id").data("value")+" AND ";
         query += "lessons.group_id = "+group_id+" ORDER BY name";
         selectQuery(query, {}, function(response) {
-            removeAuditoryTime()
+            removeAuditoryTime();
             $("#select_auditory_time").append(slidedSelectTool("Аудитория | Время", "lesson_id", $.parseJSON(response)));
             $("#lesson_id").ready(function() {
                 loadStudentList($("#lesson_id").data("value"));
-            });
-            $("#lesson_id .item").click(function() {
+            }).on("click", ".item", function() {
                 loadStudentList($(this).data("value"));
             });
         });
@@ -438,8 +429,7 @@ function onMarksForTeacherLoad() {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)))
             $("#group_id").ready(function() {
                 loadLessons($("#group_id").data("value"));
-            });
-            $("#group_id .item").click(function() {
+            }).on("click", ".item", function() {
                 loadLessons($(this).data("value"));
             });
         })
@@ -454,8 +444,7 @@ function onMarksForTeacherLoad() {
             $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
             $("#subject_id").ready(function() {
                 loadGroups($("#subject_id").data("value"));
-            });
-            $("#subject_id .item").click(function() {
+            }).on("click", ".item", function() {
                 loadGroups($(this).data("value"));
             });
         });
@@ -472,8 +461,7 @@ function onMarksForTeacherLoad() {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
             $("#teacher_id").ready(function() {
                 loadSubjects($("#teacher_id").data("value"));
-            });
-            $("#teacher_id .item").click(function() {
+            }).on("click", ".item", function() {
                 loadSubjects($(this).data("value"));
             });
         });
@@ -495,15 +483,15 @@ function progression(from, to, step) {
 
 function slidedSelectTool(title, id, params) {
     var tool = selectTool(title, id, params);
-    $(tool).find(".box").css("display", "none");
-    $(tool).find(".item").click(function() {
+    $(".box", tool).css("display", "none");
+    $(".item", tool).click(function() {
         $(this).parent().slideUp();
-        $(tool).find(".note").fadeIn();
+        $(".note", tool).fadeIn();
     });
-    $(tool).find(".note").css("display", "block");
-    $(tool).find(".top").click(function() {
-        $(tool).find(".box").slideToggle();
-        $(tool).find(".note").fadeToggle();
+    $(".note", tool).css("display", "block");
+    $(".top", tool).click(function() {
+        $(".box", tool).slideToggle();
+        $(".note", tool).fadeToggle();
     });
     return tool;
 }
@@ -533,10 +521,9 @@ function onEditScheduleLoad() {
         };
         $("#select_month").append(slidedSelectTool("Месяц", "month", month_names));
         loadCalendar(2013, 1);
-        $("#month .item").click(function() {
+        $("#month").on("click", ".item", function() {
             loadCalendar(2013, $(this).data("value"));
-        })
-        $("#month label[for]").click(function() {
+        }).on("click", "label[for]", function() {
             id = this.getAttribute("for");
             loadCalendar(2013, $("#"+id).val());
         });
@@ -547,25 +534,25 @@ function onEditScheduleLoad() {
 
 function sortableTable(params) {
     var table = getTable(params, true);
-    $(table).find("th").each(function(index) {
+    $("th", table).each(function(index, el) {
         var button = document.createElement("input");
         button.type = "button";
-        button.value = this.innerHTML;
+        button.value = el.innerHTML;
         button.style.width = "100%";
-        this.innerHTML = "";
-        this.appendChild(button);
+        el.innerHTML = "";
+        el.appendChild(button);
         index++;
         $(this).click(function() {
-            var tds = $(table).find("tr td:nth-child("+index+")").get();
+            var tds = $("tr td:nth-child("+index+")", table).get();
             var ord = [];
-            for (var i = 0; i < tds.length; i++) ord.push(i);
+            for (i = 0; i < tds.length; i++) ord.push(i);
             ord.sort(function (a, b) {
                 if (tds[a].innerHTML > tds[b].innerHTML) return 1;
                 if (tds[a].innerHTML < tds[b].innerHTML) return -1;
                 return 0;
             });
-            var trs = $(table).find("tr:has(td)").get();
-            for (var i = 0; i < tds.length; i++) {
+            var trs = $("tr:has(td)", table).get();
+            for (i = 0; i < tds.length; i++) {
                 $(table).append(trs[ord[i]]);
             }
         });
@@ -585,15 +572,16 @@ function onScheduleForTeacherLoad() {
         query += "ORDER BY subjects.name, groups.name, auditories.name, lessons.time";
 
         selectQuery(query, {}, function(response) {
-            $("#schedule_table").children().remove();
+            var $shedule_table = $("#schedule_table");
+            $shedule_table.children().remove();
             var table = sortableTable($.parseJSON(response));
             table.className = "custom_table";
-            var ths = $(table).find("input[type='button']").get();
+            var ths = $("input[type='button']", table).get();
             var titles = ["Дисциплина", "Группа", "Аудитория", "Время"];
             for (var i = 0; i < 4; i++) {
                 ths[i].value = titles[i];
             }
-            $("#schedule_table").append(table);
+            $shedule_table.append(table);
         });
     }
 
@@ -605,12 +593,7 @@ function onScheduleForTeacherLoad() {
         query += "ORDER BY name";
         selectQuery(query, {}, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
-            $("#teacher_id").ready(function() {
-                loadSchedule();
-            });
-            $("#teacher_id .item").click(function() {
-                loadSchedule();
-            });
+            $("#teacher_id").ready(loadSchedule).on("click", ".item", loadSchedule);
         });
     });
 }
@@ -618,7 +601,7 @@ function onScheduleForTeacherLoad() {
 function onScheduleForStudentLoad() {
     function loadSchedule() {
         $("#schedule_table").children().remove();
-        query = "SELECT subjects.name AS subject_name, "
+        query = "SELECT subjects.name AS subject_name, ";
         query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, ";
         query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
         query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
@@ -630,15 +613,16 @@ function onScheduleForStudentLoad() {
         query += "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time";
 
         selectQuery(query, {}, function(response) {
-            $("#schedule_table").children().remove();
+            var $schedule_table = $("#schedule_table");
+            $schedule_table.children().remove();
             var table = sortableTable($.parseJSON(response));
             table.className = "custom_table";
-            var ths = $(table).find("input[type='button']").get();
+            var ths = $("input[type='button']", table).get();
             var titles = ["Дисциплина", "Преподаватель", "Аудитория", "Время"];
             for (var i = 0; i < 4; i++) {
                 ths[i].value = titles[i];
             }
-            $("#schedule_table").append(table);
+            $schedule_table.append(table);
         });
     }
 
@@ -648,12 +632,7 @@ function onScheduleForStudentLoad() {
         query += "ORDER BY groups.name";
         selectQuery(query, {}, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
-            $("#group_id").ready(function () {
-                loadSchedule();
-            });
-            $("#group_id .item").click(function () {
-                loadSchedule();
-            });
+            $("#group_id").ready(loadSchedule).on("click", ".item", loadSchedule);
         })
     });
 }
@@ -663,19 +642,21 @@ function csvDownloadForm() {
     const active_table_selector = "table.current";
 
     function onSelection() {
-        $("body").data("table_selection", true);
+        var $body = $("body");
+        $body.data("table_selection", true);
         $("#download_button").val("Выберите таблицу");
-        $("body").on("mouseenter", table_selector, onMouseEnter);
-        $("body").on("mouseleave", table_selector, onMouseLeave);
-        $("body").on("click", active_table_selector, onTableClickInSelection);
+        $body.on("mouseenter", table_selector, onMouseEnter);
+        $body.on("mouseleave", table_selector, onMouseLeave);
+        $body.on("click", active_table_selector, onTableClickInSelection);
     }
 
     function offSelection() {
-        $("body").data("table_selection", false);
+        var $body = $("body");
+        $body.data("table_selection", false);
         $("#download_button").val("Сохранить в .csv");
-        $("body").off("mouseenter", table_selector, onMouseEnter);
-        $("body").off("mouseleave", table_selector, onMouseLeave);
-        $("body").off("click", active_table_selector, onTableClickInSelection);
+        $body.off("mouseenter", table_selector, onMouseEnter);
+        $body.off("mouseleave", table_selector, onMouseLeave);
+        $body.off("click", active_table_selector, onTableClickInSelection);
     }
 
     const selection_style = [["border-style", "solid"], ["border-width", "3.013px"], ["border-color", "red"]];
@@ -700,8 +681,7 @@ function csvDownloadForm() {
                 }
                 $(this).data("stored", false);
             }
-        });
-        $(".current").removeClass("current");
+        }).removeClass("current");
         $(".mouse_over:last").addClass("current");
         $(".current").each(function() {
             if (!$(this).data("stored")) {
@@ -793,15 +773,16 @@ function onMarksForStudentLoad() {
         query += "ORDER BY mark_history.time";
 
         selectQuery(query, {}, function(response) {
-            $("#marks_table").children().remove();
+            var $marks_talbe = $("#mark_table");
+            $marks_talbe.children().remove();
             var table = sortableTable($.parseJSON(response));
             table.className = "custom_table";
-            var ths = $(table).find("input[type='button']").get();
+            var ths = $("input[type='button']", table).get();
             var titles = ["#", "Предмет", "Преподаватель", "Дата", "Отметка", "Комментарий"];
             for (var i = 0; i < titles.length; i++) {
                 ths[i].value = titles[i];
             }
-            $("#marks_table").append(table);
+            $marks_talbe.append(table);
         });
     }
 
@@ -812,15 +793,11 @@ function onMarksForStudentLoad() {
         query += "JOIN groups ON students.group_id = groups.id ";
         query += "WHERE groups.id = "+$("#group_id").data("value")+" ORDER BY name";
         selectQuery(query, {}, function(response) {
-            $("#select_student").children().remove();
+            var $select_student = $("#select_student");
+            $select_student.children().remove();
             var select_student = slidedSelectTool("Студенты", "student_id", $.parseJSON(response));
-            $("#select_student").append(select_student);
-            $("#student_id").ready(function() {
-                loadMarks();
-            });
-            $("#student_id").on("click", ".item", function() {
-                loadMarks();
-            });
+            $select_student.append(select_student);
+            $select_student.ready(loadMarks).on("click", ".item", loadMarks);
         });
     }
 
@@ -830,12 +807,7 @@ function onMarksForStudentLoad() {
         query += "ORDER BY groups.name";
         selectQuery(query, {}, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
-            $("#group_id").ready(function () {
-                loadStudents();
-            });
-            $("#group_id").on("click", ".item", function() {
-                loadStudents();
-            });
+            $("#group_id").ready(loadStudents).on("click", ".item", loadStudents);
         });
     });
 }
@@ -934,9 +906,7 @@ function navigationMenu() {
         }
     });
     $(document).click(function () {
-        if ($(menu).data("over_menu")) {
-            ;
-        } else {
+        if (!$(menu).data("over_menu")) {
             $(".navigation_menu li li").css("display", "none");
             $(".navigation_menu > li").removeClass("active");
         }
