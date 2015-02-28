@@ -61,6 +61,10 @@ function OK() {
     showMessage("OK");
 }
 
+function showJSON(val) {
+    showMessage(JSON.stringify(val));
+}
+
 function getTable(text, with_header) {
     var table = document.createElement("table");
     var tr = [];
@@ -483,15 +487,20 @@ function progression(from, to, step) {
 
 function slidedSelectTool(title, id, params) {
     var tool = selectTool(title, id, params);
-    $(".box", tool).css("display", "none");
+    $(".box", tool).css("display", "none").css("position", "absolute").css("background-color", "#CCCCFF");
     $(".item", tool).click(function() {
         $(this).parent().slideUp();
         $(".note", tool).fadeIn();
     });
     $(".note", tool).css("display", "block");
     $(".top", tool).click(function() {
+        $(".box", tool).css("width", $(tool).width());
         $(".box", tool).slideToggle();
         $(".note", tool).fadeToggle();
+    });
+    $(tool).mouseleave(function() {
+        $(".box", tool).slideUp();
+        $(".note", tool).fadeIn();
     });
     return tool;
 }
@@ -756,10 +765,27 @@ function csvDownloadForm() {
     return form;
 }
 
+function setOfArraysToArrayOfSets(val) {
+    var res, first = true;
+    for (i in val) {
+        if (first) {
+            res = [];
+            for (j = 0; j < val[i].length; j++) {
+                res.push(Object());
+            }
+            first = false;
+        }
+        for (j = 0; j < val[i].length; j++) {
+            res[j][i] = val[i][j];
+        }
+    }
+    return res;
+}
+
 function onMarksForStudentLoad() {
     function loadMarks() {
         $("#marks_table").children().remove();
-        query = "SELECT marks.id, subjects.name, full_name(teachers.id) AS teacher_name, mark_history.time, ";
+        query = "SELECT subjects.name AS subject_name, full_name(teachers.id) AS teacher_name, mark_history.time, ";
         query += "mark_types.short_name, mark_history.comment FROM mark_history ";
         query += "JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) ";
         query += "AS last_marks ON mark_history.id = last_marks.id ";
@@ -773,15 +799,63 @@ function onMarksForStudentLoad() {
         query += "ORDER BY mark_history.time";
 
         selectQuery(query, {}, function(response) {
-            var $marks_talbe = $("#mark_table");
+            var $marks_talbe = $("#marks_table");
             $marks_talbe.children().remove();
-            var table = sortableTable($.parseJSON(response));
-            table.className = "custom_table";
-            var ths = $("input[type='button']", table).get();
-            var titles = ["#", "Предмет", "Преподаватель", "Дата", "Отметка", "Комментарий"];
-            for (var i = 0; i < titles.length; i++) {
-                ths[i].value = titles[i];
+            var data = setOfArraysToArrayOfSets($.parseJSON(response));
+            data.sort(function(a, b) {a = a.time; b = b.time; return (a < b? -1 : (a > b? +1 : 0));});
+            var tab = Object();
+            var subject_names = Object(), times = Object();
+            for (i = 0; i < data.length; i++) {
+                data[i].time = data[i].time.substring(0, 10);
+                subject_names[data[i].subject_name] = true;
+                times[data[i].time] = true;
+                if (tab[data[i].subject_name] == undefined) tab[data[i].subject_name] = Object();
+                if (tab[data[i].subject_name][data[i].time] != undefined) {
+                    tab[data[i].subject_name][data[i].time] += ", "+data[i].short_name;
+                } else {
+                    tab[data[i].subject_name][data[i].time] = data[i].short_name;
+                }
             }
+            var beauty = document.createElement("table");
+            var subject_array = [];
+            for (i in subject_names) {
+                subject_array.push(i);
+            }
+            var time_array = [];
+            for (i in times) {
+                time_array.push(i);
+            }
+            subject_array.sort();
+            time_array.sort();
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            tr.appendChild(td);
+            for (i = 0; i < time_array.length; i++) {
+                td = document.createElement("td");
+                td.innerHTML = time_array[i];
+                tr.appendChild(td);
+            }
+            beauty.appendChild(tr);
+            for (i = 0; i < subject_array.length; i++) {
+                tr = document.createElement("tr");
+                td = document.createElement("td");
+                td.innerHTML = subject_array[i];
+                tr.appendChild(td);
+                for (j = 0; j < time_array.length; j++) {
+                    td = document.createElement("td");
+                    td.innerHTML = (tab[subject_array[i]][time_array[j]] == undefined? "-" : tab[subject_array[i]][time_array[j]]);
+                    tr.appendChild(td);
+                }
+                beauty.appendChild(tr);
+            }
+            var table = sortableTable($.parseJSON(response));
+            table = beauty;  //debug
+            table.className = "custom_table";
+            //var ths = $("input[type='button']", table).get();
+            //var titles = ["Предмет", "Преподаватель", "Дата", "Отметка", "Комментарий"];
+            //for (var i = 0; i < titles.length; i++) {
+            //    ths[i].value = titles[i];
+            //}
             $marks_talbe.append(table);
         });
     }
@@ -881,6 +955,10 @@ function navigationMenu() {
                     {
                         "title": "Выйти",
                         "url": "logout.php"
+                    },
+                    {
+                        "title": "*",
+                        "url": "cards.php"
                     }
                 ]
             }
@@ -938,4 +1016,42 @@ function navigationMenu() {
     div.appendChild(csv_download_form);
 
     return div;
+}
+
+function onCardsLoad() {
+    function onClick(el) {
+        el = el.currentTarget;
+        if ($("label", el).html() != "") return;
+        var $unclose = $(".game .unclose");
+        var $labels = $("label", $unclose);
+        if ($unclose.size() == 2) {
+            if ($labels.first().html() != $labels.last().html()) {
+                $labels.html("");
+            }
+            $unclose.removeClass("unclose").addClass("simple");
+        }
+        $(el).removeClass("simple").addClass("unclose");
+        $("label", el).text(el.id);
+        if ($(".game label").filter(function () {
+                return $(this).html() == "";
+            }).size() == 0) {
+            location = "good.php";
+        }
+    }
+
+    function autoPlay() {
+        if ($("#bot_mode:checked").size() == 0) return;
+        var $empty = $(".game .simple").filter(function () {
+            return $("label", this).html() == "";
+        });
+        if ($empty.size() == 0) return;
+        onClick({currentTarget: $empty.get(Math.floor(Math.random() * $empty.size()))});
+    }
+
+    $(document).ready(function() {
+        $(".game").on("click", ".simple", onClick);
+
+        setInterval(autoPlay, 200);
+
+    });
 }
