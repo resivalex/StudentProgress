@@ -659,14 +659,15 @@ function onScheduleForStudentLoad() {
 }
 
 function csvDownloadForm() {
-    const table_selector = "table:not(:has(table))";
+    const table_selector = "table";
+    const active_table_selector = "table.current";
 
     function onSelection() {
         $("body").data("table_selection", true);
         $("#download_button").val("Выберите таблицу");
         $("body").on("mouseenter", table_selector, onMouseEnter);
         $("body").on("mouseleave", table_selector, onMouseLeave);
-        $("body").on("click", table_selector, onTableClickInSelection);
+        $("body").on("click", active_table_selector, onTableClickInSelection);
     }
 
     function offSelection() {
@@ -674,22 +675,16 @@ function csvDownloadForm() {
         $("#download_button").val("Сохранить в .csv");
         $("body").off("mouseenter", table_selector, onMouseEnter);
         $("body").off("mouseleave", table_selector, onMouseLeave);
-        $("body").off("click", table_selector, onTableClickInSelection);
+        $("body").off("click", active_table_selector, onTableClickInSelection);
     }
 
     const selection_style = [["border-style", "solid"], ["border-width", "3.013px"], ["border-color", "red"]];
 
-    function onMouseEnter() {
+    function checkCurrent() {
         function changeStyleProperty(el, prop, val) {
             $(el).data(prop, el.style.getPropertyValue(prop));
             $(el).css(prop, val);
         }
-        for (var i = 0; i < selection_style.length; i++) {
-            changeStyleProperty(this, selection_style[i][0], selection_style[i][1]);
-        }
-    }
-
-    function onMouseLeave() {
         function restoreStyleProperty(el, prop) {
             var val = $(el).data(prop);
             if (val == undefined) {
@@ -698,9 +693,34 @@ function csvDownloadForm() {
                 $(el).css(prop, $(el).data(prop));
             }
         }
-        for (var i = 0; i < selection_style.length; i++) {
-            restoreStyleProperty(this, selection_style[i][0]);
-        }
+        $(".current").each(function() {
+            if ($(this).data("stored")) {
+                for (var i = 0; i < selection_style.length; i++) {
+                    restoreStyleProperty(this, selection_style[i][0]);
+                }
+                $(this).data("stored", false);
+            }
+        });
+        $(".current").removeClass("current");
+        $(".mouse_over:last").addClass("current");
+        $(".current").each(function() {
+            if (!$(this).data("stored")) {
+                for (var i = 0; i < selection_style.length; i++) {
+                    changeStyleProperty(this, selection_style[i][0], selection_style[i][1]);
+                }
+                $(this).data("stored", true);
+            }
+        });
+    }
+
+    function onMouseEnter() {
+        $(this).addClass("mouse_over");
+        checkCurrent();
+    }
+
+    function onMouseLeave() {
+        $(this).removeClass("mouse_over");
+        checkCurrent();
     }
 
     function onTableClickInSelection() {
@@ -719,9 +739,10 @@ function csvDownloadForm() {
         restoreStyleProperty(this, "border-color");
 
         var tab_array = [];
-        $(this).find("tr:has(td)").each(function () {
+        $(".current tr").filter(function(index, el) {return $(el).closest("table").hasClass("current");}).each(function () {
             tab_array.push([]);
-            var tds = $(this).find("td").get();
+            var row = this;
+            var tds = $("td, th", this).filter(function(index, el) {return $(el).closest("table").hasClass("current");}).get();
             for (var i = 0; i < tds.length; i++) {
                 tab_array[tab_array.length - 1].push($(tds[i]).text());
             }

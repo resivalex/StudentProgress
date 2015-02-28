@@ -4,6 +4,8 @@ $table = json_decode($_POST["table"], true);
 $content = "";
 foreach ($table["table"] as $row) {
     foreach ($row as $cell) {
+        $cell = str_replace("\n", " ", $cell);
+        $cell = str_replace("\r", " ", $cell);
         $cell = str_replace("\"", "\"\"", $cell);
         $content .= "\"".iconv('UTF-8', 'CP1251', $cell)."\";";
     }
