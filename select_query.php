@@ -1,6 +1,6 @@
 <?php
 
-include("queries.php");
+include_once("queries.php");
 
 if (isset($_POST["params"])) {
     $res = select_query($_POST["query"], $_POST["params"]);

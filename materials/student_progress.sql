@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Фев 26 2015 г., 09:52
+-- Время создания: Мар 01 2015 г., 16:10
 -- Версия сервера: 5.5.27
 -- Версия PHP: 5.4.7
 
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `lessons` (
   KEY `auditory_id` (`auditory_id`),
   KEY `subject_id` (`subject_id`),
   KEY `group_id_2` (`group_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=29 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
 
 --
 -- Дамп данных таблицы `lessons`
@@ -160,7 +160,10 @@ INSERT INTO `lessons` (`id`, `group_id`, `subject_id`, `auditory_id`, `teacher_i
 (12, 2, 2, 3, 17, '2013-03-15 07:15:00'),
 (14, 2, 6, 67, 5, '2013-01-01 04:00:00'),
 (15, 3, 2, 1, 5, '2013-01-23 06:00:00'),
-(28, 4, 1, 2, 17, '2013-05-01 15:00:00');
+(28, 4, 1, 2, 17, '2013-05-01 15:00:00'),
+(29, 3, 5, 2, 12, '2013-02-01 07:20:00'),
+(30, 2, 1, 10, 12, '2013-04-01 08:20:00'),
+(31, 2, 1, 1, 5, '2013-01-01 04:00:00');
 
 -- --------------------------------------------------------
 
@@ -188,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `marks` (
   PRIMARY KEY (`id`),
   KEY `lesson_id` (`lesson_id`),
   KEY `student_id` (`student_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42 ;
 
 --
 -- Дамп данных таблицы `marks`
@@ -201,7 +204,12 @@ INSERT INTO `marks` (`id`, `student_id`, `lesson_id`) VALUES
 (33, 1, 7),
 (34, 3, 12),
 (35, 4, 12),
-(36, 16, 15);
+(36, 16, 15),
+(37, 16, 29),
+(38, 3, 30),
+(39, 4, 30),
+(40, 1, 30),
+(41, 3, 31);
 
 -- --------------------------------------------------------
 
@@ -218,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `mark_history` (
   PRIMARY KEY (`id`),
   KEY `mark_type_id` (`mark_type_id`),
   KEY `mark_id` (`mark_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=31 ;
 
 --
 -- Дамп данных таблицы `mark_history`
@@ -245,7 +253,16 @@ INSERT INTO `mark_history` (`id`, `mark_type_id`, `mark_id`, `time`, `comment`) 
 (18, 2, 34, '2015-02-24 19:58:10', 'длиииииииииииииииииииииииииииииииииииииииииииииииииииииииинный коментарий......................'),
 (19, 4, 35, '2015-02-24 19:58:43', 'подготовился!'),
 (20, 2, 36, '2015-02-24 20:03:44', 'Имеет представление. Не более.'),
-(21, 3, 36, '2015-02-24 20:03:59', 'без комментариев');
+(21, 3, 36, '2015-02-24 20:03:59', 'без комментариев'),
+(22, 1, 37, '2015-02-28 09:15:12', 'не подготовила доклад!'),
+(23, 5, 37, '2015-02-28 09:15:25', 'без комментариев'),
+(24, 3, 37, '2015-02-28 09:16:00', 'отличный доклад! надо было вовремя сдавать.'),
+(25, 4, 38, '2015-02-28 18:19:40', 'отлично'),
+(26, 4, 39, '2015-02-28 18:19:58', 'абсолютно'),
+(27, 2, 40, '2015-02-28 18:20:08', 'без комментариев'),
+(28, 3, 40, '2015-02-28 18:20:15', 'без комментариев'),
+(29, 3, 41, '2015-02-28 20:01:58', 'без комментариев'),
+(30, 5, 38, '2015-02-28 20:02:20', 'без комментариев');
 
 -- --------------------------------------------------------
 
@@ -390,7 +407,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `login` (`login`),
   KEY `login_2` (`login`),
   KEY `login_3` (`login`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
 
 --
 -- Дамп данных таблицы `users`
