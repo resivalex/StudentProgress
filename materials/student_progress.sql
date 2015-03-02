@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 01 2015 г., 16:10
+-- Время создания: Мар 02 2015 г., 21:11
 -- Версия сервера: 5.5.27
 -- Версия PHP: 5.4.7
 
@@ -20,49 +20,7 @@ SET time_zone = "+00:00";
 -- База данных: `student_progress`
 --
 
-DELIMITER $$
---
--- Процедуры
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `add_mark`(IN par_student_id INT, IN par_lesson_id INT,
-	IN par_mark_type_id INT, IN par_comment VARCHAR(200))
-BEGIN  
-	DECLARE loc_mark_id INT DEFAULT -1;
-        
-        IF
-        	(SELECT count(*) FROM marks
-                WHERE student_id = par_student_id
-                AND lesson_id = par_lesson_id) = 0
-        THEN
-        	INSERT INTO marks (student_id, lesson_id)
-                VALUES (par_student_id, par_lesson_id);
-        END IF;
-        
-        SET loc_mark_id = (SELECT marks.id FROM marks
-        		WHERE student_id = par_student_id
-                        AND lesson_id = par_lesson_id);
-                        
-        INSERT INTO mark_history (mark_type_id, mark_id,
-        			time, comment)
-        VALUES (par_mark_type_id, loc_mark_id,
-        CURRENT_TIMESTAMP, par_comment);
 
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `proc_OUT`(OUT var1 VARCHAR(100))
-BEGIN  
-    SET var1 = 'This is a test';  
-END$$
-
---
--- Функции
---
-CREATE DEFINER=`root`@`localhost` FUNCTION `full_name`(par_user_id INT) RETURNS varchar(155) CHARSET utf8
-BEGIN
-  RETURN (SELECT concat(surname, ' ', name, ' ', patronymic) FROM users WHERE id = par_user_id);
-END$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -76,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `auditories` (
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=68 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=70 ;
 
 --
 -- Дамп данных таблицы `auditories`
@@ -90,7 +48,8 @@ INSERT INTO `auditories` (`id`, `name`, `description`) VALUES
 (6, '6', 'small'),
 (9, 'г 314', 'Компьютерный класс'),
 (10, 'слж', 'Подсобка'),
-(67, 'ауйуц45', 'цуйкцуаыв');
+(67, 'ауйуц45', 'цуйкцуаыв'),
+(68, '', '');
 
 -- --------------------------------------------------------
 
@@ -174,9 +133,151 @@ INSERT INTO `lessons` (`id`, `group_id`, `subject_id`, `auditory_id`, `teacher_i
 CREATE TABLE IF NOT EXISTS `log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `action` varchar(200) NOT NULL,
+  `action` varchar(4096) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=282 ;
+
+--
+-- Дамп данных таблицы `log`
+--
+
+INSERT INTO `log` (`id`, `time`, `action`) VALUES
+(146, '2015-03-02 18:24:04', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(147, '2015-03-02 18:24:04', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(148, '2015-03-02 18:24:04', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(149, '2015-03-02 18:24:05', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(150, '2015-03-02 18:24:05', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 28 ORDER BY name")'),
+(151, '2015-03-02 18:24:05', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(152, '2015-03-02 18:24:07', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(153, '2015-03-02 18:24:07', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(154, '2015-03-02 18:24:07', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(155, '2015-03-02 18:24:07', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(156, '2015-03-02 18:24:07', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 28 ORDER BY name")'),
+(157, '2015-03-02 18:24:07', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(158, '2015-03-02 18:24:10', 'select_query("SELECT time, action FROM log ORDER BY id")'),
+(159, '2015-03-02 18:25:36', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(160, '2015-03-02 18:25:36', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(161, '2015-03-02 18:25:36', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(162, '2015-03-02 18:25:36', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(163, '2015-03-02 18:25:36', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 28 ORDER BY name")'),
+(164, '2015-03-02 18:25:36', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(165, '2015-03-02 18:25:39', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 2 AND lessons.teacher_id = 17 ORDER BY name")'),
+(166, '2015-03-02 18:25:39', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 2 AND lessons.group_id = 2 ORDER BY name")'),
+(167, '2015-03-02 18:25:39', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 12 ORDER BY name")'),
+(168, '2015-03-02 18:25:39', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = 3 AND lessons.id = 12 ORDER by mark_history.id DESC")'),
+(169, '2015-03-02 18:25:39', 'select_query("SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name")'),
+(170, '2015-03-02 18:25:47', 'select_query("SELECT time, action FROM log ORDER BY id")'),
+(171, '2015-03-02 18:28:36', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 5 ORDER BY name")'),
+(172, '2015-03-02 18:28:36', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 5 ORDER BY name")'),
+(173, '2015-03-02 18:28:36', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 5 AND lessons.subject_id = 1 AND lessons.group_id = 2 ORDER BY name")'),
+(174, '2015-03-02 18:28:36', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 31 ORDER BY name")'),
+(175, '2015-03-02 18:28:36', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = 3 AND lessons.id = 31 ORDER by mark_history.id DESC")'),
+(176, '2015-03-02 18:28:36', 'select_query("SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name")'),
+(177, '2015-03-02 18:33:42', 'select_query("SELECT name, description, id FROM auditories")'),
+(178, '2015-03-02 18:33:42', 'select_query("SELECT name, description, id FROM subjects")'),
+(179, '2015-03-02 18:33:42', 'select_query("SELECT name, course, id FROM groups")'),
+(180, '2015-03-02 18:33:46', 'modify_query("INSERT INTO subjects (name, description) VALUES (?, ?)")'),
+(181, '2015-03-02 18:33:46', 'select_query("SELECT name, description, id FROM subjects")'),
+(182, '2015-03-02 18:33:53', 'modify_query("INSERT INTO subjects (name, description) VALUES (?, ?)")'),
+(183, '2015-03-02 18:33:56', 'modify_query("DELETE FROM subjects WHERE id = 7")'),
+(184, '2015-03-02 18:33:56', 'select_query("SELECT name, description, id FROM subjects")'),
+(185, '2015-03-02 18:33:59', 'modify_query("INSERT INTO subjects (name, description) VALUES (?, ?)")'),
+(186, '2015-03-02 18:33:59', 'select_query("SELECT name, description, id FROM subjects")'),
+(187, '2015-03-02 18:34:04', 'modify_query("INSERT INTO subjects (name, description) VALUES (?, ?)")'),
+(188, '2015-03-02 18:34:04', 'select_query("SELECT name, description, id FROM subjects")'),
+(189, '2015-03-02 18:34:35', 'modify_query("DELETE FROM subjects WHERE id = 10")'),
+(190, '2015-03-02 18:34:35', 'select_query("SELECT name, description, id FROM subjects")'),
+(191, '2015-03-02 18:34:35', 'modify_query("DELETE FROM subjects WHERE id = 9")'),
+(192, '2015-03-02 18:34:35', 'select_query("SELECT name, description, id FROM subjects")'),
+(193, '2015-03-02 18:42:13', 'select_query("SELECT DISTINCT groups.id, groups.name FROM groups JOIN lessons ON (groups.id = lessons.group_id) ORDER BY groups.name")'),
+(194, '2015-03-02 18:42:13', 'select_query("SELECT subjects.name AS subject_name, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name, auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) JOIN teachers ON (lessons.teacher_id = teachers.id) JOIN users ON (teachers.id = users.id) JOIN groups ON (lessons.group_id = groups.id) JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE groups.id = 4 ORDER BY subjects.name, teacher_name, auditories.name, lessons.time")'),
+(195, '2015-03-02 18:42:19', 'select_query("SELECT DISTINCT groups.id, groups.name FROM groups JOIN students ON (groups.id = students.group_id) ORDER BY groups.name")'),
+(196, '2015-03-02 18:42:19', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM students JOIN groups ON students.group_id = groups.id WHERE groups.id = 2 ORDER BY name")'),
+(197, '2015-03-02 18:42:19', 'select_query("SELECT subjects.name AS subject_name, full_name(teachers.id) AS teacher_name, mark_history.time, mark_types.short_name, mark_history.comment FROM mark_history JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) AS last_marks ON mark_history.id = last_marks.id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN marks ON mark_history.mark_id = marks.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id JOIN subjects ON lessons.subject_id = subjects.id JOIN teachers ON lessons.teacher_id = teachers.id WHERE students.id = 3 ORDER BY mark_history.time")'),
+(198, '2015-03-02 18:54:27', 'select_query("SELECT DISTINCT groups.id, groups.name FROM groups JOIN students ON (groups.id = students.group_id) ORDER BY groups.name")'),
+(199, '2015-03-02 18:54:27', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM students JOIN groups ON students.group_id = groups.id WHERE groups.id = 2 ORDER BY name")'),
+(200, '2015-03-02 18:54:27', 'select_query("SELECT full_names.name AS teacher_name, mark_history.time, mark_types.short_name, mark_history.comment FROM mark_history JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) AS last_marks ON mark_history.id = last_marks.id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN marks ON mark_history.mark_id = marks.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id JOIN subjects ON lessons.subject_id = subjects.id JOIN teachers ON lessons.teacher_id = teachers.id JOIN full_names ON teachers.id = full_names.id WHERE students.id = 3 ORDER BY mark_history.time")'),
+(201, '2015-03-02 18:54:37', 'select_query("SELECT DISTINCT groups.id, groups.name FROM groups JOIN lessons ON (groups.id = lessons.group_id) ORDER BY groups.name")'),
+(202, '2015-03-02 18:54:37', 'select_query("SELECT subjects.name AS subject_name, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name, auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) JOIN teachers ON (lessons.teacher_id = teachers.id) JOIN users ON (teachers.id = users.id) JOIN groups ON (lessons.group_id = groups.id) JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE groups.id = 4 ORDER BY subjects.name, teacher_name, auditories.name, lessons.time")'),
+(203, '2015-03-02 18:54:38', 'select_query("SELECT DISTINCT groups.id, groups.name FROM groups JOIN students ON (groups.id = students.group_id) ORDER BY groups.name")'),
+(204, '2015-03-02 18:54:39', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM students JOIN groups ON students.group_id = groups.id WHERE groups.id = 2 ORDER BY name")'),
+(205, '2015-03-02 18:54:39', 'select_query("SELECT full_names.name AS teacher_name, mark_history.time, mark_types.short_name, mark_history.comment FROM mark_history JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) AS last_marks ON mark_history.id = last_marks.id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN marks ON mark_history.mark_id = marks.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id JOIN subjects ON lessons.subject_id = subjects.id JOIN teachers ON lessons.teacher_id = teachers.id JOIN full_names ON teachers.id = full_names.id WHERE students.id = 3 ORDER BY mark_history.time")'),
+(206, '2015-03-02 18:55:42', 'select_query("SELECT DISTINCT groups.id, groups.name FROM groups JOIN students ON (groups.id = students.group_id) ORDER BY groups.name")'),
+(207, '2015-03-02 18:55:42', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM students JOIN groups ON students.group_id = groups.id WHERE groups.id = 2 ORDER BY name")'),
+(208, '2015-03-02 18:55:42', 'select_query("SELECT subjects.name AS subject_name, full_names.name AS teacher_name, mark_history.time, mark_types.short_name, mark_history.comment FROM mark_history JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) AS last_marks ON mark_history.id = last_marks.id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN marks ON mark_history.mark_id = marks.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id JOIN subjects ON lessons.subject_id = subjects.id JOIN teachers ON lessons.teacher_id = teachers.id JOIN full_names ON teachers.id = full_names.id WHERE students.id = 3 ORDER BY mark_history.time")'),
+(209, '2015-03-02 18:59:02', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(210, '2015-03-02 18:59:02', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(211, '2015-03-02 18:59:02', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(212, '2015-03-02 18:59:02', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(213, '2015-03-02 18:59:02', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 28 ORDER BY name")'),
+(214, '2015-03-02 18:59:02', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(215, '2015-03-02 18:59:04', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 2 AND lessons.teacher_id = 17 ORDER BY name")'),
+(216, '2015-03-02 18:59:04', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 2 AND lessons.group_id = 2 ORDER BY name")'),
+(217, '2015-03-02 18:59:04', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 12 ORDER BY name")'),
+(218, '2015-03-02 18:59:04', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = 3 AND lessons.id = 12 ORDER by mark_history.id DESC")'),
+(219, '2015-03-02 18:59:04', 'select_query("SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name")'),
+(220, '2015-03-02 19:00:16', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(221, '2015-03-02 19:00:16', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(222, '2015-03-02 19:00:16', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(223, '2015-03-02 19:00:16', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(224, '2015-03-02 19:00:16', 'select_query("SELECT students.id AS id, full_names.name AS name FROM lessons JOIN students ON lessons.group_id = students.group_id JOIN full_names ON students.id = full_names.id WHERE lessons.id = 28 ORDER BY name")'),
+(225, '2015-03-02 19:00:16', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(226, '2015-03-02 19:00:19', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 2 AND lessons.teacher_id = 17 ORDER BY name")'),
+(227, '2015-03-02 19:00:19', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 2 AND lessons.group_id = 2 ORDER BY name")'),
+(228, '2015-03-02 19:00:19', 'select_query("SELECT students.id AS id, full_names.name AS name FROM lessons JOIN students ON lessons.group_id = students.group_id JOIN full_names ON students.id = full_names.id WHERE lessons.id = 12 ORDER BY name")'),
+(229, '2015-03-02 19:00:19', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = 3 AND lessons.id = 12 ORDER by mark_history.id DESC")'),
+(230, '2015-03-02 19:00:19', 'select_query("SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name")'),
+(231, '2015-03-02 19:04:35', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(232, '2015-03-02 19:04:35', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(233, '2015-03-02 19:04:35', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(234, '2015-03-02 19:04:35', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(235, '2015-03-02 19:04:35', 'select_query("SELECT students.id AS id, full_names.name AS name FROM lessons JOIN students ON lessons.group_id = students.group_id JOIN full_names ON students.id = full_names.id WHERE lessons.id = 28 ORDER BY name")'),
+(236, '2015-03-02 19:04:35', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(237, '2015-03-02 19:25:05', 'select_query("SELECT DISTINCT teachers.id, concat(users.surname, '' '', users.name, '' '', users.patronymic) AS teacher_name FROM teachers JOIN users ON teachers.id = users.id JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name")'),
+(238, '2015-03-02 19:25:05', 'select_query("SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) WHERE lessons.teacher_id = 17 ORDER BY name")'),
+(239, '2015-03-02 19:25:05', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 1 AND lessons.teacher_id = 17 ORDER BY name")'),
+(240, '2015-03-02 19:25:05', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 1 AND lessons.group_id = 4 ORDER BY name")'),
+(241, '2015-03-02 19:25:05', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 28 ORDER BY name")'),
+(242, '2015-03-02 19:25:05', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = undefined AND lessons.id = 28 ORDER by mark_history.id DESC")'),
+(243, '2015-03-02 19:25:07', 'select_query("SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) WHERE lessons.subject_id = 2 AND lessons.teacher_id = 17 ORDER BY name")'),
+(244, '2015-03-02 19:25:07', 'select_query("SELECT lessons.id AS id, concat(name, '' | '', time) AS name FROM lessons JOIN auditories ON (lessons.auditory_id = auditories.id) WHERE lessons.teacher_id = 17 AND lessons.subject_id = 2 AND lessons.group_id = 2 ORDER BY name")'),
+(245, '2015-03-02 19:25:07', 'select_query("SELECT students.id AS id, full_name(students.id) AS name FROM lessons JOIN students ON lessons.group_id = students.group_id WHERE lessons.id = 12 ORDER BY name")'),
+(246, '2015-03-02 19:25:07', 'select_query("SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks JOIN mark_history ON marks.id = mark_history.mark_id JOIN mark_types ON mark_history.mark_type_id = mark_types.id JOIN students ON marks.student_id = students.id JOIN lessons ON marks.lesson_id = lessons.id WHERE students.id = 3 AND lessons.id = 12 ORDER by mark_history.id DESC")'),
+(247, '2015-03-02 19:25:07', 'select_query("SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name")'),
+(248, '2015-03-02 19:34:06', 'select_query("SELECT * FROM auditories")'),
+(249, '2015-03-02 19:34:06', 'select_query("SELECT * FROM chiefs")'),
+(250, '2015-03-02 19:34:06', 'select_query("SELECT * FROM full_names")'),
+(251, '2015-03-02 19:34:06', 'select_query("SELECT * FROM groups")'),
+(252, '2015-03-02 19:34:06', 'select_query("SELECT * FROM lessons")'),
+(253, '2015-03-02 19:34:06', 'select_query("SELECT * FROM log")'),
+(254, '2015-03-02 19:34:06', 'select_query("SELECT * FROM mark_history")'),
+(255, '2015-03-02 19:34:06', 'select_query("SELECT * FROM mark_types")'),
+(256, '2015-03-02 19:34:06', 'select_query("SELECT * FROM marks")'),
+(257, '2015-03-02 19:34:06', 'select_query("SELECT * FROM roles")'),
+(258, '2015-03-02 19:34:06', 'select_query("SELECT * FROM students")'),
+(259, '2015-03-02 19:34:06', 'select_query("SELECT * FROM subjects")'),
+(260, '2015-03-02 19:34:06', 'select_query("SELECT * FROM teachers")'),
+(261, '2015-03-02 19:34:06', 'select_query("SELECT * FROM users")'),
+(262, '2015-03-02 19:35:26', 'select_query("SELECT * FROM auditories")'),
+(263, '2015-03-02 19:35:26', 'select_query("SELECT * FROM chiefs")'),
+(264, '2015-03-02 19:35:26', 'select_query("SELECT * FROM full_names")'),
+(265, '2015-03-02 19:35:26', 'select_query("SELECT * FROM groups")'),
+(266, '2015-03-02 19:35:26', 'select_query("SELECT * FROM lessons")'),
+(267, '2015-03-02 19:35:26', 'select_query("SELECT * FROM log")'),
+(268, '2015-03-02 19:35:26', 'select_query("SELECT * FROM mark_history")'),
+(269, '2015-03-02 19:35:26', 'select_query("SELECT * FROM mark_types")'),
+(270, '2015-03-02 19:35:26', 'select_query("SELECT * FROM marks")'),
+(271, '2015-03-02 19:35:26', 'select_query("SELECT * FROM roles")'),
+(272, '2015-03-02 19:35:26', 'select_query("SELECT * FROM students")'),
+(273, '2015-03-02 19:35:26', 'select_query("SELECT * FROM subjects")'),
+(274, '2015-03-02 19:35:26', 'select_query("SELECT * FROM teachers")'),
+(275, '2015-03-02 19:35:26', 'select_query("SELECT * FROM users")'),
+(276, '2015-03-02 19:42:55', 'select_query("SELECT name, description, id FROM auditories")'),
+(277, '2015-03-02 19:42:55', 'select_query("SELECT name, description, id FROM subjects")'),
+(278, '2015-03-02 19:42:55', 'select_query("SELECT name, course, id FROM groups")'),
+(279, '2015-03-02 19:42:57', 'modify_query("INSERT INTO auditories (name, description) VALUES (?, ?)")'),
+(280, '2015-03-02 19:42:57', 'select_query("SELECT name, description, id FROM auditories")'),
+(281, '2015-03-02 19:42:58', 'modify_query("INSERT INTO auditories (name, description) VALUES (?, ?)")');
 
 -- --------------------------------------------------------
 
@@ -351,7 +452,7 @@ CREATE TABLE IF NOT EXISTS `subjects` (
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Дамп данных таблицы `subjects`
@@ -407,7 +508,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `login` (`login`),
   KEY `login_2` (`login`),
   KEY `login_3` (`login`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
 
 --
 -- Дамп данных таблицы `users`

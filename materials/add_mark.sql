@@ -1,4 +1,4 @@
-DELIMITER //  
+DELIMITER $$
   
 CREATE PROCEDURE add_mark (IN par_student_id INT, IN par_lesson_id INT,
 	IN par_mark_type_id INT, IN par_comment VARCHAR(200))  
@@ -23,4 +23,5 @@ BEGIN
         VALUES (par_mark_type_id, loc_mark_id,
         CURRENT_TIMESTAMP, par_comment);
 
-END //  
+END $$
+DELIMITER ;

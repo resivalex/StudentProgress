@@ -1,6 +1,7 @@
 <?php
 
 $sql = new mysqli("p:localhost", "root", "m3i4n3t", "student_progress");
+//$sql = new mysqli("p:mysql.hostinger.ru", "u110559410_root", "m3i4n3t", "u110559410_stude");
 $sql->query("SET NAMES 'utf8'");
 
 function select_query($query, $param = "") {
@@ -8,28 +9,36 @@ function select_query($query, $param = "") {
     $sql = $GLOBALS["sql"];
     $select_result = array();
 
-    $smth = $sql->prepare($query);
-    if ($param) {
-        $code = "";
-        for ($i = 0; $i < count($param); $i++) {
-            $code .= '$'."var$i = ".'$param['.$i.'];'."\n";
+    $query_to_log = "INSERT INTO log (time, action) VALUES (CURRENT_TIMESTAMP, '";
+    $query_to_log .= $sql->escape_string("select_query(\"".$query."\")")."')";
+    $sql->query($query_to_log);
+
+    if ($param == "") {
+        $result = $sql->query($query);
+    } else {
+        $smth = $sql->prepare($query);
+        if ($param) {
+            $code = "";
+            for ($i = 0; $i < count($param); $i++) {
+                $code .= '$' . "var$i = " . '$param[' . $i . '];' . "\n";
+            }
+            $code .= '$smth->bind_param($var0';
+            for ($i = 1; $i < count($param); $i++) {
+                $code .= ", " . '$' . "var$i";
+            }
+            $code .= ");\n";
+            eval($code);
         }
-        $code .= '$smth->bind_param($var0';
-        for ($i = 1; $i < count($param); $i++) {
-            $code .= ", ".'$'."var$i";
+        if (gettype($smth) != "object") {
+            var_dump($sql->error);
+            var_dump($query);
         }
-        $code .= ");\n";
-        eval($code);
+        if (!$smth->execute()) {
+            $smth->close();
+            return false;
+        }
+        $result = $smth->get_result();
     }
-    if (gettype($smth) != "object") {
-        var_dump($sql->error);
-        var_dump($query);
-    }
-    if (!$smth->execute()) {
-        $smth->close();
-        return false;
-    }
-    $result = $smth->get_result();
     while ($field = $result->fetch_field()) {
         $select_result[$field->name] = array();
     }
@@ -38,7 +47,7 @@ function select_query($query, $param = "") {
             $select_result[$field][] = $value;
         }
     }
-    $smth->close();
+    if (isset($smth)) $smth->close();
 
     return $select_result;
 }
@@ -47,25 +56,33 @@ function modify_query($query, $param = "") {
     /** @var $sql mysqli */
     $sql = $GLOBALS["sql"];
 
-    $smth = $sql->prepare($query);
-    if ($param) {
-        $code = "";
-        for ($i = 0; $i < count($param); $i++) {
-            $code .= '$'."var$i = ".'$param['.$i.'];'."\n";
+    $query_to_log = "INSERT INTO log (time, action) VALUES (CURRENT_TIMESTAMP, '";
+    $query_to_log .= $sql->escape_string("modify_query(\"".$query."\")")."')";
+    $sql->query($query_to_log);
+
+    if ($param == "") {
+        $result = $sql->query($query);
+    } else {
+        $smth = $sql->prepare($query);
+        if ($param) {
+            $code = "";
+            for ($i = 0; $i < count($param); $i++) {
+                $code .= '$' . "var$i = " . '$param[' . $i . '];' . "\n";
+            }
+            $code .= '$smth->bind_param($var0';
+            for ($i = 1; $i < count($param); $i++) {
+                $code .= ", " . '$' . "var$i";
+            }
+            $code .= ");\n";
+            eval($code);
         }
-        $code .= '$smth->bind_param($var0';
-        for ($i = 1; $i < count($param); $i++) {
-            $code .= ", ".'$'."var$i";
+        if (gettype($smth) != "object") {
+            var_dump($sql->error);
+            var_dump($query);
         }
-        $code .= ");\n";
-        eval($code);
+        $result = $smth->execute();
     }
-    if (gettype($smth) != "object") {
-        var_dump($sql->error);
-        var_dump($query);
-    }
-    $result = $smth->execute();
-    $smth->close();
+    if (isset($smth)) $smth->close();
 
     return $result;
 }

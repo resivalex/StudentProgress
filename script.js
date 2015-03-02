@@ -907,6 +907,10 @@ function navigationMenu() {
                     {
                         "title": "Все таблицы",
                         "url": "all_tables.php"
+                    },
+                    {
+                        "title": "Лог",
+                        "url": "log.php"
                     }
                 ]
             },
