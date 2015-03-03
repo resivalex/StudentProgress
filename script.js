@@ -1,27 +1,3 @@
-function submit_remove_id_value(value) {
-	hidden = document.getElementById('remove_id');
-	hidden.value = value;
-	f = document.forms[0];
-	f.submit();
-}
-
-function cant_remove_group() {
-	alert('Нельзя удалить группу пока в ней есть студенты');
-}
-
-function cant_remove_subject() {
-	alert('Нельзя удалить дисциплину пока она есть в занятиях');
-}
-
-function open_card(row, column) {
-	el1 = document.getElementById("row");
-	el1.value = row;
-	el2 = document.getElementById("col");
-	el2.value = column;
-	frm = document.forms[0];
-	frm.submit();
-}
-
 function loadCalendar(year, month) {
     $("#day_select_tool").load("calendar.php", {"y":year, "m":month});
 }
@@ -99,14 +75,9 @@ function getTableFromJSON(text) {
     return getTable($.parseJSON(text));
 }
 
-function selectQuery(query, params, fun) {
+function sqlQuery(query, fun) {
     var temp = document.createElement("div");
-    $(temp).load("select_query.php", {"query": query, "params": params}, fun);
-}
-
-function modifyQuery(query, params, fun) {
-    var temp = document.createElement("div");
-    $(temp).load("modify_query.php", {"query": query, "params": params}, fun);
+    $(temp).load("sql_query.php", {"query": query}, fun);
 }
 
 function splitSelectQueryFromParams(table_name, params) {
@@ -122,7 +93,7 @@ function splitSelectQueryFromParams(table_name, params) {
 function loadRemovableTable(table_name, id_name, query) {
     var el = document.getElementById(id_name);
 
-    selectQuery(query, {}, function(response) {
+    sqlQuery(query, function(response) {
         var table = getTableFromJSON(response);
         table.className = "custom_table";
         $(table).children().each(function(index, element) {
@@ -139,7 +110,7 @@ function loadRemovableTable(table_name, id_name, query) {
                         tr = tr.parentNode;
                     }
                     $(tr).fadeTo(500, 0.5);
-                    modifyQuery("DELETE FROM " + table_name + " WHERE id = " + id, {}, function(response) {
+                    sqlQuery("DELETE FROM " + table_name + " WHERE id = " + id, function(response) {
                         del.removeAttribute("disabled");
                         if ($.parseJSON(response) === false) {
                             $(tr).fadeTo(500, 1.0);
@@ -161,25 +132,22 @@ function loadRemovableTable(table_name, id_name, query) {
 
 // добавляет строку в базу данных на странице edit_tables
 function addToTable(table_name, params) {
-    var query = "INSERT INTO " + table_name + " (" + params[0];
+    var text = "INSERT INTO " + table_name + " (" + params[0];
     for (i = 1; i < params.length; i++) {
-        query += ", " + params[i];
+        text += ", " + params[i];
     }
-    query += ") VALUES (?";
+    text += ") VALUES (?";
     for (i = 1; i < params.length; i++) {
-        query += ", ?";
+        text += ", ?";
     }
-    query += ")";
-    var qparams = [""];
+    text += ")";
+    var query = [text];
     for (i = 0; i < params.length; i++) {
-        qparams[0] += "s";
-        qparams.push(document.getElementById(table_name + "_" + params[i]).value);
+        query.push(document.getElementById(table_name + "_" + params[i]).value);
     }
-    modifyQuery(query, qparams, function(response) {
-        if (jQuery.parseJSON(response) === false) {
+    sqlQuery(query, function(response) {
+        if ($.parseJSON(response) === false) {
             showMessage("Неудача");
-            showMessage(query);
-            showMessage(qparams);
         } else {
             showMessage("Добавлено");
             loadRemovableTable(table_name, table_name, splitSelectQueryFromParams(table_name, params));
@@ -189,37 +157,32 @@ function addToTable(table_name, params) {
 
 // добавляет пользователя на странице accounts.php
 function addToUsers(role_name) {
-    var query = "INSERT INTO users ";
-    query += "(name, surname, patronymic, login, password, role_id, email, phone) ";
-    query += "VALUES (?, ?, ?, ?, ?, (SELECT id FROM roles WHERE name = ?), ?, ?)";
-    var params = [];
-    params.push("ssssssss");
+    var text = "INSERT INTO users ";
+    text += "(name, surname, patronymic, login, password, role_id, email, phone) ";
+    text += "VALUES (?, ?, ?, ?, ?, (SELECT id FROM roles WHERE name = ?), ?, ?)";
+    var query = [text];
     var block = $("." + role_name);
-    params.push($("input[name='name']", block).val());
-    params.push($("input[name='surname']", block).val());
-    params.push($("input[name='patronymic']", block).val());
-    params.push($("input[name='login']", block).val());
-    params.push($("input[name='password']", block).val());
-    params.push(role_name);
-    params.push($("input[name='email']", block).val());
-    params.push($("input[name='phone']", block).val());
+    query.push($("input[name='name']", block).val());
+    query.push($("input[name='surname']", block).val());
+    query.push($("input[name='patronymic']", block).val());
+    query.push($("input[name='login']", block).val());
+    query.push($("input[name='password']", block).val());
+    query.push(role_name);
+    query.push($("input[name='email']", block).val());
+    query.push($("input[name='phone']", block).val());
 
-    modifyQuery(query, params, function(response) {
-        showMessage(response);
+    sqlQuery(query, function(response) {
         if ($.parseJSON(response) === false) {
             showMessage("Неудача");
-            showMessage(query);
-            showMessage(params);
         } else {
             showMessage("Добавлено");
             var query = "SELECT surname, users.name AS name, patronymic, login, password, email, phone, users.id AS id ";
             query += "FROM users ";
             query += "JOIN roles ON users.role_id = roles.id ";
             query += "WHERE roles.name = '" + role_name + "'";
-
             loadRemovableTable('users', role_name, query);
         }
-    })
+    });
 }
 
 // функция для заполнения полей на login.php
@@ -242,7 +205,7 @@ function addLesson() {
     var query = "INSERT INTO lessons ";
     query += "(group_id, subject_id, auditory_id, teacher_id, time) ";
     query += "VALUES ('"+group_id+"', '"+subject_id+"', '"+auditory_id+"', '"+teacher_id+"', '"+datetime+"')";
-    modifyQuery(query, {}, function(response) {
+    sqlQuery(query, function(response) {
         showMessage(response);
         if ($.parseJSON(response) === false) {
             showMessage("Неудача");
@@ -341,7 +304,7 @@ function onMarksForTeacherLoad() {
         query += "JOIN lessons ON marks.lesson_id = lessons.id ";
         query += "WHERE students.id = "+$("#student_id").data("value")+" AND ";
         query += "lessons.id = "+$("#lesson_id").data("value")+" ORDER by mark_history.id DESC";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             if ($("#student_id").data("value") != undefined) {
                 if ($.parseJSON(response).id.length == 0) {
                     response = "{\"message\": [\"Отметок нет!\"]}";
@@ -351,7 +314,7 @@ function onMarksForTeacherLoad() {
                 table.className = "custom_table";
                 $("#mark").append(table);
                 query = "SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name";
-                selectQuery(query, {}, function (response) {
+                sqlQuery(query, function (response) {
                     var select_mark = selectTool("Отметка", "mark_type_id", $.parseJSON(response));
                     var mark_table = document.createElement("table");
                     var tr = document.createElement("tr");
@@ -382,7 +345,7 @@ function onMarksForTeacherLoad() {
                     $(button).click(function() {
                         var query = "CALL add_mark("+$("#student_id").data("value")+","+$("#lesson_id").data("value")+",";
                         query += $("#mark_type_id").data("value")+",'"+$("#comment_area").val()+"')";
-                        modifyQuery(query, {}, function(response) {
+                        sqlQuery(query, function(response) {
                             loadMark();
                         });
                     });
@@ -397,7 +360,7 @@ function onMarksForTeacherLoad() {
         query = "SELECT students.id AS id, full_name(students.id) AS name FROM lessons ";
         query += "JOIN students ON lessons.group_id = students.group_id ";
         query += "WHERE lessons.id = "+$("#lesson_id").data("value")+" ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             removeStudentList();
             var select_student = selectTool("Студенты", "student_id", $.parseJSON(response));
             $("#judging").append(select_student);
@@ -412,7 +375,7 @@ function onMarksForTeacherLoad() {
         query += "WHERE lessons.teacher_id = "+$("#teacher_id").data("value")+" AND ";
         query += "lessons.subject_id = "+$("#subject_id").data("value")+" AND ";
         query += "lessons.group_id = "+group_id+" ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             removeAuditoryTime();
             $("#select_auditory_time").append(slidedSelectTool("Аудитория | Время", "lesson_id", $.parseJSON(response)));
             $("#lesson_id").ready(function() {
@@ -428,7 +391,7 @@ function onMarksForTeacherLoad() {
         query = "SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) ";
         query += "WHERE lessons.subject_id = "+subject_id+" AND ";
         query += "lessons.teacher_id = "+$("#teacher_id").data("value")+" ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             removeGroups();
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)))
             $("#group_id").ready(function() {
@@ -443,7 +406,7 @@ function onMarksForTeacherLoad() {
         removeSubjects();
         query = "SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) ";
         query += "WHERE lessons.teacher_id = "+teacher_id+" ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             removeSubjects();
             $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
             $("#subject_id").ready(function() {
@@ -461,7 +424,7 @@ function onMarksForTeacherLoad() {
         query += "JOIN users ON teachers.id = users.id ";
         query += "JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name";
 
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
             $("#teacher_id").ready(function() {
                 loadSubjects($("#teacher_id").data("value"));
@@ -509,19 +472,19 @@ function onEditScheduleLoad() {
     $("body").ready(function() {
         var query = "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) ";
         query += "FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
         });
         query = "SELECT id, name FROM subjects ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
         });
         query = "SELECT id, name FROM groups ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
         });
         query = "SELECT id, name FROM auditories ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             $("#select_auditory").append(slidedSelectTool("Аудитория", "auditory_id", $.parseJSON(response)));
         });
         var month_names = {
@@ -580,7 +543,7 @@ function onScheduleForTeacherLoad() {
         query += "WHERE teacher_id = "+$("#teacher_id").data("value")+" ";
         query += "ORDER BY subjects.name, groups.name, auditories.name, lessons.time";
 
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             var $shedule_table = $("#schedule_table");
             $shedule_table.children().remove();
             var table = sortableTable($.parseJSON(response));
@@ -600,7 +563,7 @@ function onScheduleForTeacherLoad() {
         query += "JOIN users ON teachers.id = users.id ";
         query += "JOIN lessons ON teachers.id = lessons.teacher_id ";
         query += "ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
             $("#teacher_id").ready(loadSchedule).on("click", ".item", loadSchedule);
         });
@@ -621,7 +584,7 @@ function onScheduleForStudentLoad() {
         query += "WHERE groups.id = "+$("#group_id").data("value")+" ";
         query += "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time";
 
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             var $schedule_table = $("#schedule_table");
             $schedule_table.children().remove();
             var table = sortableTable($.parseJSON(response));
@@ -639,7 +602,7 @@ function onScheduleForStudentLoad() {
         query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
         query += "JOIN lessons ON (groups.id = lessons.group_id) ";
         query += "ORDER BY groups.name";
-        selectQuery(query, {}, function (response) {
+        sqlQuery(query, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
             $("#group_id").ready(loadSchedule).on("click", ".item", loadSchedule);
         })
@@ -798,7 +761,7 @@ function onMarksForStudentLoad() {
         query += "WHERE students.id = "+$("#student_id").data("value")+" ";
         query += "ORDER BY mark_history.time";
 
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             var $marks_talbe = $("#marks_table");
             $marks_talbe.children().remove();
             var data = setOfArraysToArrayOfSets($.parseJSON(response));
@@ -866,7 +829,7 @@ function onMarksForStudentLoad() {
         query = "SELECT students.id AS id, full_name(students.id) AS name FROM students ";
         query += "JOIN groups ON students.group_id = groups.id ";
         query += "WHERE groups.id = "+$("#group_id").data("value")+" ORDER BY name";
-        selectQuery(query, {}, function(response) {
+        sqlQuery(query, function(response) {
             var $select_student = $("#select_student");
             $select_student.children().remove();
             var select_student = slidedSelectTool("Студенты", "student_id", $.parseJSON(response));
@@ -879,7 +842,7 @@ function onMarksForStudentLoad() {
         query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
         query += "JOIN students ON (groups.id = students.group_id) ";
         query += "ORDER BY groups.name";
-        selectQuery(query, {}, function (response) {
+        sqlQuery(query, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
             $("#group_id").ready(loadStudents).on("click", ".item", loadStudents);
         });

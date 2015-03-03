@@ -34,7 +34,7 @@ function add_user_form($header_text, $role) {
     $result->appendChild(user_list($role));
     $form = formfs("accounts.php");
 
-    $input_values = [["Имя", "name"], ["Фамилия", "surname"], ["Отчество", "patronymic"],
+    $input_values = [["Фамилия", "surname"], ["Имя", "name"], ["Отчество", "patronymic"],
         ["Логин", "login"], ["Пароль", "password"], ["Эл. почта", "email"], ["Телефон", "phone"]];
     $items = array();
     foreach ($input_values as $value) {

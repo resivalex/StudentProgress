@@ -277,6 +277,13 @@
     border-color: #444444;
 }
 
+/* полоска в конце списка */
+.select_tool .box:last-child {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-color: #444444;
+}
+
 .select_tool .item {
     padding-left: 5px;
     padding-bottom: 5px;
