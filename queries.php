@@ -87,12 +87,19 @@ function modify_query($query, $param = "") {
     return $result;
 }
 
+function to_log($text) {
+    /** @var $sql mysqli */
+    $sql = $GLOBALS["sql"];
+
+    $action = $sql->escape_string(json_encode($text));
+    $sql->query("INSERT INTO log (time, action) VALUES (CURRENT_TIMESTAMP, '$action')");
+}
+
 function sql_query($query) {
     /** @var $sql mysqli */
     $sql = $GLOBALS["sql"];
 
-    $action = $sql->escape_string(json_encode($query));
-    $sql->query("INSERT INTO log (time, action) VALUES (CURRENT_TIMESTAMP, '$action')");
+    to_log($query);
     $result = "";
     if (gettype($query) == "string") {
         $query = [$query];
@@ -109,8 +116,11 @@ function sql_query($query) {
                     $text .= substr($query[$i], $from);
                     $result = $sql->query($text);
                     if ($result === false) {
+                        $error = $sql->error;
                         $sql->rollback();
                         $sql->autocommit(true);
+                        to_log($error);
+
                         return false;
                     }
                 } else {

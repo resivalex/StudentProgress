@@ -16,12 +16,13 @@ SQL;
     $ajax_div->setAttribute("id", $role);
     $query = str_replace("\n", " ", $query);
     $query = str_replace("\r", " ", $query);
-    $ajax_div->appendChild(fs("script", "loadRemovableTable('users', '$role', '$query');"));
+    $ajax_div->appendChild(fs("script", "loadRemovableTable('users', '$role', '$query', getDeleteQueryForUser);"));
 
     return $ajax_div;
 }
 
-function add_user_form($header_text, $role) {
+function add_user_form($header_text, $role)
+{
     /** @var $document DOMDocument */
     $result = fs("div");
     $result->setAttribute("class", $role);
@@ -48,6 +49,11 @@ function add_user_form($header_text, $role) {
     $submit->setAttribute("onclick", "addToUsers('$role')");
     $submit_div = fs("div");
     $submit_div->appendChild(custom_grid_table($items));
+    if ($role == "student") {
+        $select_group = fs("div");
+        $select_group->setAttribute("id", "select_group");
+        $submit_div->appendChild($select_group);
+    }
     $submit_div->appendChild($submit);
     $submit_div->setAttribute("style", "text-align:center");
     $form->appendChild($submit_div);
@@ -55,7 +61,7 @@ function add_user_form($header_text, $role) {
 
     $form_div = fs("div");
     $form_div->appendChild($form);
-    $form_div->setAttribute("style", "width:420px;margin:0 auto");
+    $form_div->setAttribute("style", "width: 300px;margin:0 auto;");
 
     $result->appendChild($form_div);
 
@@ -65,6 +71,7 @@ function add_user_form($header_text, $role) {
 $title = new DOMElement("title", "Учётные записи");
 $head->appendChild($title);
 
+$body->appendChild(fs("script", "onAccountsLoad()"));
 $body->appendChild(add_user_form("Студенты", "student"));
 $body->appendChild(add_user_form("Преподаватели", "teacher"));
 $body->appendChild(add_user_form("Начальники", "chief"));

@@ -89,10 +89,24 @@ function splitSelectQueryFromParams(table_name, params) {
     return query;
 }
 
+function getDeleteQueryById(table_name, id) {
+    return "DELETE FROM "+table_name+" WHERE id = "+id;
+}
+
+function getDeleteQueryForUser(table_name, id) {
+    const tables = ["students", "teachers", "chiefs", "users"/*must be last*/];
+    var query = [];
+    for (i = 0; i < tables.length; i++) {
+        query.push("DELETE FROM "+tables[i]+" WHERE id = "+id);
+    }
+    return query;
+}
+
 // загружает из базы данный ответ на query
-function loadRemovableTable(table_name, id_name, query) {
+function loadRemovableTable(table_name, id_name, query, get_delete_query) {
     var el = document.getElementById(id_name);
 
+    if (get_delete_query == undefined) get_delete_query = getDeleteQueryById;
     sqlQuery(query, function(response) {
         var table = getTableFromJSON(response);
         table.className = "custom_table";
@@ -110,16 +124,17 @@ function loadRemovableTable(table_name, id_name, query) {
                         tr = tr.parentNode;
                     }
                     $(tr).fadeTo(500, 0.5);
-                    sqlQuery("DELETE FROM " + table_name + " WHERE id = " + id, function(response) {
+                    sqlQuery(get_delete_query(table_name, id), function(response) {
                         del.removeAttribute("disabled");
                         if ($.parseJSON(response) === false) {
                             $(tr).fadeTo(500, 1.0);
                             showMessage("Неудача");
+                            showJSON(get_delete_query(table_name, id));
                             del.style.color = "#BBBBBB";
                         } else {
                             showMessage("Удалено");
                             $(tr).fadeTo(200, 0.0);
-                            loadRemovableTable(table_name, id_name, query);
+                            loadRemovableTable(table_name, id_name, query, get_delete_query);
                         }
                     });
                 });
@@ -170,6 +185,13 @@ function addToUsers(role_name) {
     query.push(role_name);
     query.push($("input[name='email']", block).val());
     query.push($("input[name='phone']", block).val());
+    var tab = {"student": "students", "teacher": "teachers", "chief": "chiefs"};
+    if (role_name == "student") {
+        query.push("INSERT INTO students (id, group_id) VALUES ((SELECT max(id) FROM users), ?)");
+        query.push($("#group_id").data("value"));
+    } else {
+        query.push("INSERT INTO " + tab[role_name] + " (id) VALUES ((SELECT max(id) FROM users))");
+    }
 
     sqlQuery(query, function(response) {
         if ($.parseJSON(response) === false) {
@@ -180,7 +202,7 @@ function addToUsers(role_name) {
             query += "FROM users ";
             query += "JOIN roles ON users.role_id = roles.id ";
             query += "WHERE roles.name = '" + role_name + "'";
-            loadRemovableTable('users', role_name, query);
+            loadRemovableTable('users', role_name, query, getDeleteQueryForUser);
         }
     });
 }
@@ -1020,5 +1042,14 @@ function onCardsLoad() {
 
         setInterval(autoPlay, 200);
 
+    });
+}
+
+function onAccountsLoad() {
+    $("#select_group").ready(function () {
+        var query = "SELECT id, name FROM groups ORDER BY name";
+        sqlQuery(query, function(response) {
+            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)))
+        });
     });
 }
