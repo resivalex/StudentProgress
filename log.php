@@ -17,4 +17,4 @@ foreach ($table_data as $key => $value2) {
 $table = custom_grid_table(transverse($vis));
 $body->appendChild($table);
 
-echo $document->saveHTML();
+out_page();

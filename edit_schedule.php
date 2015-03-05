@@ -87,5 +87,4 @@ $submit_div->appendChild($submit);
 $select_div->appendChild($submit_div);
 $body->appendChild($select_div);
 
-
-echo $document->saveHTML();
+out_page();

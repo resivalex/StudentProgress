@@ -12,4 +12,4 @@ $body->appendChild(afs("Расписание для студента", "schedule
 $body->appendChild(brfs());
 $body->appendChild(afs("Редактирование расписания", "edit_schedule.php"));
 
-echo $document->saveHTML();
+out_page();

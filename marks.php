@@ -10,4 +10,4 @@ $body->appendChild(afs("Вариант для преподавателя", "mark
 $body->appendChild(brfs());
 $body->appendChild(afs("Отметки студента", "marks_for_student.php"));
 
-echo $document->saveHTML();
+out_page();

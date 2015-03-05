@@ -79,6 +79,10 @@ if (isset($_SESSION["username"])) {
     $body->appendChild(fs("script", "$('body').append(navigationMenu())"));
 }
 
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
-echo "\n";
-?> 
+function out_page() {
+    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
+    echo "\n";
+    /** @var DOMDocument $document */
+    $document = $GLOBALS["document"];
+    echo $document->saveHTML();
+}

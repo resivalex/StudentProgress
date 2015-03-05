@@ -54,5 +54,4 @@ $submit_div->appendChild($fast_submit);
 $submit_div->setAttribute("style", "text-align:center");
 $form->appendChild($submit_div);
 
-echo $document->saveHTML();
-?>
+out_page();

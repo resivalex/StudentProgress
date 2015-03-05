@@ -8,4 +8,4 @@ $head->appendChild($title);
 $body->appendChild(afs("*", "cards.php"));
 
 //$body->appendChild(brfs());
-echo $document->saveHTML();
+out_page();

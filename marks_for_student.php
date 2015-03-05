@@ -25,4 +25,4 @@ $marks_table = fs("div");
 $marks_table->setAttribute("id", "marks_table");
 $body->appendChild($marks_table);
 
-echo $document->saveHTML();
+out_page();

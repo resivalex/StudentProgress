@@ -40,4 +40,4 @@ $bot_label = fs("label", "Пусть пока компьютер поиграе�
 $bot_label->setAttribute("for", "bot_mode");
 $body->appendChild($bot_label);
 
-echo $document->saveHTML();
+out_page();

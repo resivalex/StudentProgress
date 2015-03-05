@@ -57,4 +57,4 @@ $body->appendChild(add_info_form("Аудитории", "auditories", [["Назв
 $body->appendChild(add_info_form("Дисциплины", "subjects", [["Название", "name"], ["Описание", "description"]]));
 $body->appendChild(add_info_form("Группы", "groups", [["Название", "name"], ["Курс", "course"]]));
 
-echo $document->saveHTML();
+out_page();

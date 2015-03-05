@@ -135,6 +135,4 @@ foreach ($tds as $td) {
     $td->setAttribute("align", "center");
 }
 
-
-echo $document->saveHTML();
-?>
+out_page();

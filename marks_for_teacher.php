@@ -47,5 +47,4 @@ $td->appendChild($mark_div);
 $tr->appendChild($td);
 $body->appendChild($judging_table);
 
-echo $document->saveHTML();
-?>
+out_page();

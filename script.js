@@ -331,6 +331,7 @@ function onMarksForTeacherLoad() {
                 if ($.parseJSON(response).id.length == 0) {
                     response = "{\"message\": [\"Отметок нет!\"]}";
                 }
+                response = response.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 removeMark();
                 var table = getTableFromJSON(response);
                 table.className = "custom_table";
@@ -365,8 +366,21 @@ function onMarksForTeacherLoad() {
                     button.value = "Добавить / Исправить";
                     $("#mark").append(select_mark).append(comment_table).append(button);
                     $(button).click(function() {
-                        var query = "CALL add_mark("+$("#student_id").data("value")+","+$("#lesson_id").data("value")+",";
-                        query += $("#mark_type_id").data("value")+",'"+$("#comment_area").val()+"')";
+                        var student_id = $("#student_id").data("value");
+                        var lesson_id = $("#lesson_id").data("value");
+                        var mark_type_id = $("#mark_type_id").data("value");
+                        var comment = $("#comment_area").val();
+                        var text = "INSERT INTO marks (student_id, lesson_id) ";
+                        text += "SELECT student_id, lesson_id FROM (SELECT ? AS student_id, ? AS lesson_id) AS need ";
+                        text += "LEFT OUTER JOIN ";
+                        text += "(SELECT student_id, lesson_id FROM marks WHERE ";
+                        text += "student_id = ? AND lesson_id = ?) AS fact ";
+                        text += "USING (student_id, lesson_id) WHERE fact.student_id IS NULL ";
+                        var query = [text, student_id, lesson_id, student_id, lesson_id];
+                        text = "INSERT INTO mark_history (mark_id, mark_type_id, time, comment) ";
+                        text += "VALUES ((SELECT id FROM marks WHERE student_id = ? AND lesson_id = ?), "
+                        text += "?, CURRENT_TIMESTAMP, ?) ";
+                        query.push(text, student_id, lesson_id, mark_type_id, comment);
                         sqlQuery(query, function(response) {
                             loadMark();
                         });
@@ -379,8 +393,9 @@ function onMarksForTeacherLoad() {
 
     function loadStudentList(group_id) {
         removeStudentList();
-        query = "SELECT students.id AS id, full_name(students.id) AS name FROM lessons ";
+        query = "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM lessons ";
         query += "JOIN students ON lessons.group_id = students.group_id ";
+        query += "JOIN users ON (students.id = users.id) ";
         query += "WHERE lessons.id = "+$("#lesson_id").data("value")+" ORDER BY name";
         sqlQuery(query, function(response) {
             removeStudentList();
@@ -770,7 +785,7 @@ function setOfArraysToArrayOfSets(val) {
 function onMarksForStudentLoad() {
     function loadMarks() {
         $("#marks_table").children().remove();
-        query = "SELECT subjects.name AS subject_name, full_name(teachers.id) AS teacher_name, mark_history.time, ";
+        query = "SELECT subjects.name AS subject_name, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, mark_history.time, ";
         query += "mark_types.short_name, mark_history.comment FROM mark_history ";
         query += "JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) ";
         query += "AS last_marks ON mark_history.id = last_marks.id ";
@@ -780,10 +795,12 @@ function onMarksForStudentLoad() {
         query += "JOIN lessons ON marks.lesson_id = lessons.id ";
         query += "JOIN subjects ON lessons.subject_id = subjects.id ";
         query += "JOIN teachers ON lessons.teacher_id = teachers.id ";
+        query += "JOIN users ON teachers.id = users.id ";
         query += "WHERE students.id = "+$("#student_id").data("value")+" ";
         query += "ORDER BY mark_history.time";
 
         sqlQuery(query, function(response) {
+            showMessage(response);
             var $marks_talbe = $("#marks_table");
             $marks_talbe.children().remove();
             var data = setOfArraysToArrayOfSets($.parseJSON(response));
@@ -848,7 +865,8 @@ function onMarksForStudentLoad() {
     function loadStudents(group_id) {
         $("#select_student").children().remove();
         $("#marks_table").children().remove();
-        query = "SELECT students.id AS id, full_name(students.id) AS name FROM students ";
+        query = "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM students ";
+        query += "JOIN users ON students.id = users.id ";
         query += "JOIN groups ON students.group_id = groups.id ";
         query += "WHERE groups.id = "+$("#group_id").data("value")+" ORDER BY name";
         sqlQuery(query, function(response) {
@@ -856,7 +874,7 @@ function onMarksForStudentLoad() {
             $select_student.children().remove();
             var select_student = slidedSelectTool("Студенты", "student_id", $.parseJSON(response));
             $select_student.append(select_student);
-            $select_student.ready(loadMarks).on("click", ".item", loadMarks);
+            $("#student_id").ready(loadMarks).on("click", ".item", loadMarks);
         });
     }
 

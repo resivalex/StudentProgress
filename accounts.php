@@ -76,4 +76,4 @@ $body->appendChild(add_user_form("Студенты", "student"));
 $body->appendChild(add_user_form("Преподаватели", "teacher"));
 $body->appendChild(add_user_form("Начальники", "chief"));
 
-echo $document->saveHTML();
+out_page();

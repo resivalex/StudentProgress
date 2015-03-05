@@ -22,4 +22,4 @@ $body->appendChild(brfs());
 // таблица с расписанием
 $body->appendChild(id_div("schedule_table"));
 
-echo $document->saveHTML();
+out_page();

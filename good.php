@@ -10,4 +10,4 @@ $img->setAttribute("src", "tn.jpg");
 $img->setAttribute("style", "display: block; margin: 0 auto;");
 $body->appendChild($img);
 
-echo $document->saveHTML();
+out_page();

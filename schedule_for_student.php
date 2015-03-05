@@ -23,4 +23,4 @@ $schedule_table = fs("div");
 $schedule_table->setAttribute("id", "schedule_table");
 $body->appendChild($schedule_table);
 
-echo $document->saveHTML();
+out_page();

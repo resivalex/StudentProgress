@@ -30,4 +30,4 @@ foreach ($table_list as $value) {
     $body->appendChild($table);
 }
 
-echo $document->saveHTML();
+out_page();

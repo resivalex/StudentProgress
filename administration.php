@@ -16,4 +16,4 @@ $body->appendChild(brfs());
 $body->appendChild(afs("Все таблицы", "all_tables.php"));
 $body->appendChild(brfs());
 //$body->appendChild(brfs());
-echo $document->saveHTML();
+out_page();
