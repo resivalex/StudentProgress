@@ -13,7 +13,7 @@ FROM marks
 WHERE lesson_id = $lesson_id AND student_id = $student_id
 SQL;
 
-$result = select_query($query);
+$result = sql_query($query);
 
 if ($result['records'][0] == 0) {
     $query =
@@ -24,7 +24,7 @@ VALUES
 ($lesson_id, $student_id)
 SQL;
 
-    modify_query($query);
+    sql_query($query);
 }
 
 $query =
@@ -34,7 +34,7 @@ FROM marks
 WHERE lesson_id = $lesson_id AND student_id = $student_id
 SQL;
 
-$result = select_query($query);
+$result = sql_query($query);
 
 $mark_id = $result['id'][0];
 
@@ -46,4 +46,4 @@ VALUES
 ($mark_type, $mark_id, NOW(), 'alpha')
 SQL;
 
-modify_query($query);
+sql_query($query);

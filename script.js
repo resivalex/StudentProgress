@@ -3,42 +3,40 @@ function loadCalendar(year, month) {
 }
 
 // показать временное сообщение
-function showMessage(message_text) {
+function showMessage(message_text, title_text) {
+    if (title_text == undefined) {
+        const max_len = 30;
+        title_text = message_text.substr(0, max_len) + (message_text.length > max_len? "..." : "");
+    }
     if (document.getElementById("message_layer") == undefined) {
-        div = document.createElement("div");
-        div.setAttribute("id", "message_layer");
-        $("body").append(div);
-        $(div).css({"z-index": 100, "position": "fixed", "bottom": "0px", "left": "0px", "width": "30%",
-            "text-align": "center", "background-color": "white", "opacity": "0.9"});
+        $("<div/>").attr("id", "message_layer").appendTo($("body"));
     }
     var $layer = $("#message_layer");
-    var txt = document.createElement("p");
-    txt.style.fontWeight = 600;
-    var $temp = $(txt);
-    $temp.html(message_text);
-    $temp.css({"border-style": "solid", "border-width": "1px", "border-color": "#CCCCFF", "margin": "0px"});
-    $temp.hide();
-    $temp.ready(function() {
-        setTimeout(function() {
-            $temp.slideDown();
-        }, 100);
-        setTimeout(function() {
-            $temp.slideUp(400, function() {$temp.remove();});
-        }, 30000);
-    });
-    $temp.click(function() {
-        $temp.slideUp(400, function() {$temp.remove();});
-    });
-
-    $layer.prepend($temp);
+    var $message = $("<div/>").prependTo($layer);
+    var $title = $("<p/>").css({marginTop: 0, marginBottom: 0, backgroundColor: "#eeeeff"}).text(title_text).appendTo($message);
+    $title.append($("<label>&nbsp;&nbsp;x&nbsp;&nbsp;</label>").css({float: "right", backgroundColor: "#ccffcc"}).click(function() {
+        $message.slideUp({duration: 300, easing: "easeOutQuart", complete: function() {$message.remove();}});
+    }));
+    var $p = $("<p/>").text(message_text).appendTo($message);
+    setTimeout(function() {
+        $message.slideUp({"duration": 3000, easing: "easeOutQuart", complete: function() {$message.remove();}});
+    }, 60000);
+    $p.hide();
+    $p.dblclick(function() {$p.slideUp();});
+    $title.click(function() {$p.slideToggle();});
+    var $info_label = $("<label>&nbsp;&nbsp;i&nbsp;&nbsp;</label>").css({backgroundColor: "#bbbbff", float: "right"}).appendTo($title);
+    if (message_text == title_text) {
+        $p.remove();
+        $info_label.css("visibility", "hidden");
+    }
 }
 
 function OK() {
     showMessage("OK");
 }
 
-function showJSON(val) {
-    showMessage(JSON.stringify(val));
+function showJSON(val, title_text) {
+    showMessage(JSON.stringify(val), title_text);
 }
 
 function getTable(text, with_header) {
@@ -128,8 +126,7 @@ function loadRemovableTable(table_name, id_name, query, get_delete_query) {
                         del.removeAttribute("disabled");
                         if ($.parseJSON(response) === false) {
                             $(tr).fadeTo(500, 1.0);
-                            showMessage("Неудача");
-                            showJSON(get_delete_query(table_name, id));
+                            showJSON(get_delete_query(table_name, id), "Неудача");
                             del.style.color = "#BBBBBB";
                         } else {
                             showMessage("Удалено");
@@ -162,7 +159,7 @@ function addToTable(table_name, params) {
     }
     sqlQuery(query, function(response) {
         if ($.parseJSON(response) === false) {
-            showMessage("Неудача");
+            showJSON(response, "Неудача");
         } else {
             showMessage("Добавлено");
             loadRemovableTable(table_name, table_name, splitSelectQueryFromParams(table_name, params));
@@ -195,7 +192,7 @@ function addToUsers(role_name) {
 
     sqlQuery(query, function(response) {
         if ($.parseJSON(response) === false) {
-            showMessage("Неудача");
+            showJSON(response, "Неудача");
         } else {
             showMessage("Добавлено");
             var query = "SELECT surname, users.name AS name, patronymic, login, password, email, phone, users.id AS id ";
@@ -228,10 +225,8 @@ function addLesson() {
     query += "(group_id, subject_id, auditory_id, teacher_id, time) ";
     query += "VALUES ('"+group_id+"', '"+subject_id+"', '"+auditory_id+"', '"+teacher_id+"', '"+datetime+"')";
     sqlQuery(query, function(response) {
-        showMessage(response);
         if ($.parseJSON(response) === false) {
-            showMessage("Неудача");
-            showMessage(query);
+            showJSON(query, "Неудача");
         } else {
             showMessage("Добавлено");
             var select_query = "SELECT groups.name AS groups_name, subjects.name AS subject_name, ";
@@ -1064,10 +1059,12 @@ function onCardsLoad() {
 }
 
 function onAccountsLoad() {
-    $("#select_group").ready(function () {
+    $(document).ready(function () {
         var query = "SELECT id, name FROM groups ORDER BY name";
         sqlQuery(query, function(response) {
-            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)))
+            var $table = $("#student + div table");
+            $table.append("<tr><td colspan='2'/></tr>");
+            $("td:last", $table).append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
         });
     });
 }

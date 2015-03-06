@@ -202,18 +202,26 @@
 	color: #00AA33;
 }
 
-.message {
-	position: absolute;
-	left: 30%;
-	top: 10%;
-	padding: 10px;
-	font-size: 24pt;
-	margin: 0px auto;
-	background-color: white;
-	border-style: solid;
-	border-color: yellow;
-	border-width: 3px;
-	color: red;
+#message_layer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    width: 30%;
+    text-align: center;
+    background-color: white;
+    opacity: 0.9;
+    /*border: "solid", borderWidth: "1px", borderColor: "#ccccff"}*/
+}
+
+#message_layer label {
+    font-weight: bold;
+}
+
+#message_layer p {
+    border: solid 1px #CCCCFF;
+    font-size: small;
+    margin: 0;
 }
 
 .section_header {

@@ -76,7 +76,7 @@ function get_id($row) {
 }
 
 function get_pairs($query) {
-    return transverse(select_query($query));
+    return transverse(sql_query($query));
 }
 
 function get_name($row) {
@@ -101,17 +101,17 @@ function select_student($document) {
 }
 
 function select_group() {
-    $smth = get_id_name_from_groups();
-    $smth->bind_result($id, $name);
-    $values = array();
-    $names = array();
-    while ($smth->fetch()) {
-        $values[] = $id;
-        $names[] = $name;
-    }
-    $smth->close();
-
-    return custom_select("group_id", $values, $names);
+//    $smth = null;//get_id_name_from_groups();
+//    $smth->bind_result($id, $name);
+//    $values = array();
+//    $names = array();
+//    while ($smth->fetch()) {
+//        $values[] = $id;
+//        $names[] = $name;
+//    }
+//    $smth->close();
+//
+//    return custom_select("group_id", $values, $names);
 }
 
 function select_group_in_course($course_number) {
@@ -169,19 +169,19 @@ function select_subject() {
 }
 
 function select_teacher() {
-    $smth = get_id_surname_name_patronymic_from_teachers();
-    $values = array();
-    $names = array();
-    $name = "";
-    $patronymic = "";
-    $smth->bind_result($id, $surname, $name, $patronymic);
-    while ($smth->fetch()) {
-        $values[] = $id;
-        $names[] = "$surname $name $patronymic";
-    }
-    $smth->close();
-
-    return custom_select("teacher_id", $values, $names);
+//    $smth = get_id_surname_name_patronymic_from_teachers();
+//    $values = array();
+//    $names = array();
+//    $name = "";
+//    $patronymic = "";
+//    $smth->bind_result($id, $surname, $name, $patronymic);
+//    while ($smth->fetch()) {
+//        $values[] = $id;
+//        $names[] = "$surname $name $patronymic";
+//    }
+//    $smth->close();
+//
+//    return custom_select("teacher_id", $values, $names);
 }
 
 function input_text($name) {

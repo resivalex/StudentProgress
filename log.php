@@ -4,7 +4,7 @@ include_once("template.php");
 
 $head->appendChild($document->createElement("title", "Лог"));
 
-$table_data = select_query("SELECT time, action FROM log ORDER BY id DESC");
+$table_data = sql_query("SELECT time, action FROM log ORDER BY id DESC");
 $vis = array();
 $i = 0;
 foreach ($table_data as $key => $value2) {

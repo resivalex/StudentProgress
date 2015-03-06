@@ -23,7 +23,7 @@ FROM users
 JOIN roles ON (roles.id = users.role_id)
 WHERE login = ? AND password = ?
 SQL;
-		$result = select_query($query, array("ss", $login, $password));
+		$result = sql_query([$query, $login, $password]);
         if (isset($result["role_name"][0])) {
             $_SESSION["username"] = $login;
             $_SESSION["role"] = $result["role_name"][0];

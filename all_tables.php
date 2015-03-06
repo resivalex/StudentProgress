@@ -15,7 +15,7 @@ foreach ($table_list as $value) {
     $h3 = $document->createElement("h3", $value);
     $h3->setAttribute("align", "center");
     $body->appendChild($h3);
-    $table_data = select_query("SELECT * FROM $value");
+    $table_data = sql_query("SELECT * FROM $value");
     $vis = array();
     $i = 0;
     foreach ($table_data as $key => $value2) {
