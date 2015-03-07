@@ -40,33 +40,28 @@ function showJSON(val, title_text) {
 }
 
 function getTable(text, with_header) {
-    var table = document.createElement("table");
-    var tr = [];
+    var $table = $("<table/>");
     if (with_header) {
-        var htr = document.createElement("tr");
+        var $tr = $("<tr/>");
         for (i in text) {
-            var th = document.createElement("th");
-            th.innerHTML = i;
-            htr.appendChild(th);
+            $("<th/>").text(i).appendTo($tr);
         }
-        table.appendChild(htr);
+        $tr.appendTo($table);
     }
+    var trs = [];
     for (i in text) {
         for (j = 0; j < text[i].length; j++) {
-            tr[j] = document.createElement("tr");
-            table.appendChild(tr[j]);
+            trs[j] = $("<tr/>").appendTo($table);
         }
         if (text[i].length) break;
     }
-    for (i = 0; i < tr.length; i++) {
+    for (i = 0; i < trs.length; i++) {
         for (j in text) {
-            var td = document.createElement("td");
-            td.innerHTML = text[j][i];
-            tr[i].appendChild(td);
+            $("<td/>").text(text[j][i]).appendTo(trs[i]);
         }
     }
-    return table;
 
+    return $table.get(0);
 }
 
 function getTableFromJSON(text) {
@@ -95,7 +90,7 @@ function getDeleteQueryForUser(table_name, id) {
     const tables = ["students", "teachers", "chiefs", "users"/*must be last*/];
     var query = [];
     for (i = 0; i < tables.length; i++) {
-        query.push("DELETE FROM "+tables[i]+" WHERE id = "+id);
+        query.push("DELETE FROM "+tables[i]+" WHERE id = ?", id);
     }
     return query;
 }
@@ -108,7 +103,7 @@ function loadRemovableTable(table_name, id_name, query, get_delete_query) {
     sqlQuery(query, function(response) {
         var table = getTableFromJSON(response);
         table.className = "custom_table";
-        $(table).children().each(function(index, element) {
+        $("tr", table).each(function(index, element) {
             $(":last", element).each(function(index, element) {
                 var id = element.innerHTML;
                 element.innerHTML = "";
@@ -169,23 +164,27 @@ function addToTable(table_name, params) {
 
 // добавляет пользователя на странице accounts.php
 function addToUsers(role_name) {
-    var text = "INSERT INTO users ";
-    text += "(name, surname, patronymic, login, password, role_id, email, phone) ";
-    text += "VALUES (?, ?, ?, ?, ?, (SELECT id FROM roles WHERE name = ?), ?, ?)";
-    var query = [text];
     var block = $("." + role_name);
-    query.push($("input[name='name']", block).val());
-    query.push($("input[name='surname']", block).val());
-    query.push($("input[name='patronymic']", block).val());
-    query.push($("input[name='login']", block).val());
-    query.push($("input[name='password']", block).val());
-    query.push(role_name);
-    query.push($("input[name='email']", block).val());
-    query.push($("input[name='phone']", block).val());
-    var tab = {"student": "students", "teacher": "teachers", "chief": "chiefs"};
+    var tab = {student: "students", teacher: "teachers", chief: "chiefs"};
+    var query = [
+        "INSERT INTO users " +
+        "(name, surname, patronymic, login, password, role_id, email, phone) " +
+        "VALUES (?, ?, ?, ?, ?, (SELECT id FROM roles WHERE name = ?), ?, ?)",
+
+        $("input[name='name']", block).val(),
+        $("input[name='surname']", block).val(),
+        $("input[name='patronymic']", block).val(),
+        $("input[name='login']", block).val(),
+        $("input[name='password']", block).val(),
+        role_name,
+        $("input[name='email']", block).val(),
+        $("input[name='phone']", block).val()
+    ];
     if (role_name == "student") {
-        query.push("INSERT INTO students (id, group_id) VALUES ((SELECT max(id) FROM users), ?)");
-        query.push($("#group_id").data("value"));
+        query.push(
+            "INSERT INTO students (id, group_id) VALUES ((SELECT max(id) FROM users), ?)",
+            $("#group_id").data("value")
+        );
     } else {
         query.push("INSERT INTO " + tab[role_name] + " (id) VALUES ((SELECT max(id) FROM users))");
     }
@@ -195,10 +194,13 @@ function addToUsers(role_name) {
             showJSON(response, "Неудача");
         } else {
             showMessage("Добавлено");
-            var query = "SELECT surname, users.name AS name, patronymic, login, password, email, phone, users.id AS id ";
-            query += "FROM users ";
-            query += "JOIN roles ON users.role_id = roles.id ";
-            query += "WHERE roles.name = '" + role_name + "'";
+            var query = [
+                "SELECT surname, users.name AS name, patronymic, login, password, email, phone, users.id AS id " +
+                "FROM users " +
+                "JOIN roles ON users.role_id = roles.id " +
+                "WHERE roles.name = ?",
+                role_name
+            ];
             loadRemovableTable('users', role_name, query, getDeleteQueryForUser);
         }
     });
@@ -217,26 +219,27 @@ function addLesson() {
     var auditory_id = $("#auditory_id").data("value");
     var teacher_id = $("#teacher_id").data("value");
     var month = $("#month").data("value");
-    var day = $("input[type='radio']").filter("[name='day']").val();
+    var day = $("input[type='radio'][name='day']:checked").val();
     var hour = $("#hour").data("value");
     var minute = $("#minute").data("value");
-    var datetime = "2013-" + month + "-" + day + " " + hour + ":" + minute + ":00";
-    var query = "INSERT INTO lessons ";
-    query += "(group_id, subject_id, auditory_id, teacher_id, time) ";
-    query += "VALUES ('"+group_id+"', '"+subject_id+"', '"+auditory_id+"', '"+teacher_id+"', '"+datetime+"')";
-    sqlQuery(query, function(response) {
+    var datetime = "2013-".concat(month, "-", day, " ", hour, ":", minute, ":00");
+    var text =
+        "INSERT INTO lessons " +
+        "(group_id, subject_id, auditory_id, teacher_id, time) " +
+        "VALUES (?, ?, ?, ?, ?)";
+    sqlQuery([text, group_id, subject_id, auditory_id, teacher_id, datetime], function(response) {
         if ($.parseJSON(response) === false) {
             showJSON(query, "Неудача");
         } else {
             showMessage("Добавлено");
-            var select_query = "SELECT groups.name AS groups_name, subjects.name AS subject_name, ";
-            select_query += "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id ";
-            select_query += "FROM lessons ";
-            select_query += "JOIN groups ON (group_id = groups.id) ";
-            select_query += "JOIN subjects ON (subject_id = subjects.id) ";
-            select_query += "JOIN auditories ON (auditory_id = auditories.id) ";
-            select_query += "JOIN users ON (teacher_id = users.id)";
-
+            var select_query =
+                "SELECT groups.name AS groups_name, subjects.name AS subject_name, " +
+                "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id " +
+                "FROM lessons " +
+                "JOIN groups ON (group_id = groups.id) " +
+                "JOIN subjects ON (subject_id = subjects.id) " +
+                "JOIN auditories ON (auditory_id = auditories.id) " +
+                "JOIN users ON (teacher_id = users.id)";
             loadRemovableTable('lessons', 'schedule', select_query);
         }
     });
@@ -314,24 +317,28 @@ function onMarksForTeacherLoad() {
 
     function loadMark() {
         removeMark();
-        query = "SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks ";
-        query += "JOIN mark_history ON marks.id = mark_history.mark_id ";
-        query += "JOIN mark_types ON mark_history.mark_type_id = mark_types.id ";
-        query += "JOIN students ON marks.student_id = students.id ";
-        query += "JOIN lessons ON marks.lesson_id = lessons.id ";
-        query += "WHERE students.id = "+$("#student_id").data("value")+" AND ";
-        query += "lessons.id = "+$("#lesson_id").data("value")+" ORDER by mark_history.id DESC";
-        sqlQuery(query, function(response) {
+        var text =
+            "SELECT mark_history.id, mark_history.time, mark_types.name, mark_history.comment FROM marks " +
+            "JOIN mark_history ON marks.id = mark_history.mark_id " +
+            "JOIN mark_types ON mark_history.mark_type_id = mark_types.id " +
+            "JOIN students ON marks.student_id = students.id " +
+            "JOIN lessons ON marks.lesson_id = lessons.id " +
+            "WHERE students.id = ? AND lessons.id = ? " +
+            "ORDER by mark_history.id DESC";
+        var student_id = $("#student_id").data("value");
+        var lesson_id = $("#lesson_id").data("value");
+        sqlQuery([text, student_id, lesson_id], function(response) {
             if ($("#student_id").data("value") != undefined) {
                 if ($.parseJSON(response).id.length == 0) {
                     response = "{\"message\": [\"Отметок нет!\"]}";
                 }
-                response = response.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 removeMark();
                 var table = getTableFromJSON(response);
                 table.className = "custom_table";
                 $("#mark").append(table);
-                query = "SELECT mark_types.id, mark_types.short_name FROM mark_types ORDER BY mark_types.short_name";
+                var query =
+                    "SELECT mark_types.id, mark_types.short_name " +
+                    "FROM mark_types ORDER BY mark_types.short_name";
                 sqlQuery(query, function (response) {
                     var select_mark = selectTool("Отметка", "mark_type_id", $.parseJSON(response));
                     var mark_table = document.createElement("table");
@@ -365,16 +372,18 @@ function onMarksForTeacherLoad() {
                         var lesson_id = $("#lesson_id").data("value");
                         var mark_type_id = $("#mark_type_id").data("value");
                         var comment = $("#comment_area").val();
-                        var text = "INSERT INTO marks (student_id, lesson_id) ";
-                        text += "SELECT student_id, lesson_id FROM (SELECT ? AS student_id, ? AS lesson_id) AS need ";
-                        text += "LEFT OUTER JOIN ";
-                        text += "(SELECT student_id, lesson_id FROM marks WHERE ";
-                        text += "student_id = ? AND lesson_id = ?) AS fact ";
-                        text += "USING (student_id, lesson_id) WHERE fact.student_id IS NULL ";
+                        var text =
+                            "INSERT INTO marks (student_id, lesson_id) " +
+                            "SELECT student_id, lesson_id FROM (SELECT ? AS student_id, ? AS lesson_id) AS need " +
+                            "LEFT OUTER JOIN " +
+                            "(SELECT student_id, lesson_id FROM marks WHERE " +
+                            "student_id = ? AND lesson_id = ?) AS fact " +
+                            "USING (student_id, lesson_id) WHERE fact.student_id IS NULL ";
                         var query = [text, student_id, lesson_id, student_id, lesson_id];
-                        text = "INSERT INTO mark_history (mark_id, mark_type_id, time, comment) ";
-                        text += "VALUES ((SELECT id FROM marks WHERE student_id = ? AND lesson_id = ?), "
-                        text += "?, CURRENT_TIMESTAMP, ?) ";
+                        text =
+                            "INSERT INTO mark_history (mark_id, mark_type_id, time, comment) " +
+                            "VALUES ((SELECT id FROM marks WHERE student_id = ? AND lesson_id = ?), " +
+                            "?, CURRENT_TIMESTAMP, ?) ";
                         query.push(text, student_id, lesson_id, mark_type_id, comment);
                         sqlQuery(query, function(response) {
                             loadMark();
@@ -388,10 +397,13 @@ function onMarksForTeacherLoad() {
 
     function loadStudentList(group_id) {
         removeStudentList();
-        query = "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM lessons ";
-        query += "JOIN students ON lessons.group_id = students.group_id ";
-        query += "JOIN users ON (students.id = users.id) ";
-        query += "WHERE lessons.id = "+$("#lesson_id").data("value")+" ORDER BY name";
+        var query = [
+            "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM lessons " +
+            "JOIN students ON lessons.group_id = students.group_id " +
+            "JOIN users ON (students.id = users.id) " +
+            "WHERE lessons.id = ? ORDER BY name",
+            $("#lesson_id").data("value")
+        ];
         sqlQuery(query, function(response) {
             removeStudentList();
             var select_student = selectTool("Студенты", "student_id", $.parseJSON(response));
@@ -402,11 +414,15 @@ function onMarksForTeacherLoad() {
 
     function loadLessons(group_id) {
         removeAuditoryTime();
-        query = "SELECT lessons.id AS id, concat(name, ' | ', time) AS name FROM lessons ";
-        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
-        query += "WHERE lessons.teacher_id = "+$("#teacher_id").data("value")+" AND ";
-        query += "lessons.subject_id = "+$("#subject_id").data("value")+" AND ";
-        query += "lessons.group_id = "+group_id+" ORDER BY name";
+        var query = [
+            "SELECT lessons.id AS id, concat(name, ' | ', time) AS name FROM lessons " +
+            "JOIN auditories ON (lessons.auditory_id = auditories.id) " +
+            "WHERE lessons.teacher_id = ? AND lessons.subject_id = ? AND lessons.group_id = ? " +
+            "ORDER BY name",
+            $("#teacher_id").data("value"),
+            $("#subject_id").data("value"),
+            group_id
+        ];
         sqlQuery(query, function(response) {
             removeAuditoryTime();
             $("#select_auditory_time").append(slidedSelectTool("Аудитория | Время", "lesson_id", $.parseJSON(response)));
@@ -420,9 +436,13 @@ function onMarksForTeacherLoad() {
 
     function loadGroups(subject_id) {
         removeGroups();
-        query = "SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) ";
-        query += "WHERE lessons.subject_id = "+subject_id+" AND ";
-        query += "lessons.teacher_id = "+$("#teacher_id").data("value")+" ORDER BY name";
+        var query = [
+            "SELECT DISTINCT groups.id, groups.name FROM lessons JOIN groups ON (lessons.group_id = groups.id) " +
+            "WHERE lessons.subject_id = ? AND lessons.teacher_id = ? " +
+            "ORDER BY name",
+            subject_id,
+            $("#teacher_id").data("value")
+        ];
         sqlQuery(query, function(response) {
             removeGroups();
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)))
@@ -436,8 +456,12 @@ function onMarksForTeacherLoad() {
 
     function loadSubjects(teacher_id) {
         removeSubjects();
-        query = "SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects ON (lessons.subject_id = subjects.id) ";
-        query += "WHERE lessons.teacher_id = "+teacher_id+" ORDER BY name";
+        var query = [
+            "SELECT DISTINCT subjects.id, subjects.name FROM lessons JOIN subjects " +
+            "ON (lessons.subject_id = subjects.id) " +
+            "WHERE lessons.teacher_id = ? ORDER BY name",
+            teacher_id
+        ];
         sqlQuery(query, function(response) {
             removeSubjects();
             $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
@@ -450,12 +474,13 @@ function onMarksForTeacherLoad() {
     }
 
     function loadTeachers() {
-        var query = "SELECT DISTINCT teachers.id, ";
-        query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name ";
-        query += "FROM teachers ";
-        query += "JOIN users ON teachers.id = users.id ";
-        query += "JOIN lessons ON teachers.id = lessons.teacher_id ORDER BY teacher_name";
-
+        var query = 
+            "SELECT DISTINCT teachers.id, " +
+            "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name " +
+            "FROM teachers " +
+            "JOIN users ON teachers.id = users.id " +
+            "JOIN lessons ON teachers.id = lessons.teacher_id " +
+            "ORDER BY teacher_name";
         sqlQuery(query, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
             $("#teacher_id").ready(function() {
@@ -466,7 +491,7 @@ function onMarksForTeacherLoad() {
         });
     }
 
-    $("body").ready(function() {
+    $(document).ready(function() {
         loadTeachers();
     });
 }
@@ -501,9 +526,10 @@ function slidedSelectTool(title, id, params) {
 }
 
 function onEditScheduleLoad() {
-    $("body").ready(function() {
-        var query = "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) ";
-        query += "FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
+    $(document).ready(function() {
+        var query = 
+            "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) " +
+            "FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
         sqlQuery(query, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
         });
@@ -564,20 +590,96 @@ function sortableTable(params) {
     return table;
 }
 
+function allProperties(val) {
+    var res = [];
+    for (i in val) {
+        res.push(i);
+    }
+    return res;
+}
+
+function groupObjectsByProperty(objects, prop) {
+    var res = Object();
+    for (i = 0; i < objects.length; i++) {
+        var object = objects[i];
+        var key, val = {};
+        for (var j in object) {
+            if (j == prop) {
+                key = object[j];
+            } else {
+                val[j] = object[j];
+            }
+        }
+        if (!res[key]) res[key] = [];
+        res[key].push(val);
+    }
+    return res;
+}
+
 function onScheduleForTeacherLoad() {
+    function newView() {
+        var content = $("#schedule_table").data("content");
+        content["date"] = [];
+        for (i = 0; i < content["lesson_time"].length; i++) {
+            var time = content["lesson_time"][i];
+            content["date"].push(time.substr(0, 10));
+            content["lesson_time"][i] = time.substr(11);
+        }
+        content = arraysToObjects(content);
+        var dates = Object();
+        for (i = 0; i < content.length; i++) {
+            dates[content[i]["date"]] = true;
+        }
+        dates = allProperties(dates).sort();
+        content = groupObjectsByProperty(content, "subject_name");
+        var subjects = allProperties(content).sort();
+        for (var i in content) {
+            content[i] = groupObjectsByProperty(content[i], "date");
+        }
+        var $table = $("<table/>").addClass("custom_table");
+        var $tr = $("<tr><td/></tr>").appendTo($table);
+        for (i = 0; i < dates.length; i++) {
+            $td = $("<td/>").append($("<label/>").text(dates[i]))
+                .css("width", "10px").appendTo($tr);
+        }
+        for (i = 0; i < subjects.length; i++) {
+            var subject = subjects[i];
+            $tr = $("<tr/>").appendTo($table);
+            $("<td/>").text(subject).appendTo($tr);
+            for (j = 0; j < dates.length; j++) {
+                var date = dates[j];
+                var $td = $("<td/>").appendTo($tr);
+                if (content[subject][date] != undefined) {
+                    var info = content[subject][date];
+                    $td.text(info.length).data("content", info).hover(function () {
+                        $("#info").remove();
+                        var $info = $(getTable(objectsToArrays($(this).data("content")), true)).addClass("custom_table")
+                            .css("position", "absolute").attr("id", "info").appendTo($("#schedule_table"));
+                        $info.css({left: $(this).offset().left + $(this).width(), top: $(this).offset().top + $(this).height()});
+                    }, function () {
+                        $("#info").remove();
+                    });
+                }
+            }
+        }
+        return $table;
+    }
+
     function loadSchedule() {
         $("#schedule_table").children().remove();
-        query = "SELECT subjects.name AS subject_name, groups.name AS group_name, ";
-        query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
-        query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
-        query += "JOIN groups ON (lessons.group_id = groups.id) ";
-        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
-        query += "WHERE teacher_id = "+$("#teacher_id").data("value")+" ";
-        query += "ORDER BY subjects.name, groups.name, auditories.name, lessons.time";
-
+        var query = [
+            "SELECT subjects.name AS subject_name, groups.name AS group_name, " +
+            "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons " +
+            "JOIN subjects ON (lessons.subject_id = subjects.id) " +
+            "JOIN groups ON (lessons.group_id = groups.id) " +
+            "JOIN auditories ON (lessons.auditory_id = auditories.id) " +
+            "WHERE teacher_id = ? ",
+            $("#teacher_id").data("value")
+        ];
         sqlQuery(query, function(response) {
             var $shedule_table = $("#schedule_table");
             $shedule_table.children().remove();
+            $shedule_table.data("content", $.parseJSON(response));
             var table = sortableTable($.parseJSON(response));
             table.className = "custom_table";
             var ths = $("input[type='button']", table).get();
@@ -586,15 +688,17 @@ function onScheduleForTeacherLoad() {
                 ths[i].value = titles[i];
             }
             $shedule_table.append(table);
+            $shedule_table.append(newView());
         });
     }
 
-    $("body").ready(function () {
-        query = "SELECT DISTINCT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name ";
-        query += "FROM teachers ";
-        query += "JOIN users ON teachers.id = users.id ";
-        query += "JOIN lessons ON teachers.id = lessons.teacher_id ";
-        query += "ORDER BY name";
+    $(document).ready(function () {
+        var query =
+            "SELECT DISTINCT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name " +
+            "FROM teachers " +
+            "JOIN users ON teachers.id = users.id " +
+            "JOIN lessons ON teachers.id = lessons.teacher_id " +
+            "ORDER BY name";
         sqlQuery(query, function(response) {
             $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
             $("#teacher_id").ready(loadSchedule).on("click", ".item", loadSchedule);
@@ -605,17 +709,19 @@ function onScheduleForTeacherLoad() {
 function onScheduleForStudentLoad() {
     function loadSchedule() {
         $("#schedule_table").children().remove();
-        query = "SELECT subjects.name AS subject_name, ";
-        query += "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, ";
-        query += "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons ";
-        query += "JOIN subjects ON (lessons.subject_id = subjects.id) ";
-        query += "JOIN teachers ON (lessons.teacher_id = teachers.id) ";
-        query += "JOIN users ON (teachers.id = users.id) ";
-        query += "JOIN groups ON (lessons.group_id = groups.id) ";
-        query += "JOIN auditories ON (lessons.auditory_id = auditories.id) ";
-        query += "WHERE groups.id = "+$("#group_id").data("value")+" ";
-        query += "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time";
-
+        var query = [
+            "SELECT subjects.name AS subject_name, " +
+            "concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, " +
+            "auditories.name AS auditory_name, lessons.time AS lesson_time FROM lessons " +
+            "JOIN subjects ON (lessons.subject_id = subjects.id) " +
+            "JOIN teachers ON (lessons.teacher_id = teachers.id) " +
+            "JOIN users ON (teachers.id = users.id) " +
+            "JOIN groups ON (lessons.group_id = groups.id) " +
+            "JOIN auditories ON (lessons.auditory_id = auditories.id) " +
+            "WHERE groups.id = ? " +
+            "ORDER BY subjects.name, teacher_name, auditories.name, lessons.time",
+            $("#group_id").data("value")
+        ];
         sqlQuery(query, function(response) {
             var $schedule_table = $("#schedule_table");
             $schedule_table.children().remove();
@@ -630,10 +736,11 @@ function onScheduleForStudentLoad() {
         });
     }
 
-    $("body").ready(function () {
-        query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
-        query += "JOIN lessons ON (groups.id = lessons.group_id) ";
-        query += "ORDER BY groups.name";
+    $(document).ready(function () {
+        var query = 
+            "SELECT DISTINCT groups.id, groups.name FROM groups " +
+            "JOIN lessons ON (groups.id = lessons.group_id) " +
+            "ORDER BY groups.name";
         sqlQuery(query, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
             $("#group_id").ready(loadSchedule).on("click", ".item", loadSchedule);
@@ -760,7 +867,7 @@ function csvDownloadForm() {
     return form;
 }
 
-function setOfArraysToArrayOfSets(val) {
+function arraysToObjects(val) {
     var res, first = true;
     for (i in val) {
         if (first) {
@@ -777,28 +884,41 @@ function setOfArraysToArrayOfSets(val) {
     return res;
 }
 
+function objectsToArrays(val) {
+    var res = [];
+    for (i = 0; i < val.length; i++) {
+        for (var j in val[i]) {
+            if (res[j] == undefined) res[j] = [];
+            res[j].push(val[i][j]);
+        }
+    }
+    return res;
+}
+
 function onMarksForStudentLoad() {
     function loadMarks() {
         $("#marks_table").children().remove();
-        query = "SELECT subjects.name AS subject_name, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, mark_history.time, ";
-        query += "mark_types.short_name, mark_history.comment FROM mark_history ";
-        query += "JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) ";
-        query += "AS last_marks ON mark_history.id = last_marks.id ";
-        query += "JOIN mark_types ON mark_history.mark_type_id = mark_types.id ";
-        query += "JOIN marks ON mark_history.mark_id = marks.id ";
-        query += "JOIN students ON marks.student_id = students.id ";
-        query += "JOIN lessons ON marks.lesson_id = lessons.id ";
-        query += "JOIN subjects ON lessons.subject_id = subjects.id ";
-        query += "JOIN teachers ON lessons.teacher_id = teachers.id ";
-        query += "JOIN users ON teachers.id = users.id ";
-        query += "WHERE students.id = "+$("#student_id").data("value")+" ";
-        query += "ORDER BY mark_history.time";
-
+        var query = [
+            "SELECT subjects.name AS subject_name, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS teacher_name, mark_history.time, " +
+            "mark_types.short_name, mark_history.comment FROM mark_history " +
+            "JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) " +
+            "AS last_marks ON mark_history.id = last_marks.id " +
+            "JOIN mark_types ON mark_history.mark_type_id = mark_types.id " +
+            "JOIN marks ON mark_history.mark_id = marks.id " +
+            "JOIN students ON marks.student_id = students.id " +
+            "JOIN lessons ON marks.lesson_id = lessons.id " +
+            "JOIN subjects ON lessons.subject_id = subjects.id " +
+            "JOIN teachers ON lessons.teacher_id = teachers.id " +
+            "JOIN users ON teachers.id = users.id " +
+            "WHERE students.id = ? " +
+            "ORDER BY mark_history.time",
+            $("#student_id").data("value")
+        ];
         sqlQuery(query, function(response) {
             showMessage(response);
             var $marks_talbe = $("#marks_table");
             $marks_talbe.children().remove();
-            var data = setOfArraysToArrayOfSets($.parseJSON(response));
+            var data = arraysToObjects($.parseJSON(response));
             data.sort(function(a, b) {a = a.time; b = b.time; return (a < b? -1 : (a > b? +1 : 0));});
             var tab = Object();
             var subject_names = Object(), times = Object();
@@ -860,10 +980,13 @@ function onMarksForStudentLoad() {
     function loadStudents(group_id) {
         $("#select_student").children().remove();
         $("#marks_table").children().remove();
-        query = "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM students ";
-        query += "JOIN users ON students.id = users.id ";
-        query += "JOIN groups ON students.group_id = groups.id ";
-        query += "WHERE groups.id = "+$("#group_id").data("value")+" ORDER BY name";
+        var query = [
+            "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM students " +
+            "JOIN users ON students.id = users.id " +
+            "JOIN groups ON students.group_id = groups.id " +
+            "WHERE groups.id = ? ORDER BY name",
+            $("#group_id").data("value")
+        ];    
         sqlQuery(query, function(response) {
             var $select_student = $("#select_student");
             $select_student.children().remove();
@@ -873,10 +996,11 @@ function onMarksForStudentLoad() {
         });
     }
 
-    $("body").ready(function () {
-        query = "SELECT DISTINCT groups.id, groups.name FROM groups ";
-        query += "JOIN students ON (groups.id = students.group_id) ";
-        query += "ORDER BY groups.name";
+    $(document).ready(function () {
+        var query = 
+            "SELECT DISTINCT groups.id, groups.name FROM groups " +
+            "JOIN students ON (groups.id = students.group_id) " +
+            "ORDER BY groups.name";
         sqlQuery(query, function (response) {
             $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
             $("#group_id").ready(loadStudents).on("click", ".item", loadStudents);
@@ -1054,7 +1178,6 @@ function onCardsLoad() {
         $(".game").on("click", ".simple", onClick);
 
         setInterval(autoPlay, 200);
-
     });
 }
 
