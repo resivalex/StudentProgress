@@ -11,7 +11,7 @@ SELECT COUNT(*) AS mark_count
 FROM marks
 SQL;
 
-$result = select_query($query);
+$result = sql_query($query);
 
 $result['mark_count'][0] .= ' (общее количество отметок)';
 

@@ -33,7 +33,8 @@ function add_user_form($header_text, $role)
     $result->appendChild($header);
 
     $result->appendChild(user_list($role));
-    $form = formfs("accounts.php");
+    $add_user_div = fs("div");
+    $add_user_div->setAttribute("style", "width: 300px;margin:0 auto;");
 
     $input_values = [["Фамилия", "surname"], ["Имя", "name"], ["Отчество", "patronymic"],
         ["Логин", "login"], ["Пароль", "password"], ["Эл. почта", "email"], ["Телефон", "phone"]];
@@ -43,27 +44,22 @@ function add_user_form($header_text, $role)
         $input = input_text($value[1]);
         $items[] = [$label, $input];
     }
-    $submit = fs("input");
-    $submit->setAttribute("type", "button");
-    $submit->setAttribute("value", "Добавить пользователя");
-    $submit->setAttribute("onclick", "addToUsers('$role')");
-    $submit_div = fs("div");
-    $submit_div->appendChild(custom_grid_table($items));
+    $button = fs("button", "Добавить пользователя");
+    $button->setAttribute("type", "button");
+    $button->setAttribute("onclick", "addToUsers('$role')");
+    $button_div = fs("div");
+    $button_div->appendChild(custom_grid_table($items));
     if ($role == "student") {
         $select_group = fs("div");
         $select_group->setAttribute("id", "select_group");
-        $submit_div->appendChild($select_group);
+        $button_div->appendChild($select_group);
     }
-    $submit_div->appendChild($submit);
-    $submit_div->setAttribute("style", "text-align:center");
-    $form->appendChild($submit_div);
-    $form->appendChild(hidden("role", $role));
+    $button_div->appendChild($button);
+    $button_div->setAttribute("style", "text-align:center");
+    $add_user_div->appendChild($button_div);
 
-    $form_div = fs("div");
-    $form_div->appendChild($form);
-    $form_div->setAttribute("style", "width: 300px;margin:0 auto;");
 
-    $result->appendChild($form_div);
+    $result->appendChild($add_user_div);
 
     return $result;
 }

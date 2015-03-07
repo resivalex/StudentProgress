@@ -24,9 +24,6 @@ function add_info_form($header, $table_name, $params) {
     $ajax_div->appendChild($script);
     $result->appendChild($ajax_div);
 
-    // форма для добавления записи
-    $form = formfs("edit_tables.php");
-
     // создаём поля ввода
     $items = array();
     foreach ($params as $param) {
@@ -35,19 +32,16 @@ function add_info_form($header, $table_name, $params) {
         $input->setAttribute("id", $table_name."_".$param[1]);
         $items[] = [$label, $input];
     }
-    $submit_div = fs("div");
-    $submit_div->appendChild(custom_grid_table($items));
-    $submit_div->setAttribute("style", "text-align:center");
-    $submit = fs("input");
-    $submit->setAttribute("type", "button");
-    $submit->setAttribute("value", "Добавить");
-    $submit->setAttribute("style", "display:inline");
-    $submit->setAttribute("onclick", "addToTable('$table_name', ".json_encode($fields).")");
-    $submit_div->appendChild($submit);
-    $form->appendChild($submit_div);
-    $form->appendChild(hidden("table_name", $table_name));
+    $add_record_div = fs("div");
+    $add_record_div->appendChild(custom_grid_table($items));
+    $add_record_div->setAttribute("style", "text-align:center");
+    $button = fs("button", "Добавить");
+    $button->setAttribute("type", "button");
+    $button->setAttribute("style", "display:inline");
+    $button->setAttribute("onclick", "addToTable('$table_name', ".json_encode($fields).")");
+    $add_record_div->appendChild($button);
 
-    $result->appendChild($form);
+    $result->appendChild($add_record_div);
 
     return $result;
 }
