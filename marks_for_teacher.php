@@ -4,6 +4,7 @@ include_once("template.php");
 
 $title = $document->createElement("title", "Отметки");
 $head->appendChild($title);
+$head->appendChild(scriptfs("marks_for_teacher.js"));
 
 // фильтр для занития
 function lesson_filter($id) {

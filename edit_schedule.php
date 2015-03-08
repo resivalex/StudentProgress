@@ -3,6 +3,7 @@
 include_once("template.php");
 
 $head->appendChild(fs("title", "Редактирование расписания"));
+$head->appendChild(scriptfs("edit_schedule.js"));
 
 $query =
 <<<SQL
@@ -51,27 +52,17 @@ $month_pairs = [
     [9, "сентябрь"], [10, "октябрь"], [11, "ноябрь"], [12, "декабрь"]
 ];
 
-$select_month = fs("div");
-$select_month->setAttribute("id", "select_month");
-$select_month->setAttribute("style", "width: 150px; margin-right: 10px;");
-$select_div->appendChild($select_month);
-
-
 $select_hour = fs("div");
 $select_hour->setAttribute("id", "select_hour");
-//$select_month->setAttribute("style", "width: 150px; margin-right: 10px;");
-$select_div->appendChild($select_hour);
 
 $select_minute = fs("div");
 $select_minute->setAttribute("id", "select_minute");
-//$select_month->setAttribute("style", "width: 150px; margin-right: 10px;");
-$select_div->appendChild($select_minute);
 
 
 $day_select_tool = fs("div");
 $day_select_tool->setAttribute("id", "day_select_tool");
 $day_select_tool->setAttribute("class", "calendar-toolbar");
-$items = [[$select_month, $day_select_tool, $select_hour, $select_minute]];
+$items = [[$day_select_tool, $select_hour, $select_minute]];
 $time_table = simple_grid_table($items);
 $time_table->setAttribute("class", "align_td_to_top");
 $time_table->setAttribute("style", "margin-left: auto; margin-right: auto;");

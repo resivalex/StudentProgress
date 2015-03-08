@@ -3,6 +3,7 @@
 include_once("template.php");
 
 $head->appendChild(fs("title", "Расписание для преподавателя"));
+$head->appendChild(scriptfs("schedule_for_teacher.js"));
 
 function id_div($id) {
     $div = fs("div");

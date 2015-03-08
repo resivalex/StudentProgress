@@ -4,21 +4,9 @@ include_once("template.php");
 include_once("funs.php");
 
 function user_list($role) {
-    $query =
-<<<"SQL"
-SELECT surname, users.name AS name, patronymic, login, password, email, phone, users.id AS id
-FROM users
-JOIN roles ON users.role_id = roles.id
-WHERE roles.name = "$role"
-SQL;
-
-    $ajax_div = fs("div");
-    $ajax_div->setAttribute("id", $role);
-    $query = str_replace("\n", " ", $query);
-    $query = str_replace("\r", " ", $query);
-    $ajax_div->appendChild(fs("script", "loadRemovableTable('users', '$role', '$query', getDeleteQueryForUser);"));
-
-    return $ajax_div;
+    $div = divfs($role);
+    $div->setAttribute("class", "ajax_div");
+    return $div;
 }
 
 function add_user_form($header_text, $role)
@@ -46,6 +34,8 @@ function add_user_form($header_text, $role)
     }
     $button = fs("button", "Добавить пользователя");
     $button->setAttribute("type", "button");
+    $button->setAttribute("class", "add_button");
+    $button->setAttribute("id", "button_for_".$role);
     $button->setAttribute("onclick", "addToUsers('$role')");
     $button_div = fs("div");
     $button_div->appendChild(custom_grid_table($items));
@@ -66,8 +56,8 @@ function add_user_form($header_text, $role)
 
 $title = new DOMElement("title", "Учётные записи");
 $head->appendChild($title);
+$head->appendChild(scriptfs("accounts.js"));
 
-$body->appendChild(fs("script", "onAccountsLoad()"));
 $body->appendChild(add_user_form("Студенты", "student"));
 $body->appendChild(add_user_form("Преподаватели", "teacher"));
 $body->appendChild(add_user_form("Начальники", "chief"));

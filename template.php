@@ -55,28 +55,16 @@ $icon_link->setAttribute("type", "image/png");
 $icon_link->setAttribute("href", "favicon.png");
 $head->appendChild($icon_link);
 
-$script = $document->createElement("script");
-$script->setAttribute("type", "text/javascript");
-$script->setAttribute("src", "jquery-2.1.3.js");
-$script->setAttribute("charset", "UTF-8");
-$head->appendChild($script);
+$head->appendChild(scriptfs("jquery-2.1.3.js"));
 
 // jquery ui script
-$script = $document->createElement("script");
-$script->setAttribute("type", "text/javascript");
-$script->setAttribute("src", "jquery-ui-1.11.3.custom/jquery-ui.js");
-$script->setAttribute("charset", "UTF-8");
-$head->appendChild($script);
+$head->appendChild(scriptfs("jquery-ui-1.11.3.custom/jquery-ui.js"));
 
 // my script
-$script = $document->createElement("script");
-$script->setAttribute("type", "text/javascript");
-$script->setAttribute("src", "script.js");
-$script->setAttribute("charset", "UTF-8");
-$head->appendChild($script);
+$head->appendChild(scriptfs("script.js"));
 
 if (isset($_SESSION["username"])) {
-    $body->appendChild(fs("script", "$('body').append(navigationMenu())"));
+    $body->appendChild(divfs("navigation"));
 }
 
 function out_page() {

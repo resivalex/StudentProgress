@@ -34,6 +34,8 @@ SQL;
 }
 	
 $head->appendChild($document->createElement("title", "Авторизация"));
+$head->appendChild(scriptfs("login.js"));
+
 $form = post_form($document, "login.php");
 $body->appendChild($form);
 

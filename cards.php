@@ -5,6 +5,7 @@ include_once("funs.php");
 define("N", "8");
 
 $head->appendChild($document->createElement("title", "Карточки"));
+$head->appendChild(scriptfs("cards.js"));
 
 $body->appendChild(fs("script", "onCardsLoad()"));
 
@@ -32,6 +33,7 @@ $table = custom_grid_table($content);
 $table->setAttribute("class", "game");
 $body->appendChild($table);
 
+$bot_div = fs("div");
 $bot_mode = fs("input");
 $bot_mode->setAttribute("type", "checkbox");
 $bot_mode->setAttribute("id", "bot_mode");
@@ -39,5 +41,9 @@ $body->appendChild($bot_mode);
 $bot_label = fs("label", "Пусть пока компьютер поиграет сам");
 $bot_label->setAttribute("for", "bot_mode");
 $body->appendChild($bot_label);
+$bot_div->appendChild($bot_mode);
+$bot_div->appendChild($bot_label);
+$bot_div->setAttribute("style", "margin: 0 auto; display: table;");
+$body->appendChild($bot_div);
 
 out_page();

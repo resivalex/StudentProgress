@@ -3,6 +3,7 @@
 include_once("template.php");
 
 $head->appendChild(fs("title", "Отметки студента"));
+$head->appendChild(scriptfs("marks_for_student.js"));
 
 function select_div($id) {
     $div = fs("div");

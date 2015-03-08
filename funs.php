@@ -105,3 +105,17 @@ function custom_grid_table($items, $cell_style = "") {
     $result->setAttribute("class", "custom_table");
     return $result;
 }
+
+function scriptfs($path) {
+    $script = fs("script");
+    $script->setAttribute("type", "text/javascript");
+    $script->setAttribute("src", $path);
+    $script->setAttribute("charset", "UTF-8");
+    return $script;
+}
+
+function divfs($id) {
+    $div = fs("div");
+    $div->setAttribute("id", $id);
+    return $div;
+}
