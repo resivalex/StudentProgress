@@ -1,4 +1,6 @@
 
+$(document).ready(onScheduleForStudentLoad);
+
 function onScheduleForStudentLoad() {
     function loadSchedule() {
         $("#schedule_table").children().remove();

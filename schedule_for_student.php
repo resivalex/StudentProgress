@@ -12,9 +12,6 @@ function select_div($id) {
     return $div;
 }
 
-// скрипт
-$body->appendChild(fs("script", "onScheduleForStudentLoad()"));
-
 // выбор студента
 $body->appendChild(select_div("select_group"));
 $body->appendChild(brfs());

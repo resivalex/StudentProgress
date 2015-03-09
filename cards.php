@@ -7,8 +7,6 @@ define("N", "8");
 $head->appendChild($document->createElement("title", "Карточки"));
 $head->appendChild(scriptfs("cards.js"));
 
-$body->appendChild(fs("script", "onCardsLoad()"));
-
 $val = array();
 for ($i = 0; $i < N * N; $i++) {
     $val[] = floor($i / 2 + 1);

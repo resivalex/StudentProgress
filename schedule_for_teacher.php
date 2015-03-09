@@ -11,9 +11,6 @@ function id_div($id) {
     return $div;
 }
 
-// скрипт
-$body->appendChild(fs("script", "onScheduleForTeacherLoad()"));
-
 // выбор преподавателя
 $select_teacher = id_div("select_teacher");
 $select_teacher->setAttribute("style", "width: 40%; margin-left: auto; margin-right: auto;");

@@ -1,4 +1,6 @@
 
+$(document).ready(onScheduleForTeacherLoad);
+
 function onScheduleForTeacherLoad() {
     function newView() {
         var content = $("#schedule_table").data("content");

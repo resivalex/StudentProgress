@@ -14,8 +14,6 @@ function lesson_filter($id) {
     return $res;
 }
 
-$script = fs("script", "onMarksForTeacherLoad()");
-$body->appendChild($script);
 $body->appendChild(lesson_filter("select_teacher"));
 $body->appendChild(brfs());
 $body->appendChild(lesson_filter("select_subject"));

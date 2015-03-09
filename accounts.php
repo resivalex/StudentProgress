@@ -36,7 +36,6 @@ function add_user_form($header_text, $role)
     $button->setAttribute("type", "button");
     $button->setAttribute("class", "add_button");
     $button->setAttribute("id", "button_for_".$role);
-    $button->setAttribute("onclick", "addToUsers('$role')");
     $button_div = fs("div");
     $button_div->appendChild(custom_grid_table($items));
     if ($role == "student") {

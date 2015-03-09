@@ -18,11 +18,9 @@ function add_info_form($header, $table_name, $params) {
     foreach ($params as $param) {
         $fields[] = $param[1];
     }
-    $script = fs("script", "loadRemovableTable('$table_name', '$table_name', splitSelectQueryFromParams('$table_name', ".json_encode($fields)."));");
-    $ajax_div = fs("div");
-    $ajax_div->setAttribute("id", $table_name);
-    $ajax_div->appendChild($script);
-    $result->appendChild($ajax_div);
+
+    $result->appendChild(hiddenfs($table_name."_fields", json_encode($fields)));
+    $result->appendChild(divfs($table_name, "ajax_div"));
 
     // создаём поля ввода
     $items = array();
@@ -38,7 +36,8 @@ function add_info_form($header, $table_name, $params) {
     $button = fs("button", "Добавить");
     $button->setAttribute("type", "button");
     $button->setAttribute("style", "display:inline");
-    $button->setAttribute("onclick", "addToTable('$table_name', ".json_encode($fields).")");
+    $button->setAttribute("id", "add_to_".$table_name);
+    $button->setAttribute("class", "add_button");
     $add_record_div->appendChild($button);
 
     $result->appendChild($add_record_div);

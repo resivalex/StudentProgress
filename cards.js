@@ -1,5 +1,5 @@
 
-function onCardsLoad() {
+$(document).ready(function() {
     function onClick(el) {
         el = el.currentTarget;
         if ($("label", el).html() != "") return;
@@ -29,9 +29,7 @@ function onCardsLoad() {
         onClick({currentTarget: $empty.get(Math.floor(Math.random() * $empty.size()))});
     }
 
-    $(document).ready(function() {
-        $(".game").on("click", ".simple", onClick);
+    $(".game").on("click", ".simple", onClick);
 
-        setInterval(autoPlay, 200);
-    });
-}
+    setInterval(autoPlay, 200);
+});

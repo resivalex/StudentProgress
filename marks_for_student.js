@@ -1,4 +1,6 @@
 
+$(document).ready(onMarksForStudentLoad);
+
 function onMarksForStudentLoad() {
     function loadMarks() {
         $("#marks_table").children().remove();

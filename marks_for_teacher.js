@@ -1,4 +1,6 @@
 
+$(document).ready(onMarksForTeacherLoad);
+
 function onMarksForTeacherLoad() {
     function removeSubjects() {
         $("#subject_id").remove();

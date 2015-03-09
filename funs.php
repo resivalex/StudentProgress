@@ -114,8 +114,17 @@ function scriptfs($path) {
     return $script;
 }
 
-function divfs($id) {
+function hiddenfs($id, $value) {
+    $hidden = fs("input");
+    $hidden->setAttribute("type", "hidden");
+    $hidden->setAttribute("id", $id);
+    $hidden->setAttribute("value", $value);
+    return $hidden;
+}
+
+function divfs($id, $class = "") {
     $div = fs("div");
     $div->setAttribute("id", $id);
+    if ($class != "") $div->setAttribute("class", $class);
     return $div;
 }

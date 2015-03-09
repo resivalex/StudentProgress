@@ -10,6 +10,7 @@ $(document).ready(function() {
 
 // показать временное сообщение
 function showMessage(message_text, title_text) {
+    message_text = message_text.toString();
     if (title_text == undefined) {
         const max_len = 30;
         title_text = message_text.substr(0, max_len) + (message_text.length > max_len? "..." : "");
