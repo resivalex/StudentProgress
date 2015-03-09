@@ -55,7 +55,7 @@ function onMarksForStudentLoad() {
             tr.appendChild(td);
             for (i = 0; i < time_array.length; i++) {
                 td = document.createElement("td");
-                td.innerHTML = time_array[i];
+                td.appendChild(dateToDiv(time_array[i]).get(0));
                 tr.appendChild(td);
             }
             beauty.appendChild(tr);

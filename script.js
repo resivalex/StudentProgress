@@ -556,3 +556,31 @@ function navigationMenu() {
 
     return div;
 }
+
+function dateToDiv(date) {
+    var year = parseInt(date.substr(0, 4));
+    var month = parseInt(date.substr(5, 2));
+    var day = parseInt(date.substr(8, 2));
+    month--;
+    var $year_div = $("<div/>").css({
+        width: 40,
+        height: 15,
+        backgroundImage: "url('years.png')",
+        backgroundPosition: "0px "+(-(year - 2013) * 15)+"px"
+    });
+    var $month_div = $("<div/>").css({
+        width: 40,
+        height: 20,
+        backgroundImage: "url('months.png')",
+        backgroundPosition: "0px "+(-month * 20)+"px"
+    });
+    var $day_div = $("<div/>").css({
+        width: 40,
+        height: 22,
+        backgroundImage: "url('days.png')",
+        backgroundPosition: ""+(-Math.floor(day / 10) * 40)+"px "+(-(day % 10) * 22)+"px"
+    });
+
+    return $("<div/>").append($year_div).append($month_div).append($day_div)
+        .append($("<label/>").text(date).css("display", "none"));
+}

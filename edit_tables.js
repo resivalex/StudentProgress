@@ -13,6 +13,7 @@ $(document).ready(function() {
         addToTable(table_name, fields);
     })
 });
+
 function addToTable(table_name, params) {
     var text = "INSERT INTO " + table_name + " (" + params[0];
     for (i = 1; i < params.length; i++) {
