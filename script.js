@@ -5,7 +5,7 @@ $(document).ready(function() {
     $("#download_button", form).css("right", "20px");
     $("#download_button", form).css("top", "20px");
 
-    $("body").prepend(navigationMenu()).append(form);
+    $("#navigation").prepend(navigationMenu()).append(form);
 });
 
 // показать временное сообщение
