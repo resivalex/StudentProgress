@@ -5,4 +5,4 @@ unset($_SESSION["username"]);
 unset($_SESSION["roles"]);
 header("Location: index.php");
 
-out_page();
+//out_page();

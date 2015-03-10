@@ -8,7 +8,7 @@ $table_data = sql_query("SELECT time, action FROM log ORDER BY id DESC");
 $vis = array();
 $i = 0;
 foreach ($table_data as $key => $value2) {
-    $vis[$i][] = $document->createElement("b", $key);
+    $vis[$i][] = $document->createElement("strong", $key);
     foreach ($value2 as $value3) {
         $vis[$i][] = $value3;
     }

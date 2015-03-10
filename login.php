@@ -34,26 +34,8 @@ SQL;
 }
 	
 $head->appendChild($document->createElement("title", "Авторизация"));
-$head->appendChild(scriptfs("login.js"));
+$head->appendChild(scriptfs("javascript/login.js"));
 
-$form = post_form($document, "login.php");
-$body->appendChild($form);
-
-$content[0][0] = "Логин";
-$content[0][1] = input_text("login");
-$content[1][0] = "Пароль";
-$password_edit = input_text("password");
-$password_edit->setAttribute("type", "password");
-$content[1][1] = $password_edit;
-$table = custom_grid_table($content);
-$form->appendChild($table);
-$submit = submit("Вход");
-$submit_div = fs("div");
-$submit_div->appendChild($submit);
-$fast_submit = fs("button", "Cheat!");
-$fast_submit->setAttribute("id", "fast_submit");
-$submit_div->appendChild($fast_submit);
-$submit_div->setAttribute("style", "text-align:center");
-$form->appendChild($submit_div);
+loadfs($body, "templates/login_base.php");
 
 out_page();

@@ -26,51 +26,17 @@ $body = $document->createElement("body");
 $html->appendChild($head);
 $html->appendChild($body);
 
-$meta = $document->createElement("meta");
-$meta->setAttribute("http-equiv", "Content-Type");
-$meta->setAttribute("content", "text/html; Charset=UTF-8");
-$head->appendChild($meta);
-
-$no_cache = $document->createElement("meta");
-$no_cache->setAttribute("http-equiv", "pragma");
-$no_cache->setAttribute("content", "no-cache");
-$head->appendChild($no_cache);
-
-$link = $document->createElement("link");
-$link->setAttribute("rel", "stylesheet");
-$link->setAttribute("type", "text/css");
-$link->setAttribute("href", "style.css");
-$head->appendChild($link);
-
-// jquery ui css
-$link = $document->createElement("link");
-$link->setAttribute("rel", "stylesheet");
-$link->setAttribute("type", "text/css");
-$link->setAttribute("href", "jquery-ui-1.11.3.custom/jquery-ui.css");
-$head->appendChild($link);
-
-$icon_link = $document->createElement("link");
-$icon_link->setAttribute("rel", "shortcut icon");
-$icon_link->setAttribute("type", "image/png");
-$icon_link->setAttribute("href", "favicon.png");
-$head->appendChild($icon_link);
-
-$head->appendChild(scriptfs("jquery-2.1.3.js"));
-
-// jquery ui script
-$head->appendChild(scriptfs("jquery-ui-1.11.3.custom/jquery-ui.js"));
-
-// my script
-$head->appendChild(scriptfs("script.js"));
+loadfs($head, "templates/template_base.php");
 
 if (isset($_SESSION["username"])) {
     $body->appendChild(divfs("navigation"));
 }
 
 function out_page() {
-    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
-    echo "\n";
+//    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
+//    echo "\n";
     /** @var DOMDocument $document */
+    loadfs($GLOBALS["body"], "templates/page_bottom.php");
     $document = $GLOBALS["document"];
     echo $document->saveHTML();
 }

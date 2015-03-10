@@ -128,3 +128,28 @@ function divfs($id, $class = "") {
     if ($class != "") $div->setAttribute("class", $class);
     return $div;
 }
+
+/**
+ * @param $element DOMElement
+ * @param $filename string
+ */
+function loadfs($element, $filename, $vars = "") {
+    /** @var $document DOMDocument */
+    $document = $GLOBALS["document"];
+    $source_doc = new DOMDocument("1.0", "UTF-8");
+    ob_start();
+    include($filename);
+    $source_doc->loadHTML(mb_convert_encoding(ob_get_contents(), 'HTML-ENTITIES', 'utf-8'));
+    ob_end_clean();
+    foreach (["head", "body"] as $big_tag) {
+        $content = $source_doc->getElementsByTagName($big_tag);
+        if ($content->length) {
+            $nodes = $content->item(0)->childNodes;
+            foreach ($nodes as $node) {
+                $node = $document->importNode($node, true);
+                $element->appendChild($node);
+            }
+        }
+    }
+
+}

@@ -5,7 +5,7 @@ include_once("funs.php");
 define("N", "8");
 
 $head->appendChild($document->createElement("title", "Карточки"));
-$head->appendChild(scriptfs("cards.js"));
+$head->appendChild(scriptfs("javascript/cards.js"));
 
 $val = array();
 for ($i = 0; $i < N * N; $i++) {
