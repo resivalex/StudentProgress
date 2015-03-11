@@ -18,7 +18,7 @@ function onScheduleForStudentLoad() {
             $("#group_id").val()
         ];
         gridDateTable({
-            targetId: "schedule_table",
+            targetId: "schedule_subtable",
             query: query,
             groupProperty: "subject_name",
             dateProperty: "lesson_time",

@@ -1,61 +1,5 @@
 @CHARSET "UTF-8";
 
-.navigation_div {
-    width: 100%;
-    height: 50px;
-    background-color: #AAAAFF;
-    margin-bottom: 5px;
-}
-
-.navigation_menu, .navigation_menu ul {
-    list-style: none;
-    background-color: #EEEEFF;
-    margin: 0;
-    padding: 0;
-    z-index: 100;
-}
-
-.navigation_menu p {
-    margin: 0;
-    padding-top: 15px;
-    vertical-align: bottom;
-    padding-left: 30px;
-    padding-right: 30px;
-    height: 35px;
-}
-
-.navigation_menu a:hover {
-    color: black;
-}
-
-.navigation_menu a {
-    font-weight: bold;
-    color: #444455;
-}
-
-.navigation_menu > li {
-    float: left;
-    /*position: relative;*/
-    margin: 0;
-    background-color: #AAAAFF;
-}
-
-.navigation_menu li :hover, .navigation_menu .active {
-    background-color: #8888FF;
-}
-
-.navigation_menu li ul {
-    position: absolute;
-    background-color: #8888FF;
-}
-
-.navigation_menu li li {
-    display: none;
-    padding: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
 .grid_table {
 	border-collapse: collapse;
 	border-style: solid;
@@ -328,4 +272,88 @@
 
 .selected_cell {
     background-color: #bbf;
+}
+
+.auto_margin {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.auto_margin_40 {
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* for navigation */
+.navigation_div {
+    height: 30px;
+    background-color: #eef;
+    margin-bottom: 10px;
+}
+.navigation_menu, .navigation_menu ul {
+    list-style: outside none none;
+    padding: 0;
+}
+
+.navigation_menu {
+    display: table;
+    margin: 0 auto 10px auto;
+}
+
+.navigation_menu .category {
+    float: left;
+    background-color: #aaf;
+}
+
+.navigation_menu .category:hover {
+    background-color: #88f;
+}
+
+.navigation_menu .submenu {
+    position: absolute;
+    margin: 0 auto;
+    z-index: 1;
+}
+
+.navigation_menu .item {
+    display: none;
+    padding: 0 20px;
+    line-height: 30px;
+    float: left;
+    background-color: #88f;
+}
+
+.navigation_menu .active {
+    background-color: #88f;
+}
+
+.navigation_menu .active .item {
+    display: block;
+}
+
+.navigation_menu .category_label {
+    padding: 0 25px;
+    line-height: 30px;
+}
+
+.navigation_menu .item_link {
+    font-weight: bold;
+    color: #445;
+}
+
+.navigation_menu .item:hover {
+    background-color: #66f;
+    /*border-left: solid 2px white;*/
+    /*border-right: solid 2px white;*/
+    padding: 2px 20px;
+    position: relative;
+    top: -2px;
+    color: black;
+}
+
+#csv_div {
+    display: table;
+    position: absolute;
+    right: 10px;
 }

@@ -28,13 +28,12 @@ $html->appendChild($body);
 
 loadfs($head, "templates/template_base.php");
 
-if (isset($_SESSION["username"])) {
-    $body->appendChild(divfs("navigation"));
-}
+loadfs($body, "templates/navigation.php", isset($_SESSION["username"])? "" : ["hide_menu" => true]);
+
 
 function out_page() {
-//    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
-//    echo "\n";
+    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';
+    echo "\n";
     /** @var DOMDocument $document */
     loadfs($GLOBALS["body"], "templates/page_bottom.php");
     $document = $GLOBALS["document"];

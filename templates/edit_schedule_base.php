@@ -1,9 +1,9 @@
-<div style="width: 40%; margin-left: auto; margin-right: auto;">
+<div class="auto_margin_40">
     <div id="select_teacher"></div>
     <br><div id="select_subject"></div>
     <br><div id="select_group"></div>
     <br><div id="select_auditory"></div>
-    <br><table class="align_td_to_top" style="margin-left: auto; margin-right: auto;">
+    <br><table class="align_td_to_top auto_margin">
         <tr>
             <td>
                 <div id="day_select_tool" class="calendar-toolbar"></div>

@@ -1,12 +1,52 @@
 
 $(document).ready(function() {
-    var form = csvDownloadForm();
-    $("#download_button", form).css("position", "absolute");
-    $("#download_button", form).css("right", "20px");
-    $("#download_button", form).css("top", "20px");
-
-    $("#navigation").prepend(navigationMenu()).append(form);
+    $("#csv_div").append(csvDownloadForm());
+    navigationPrepare();
 });
+
+function navigationPrepare() {
+    $("#navigation_menu").on("click", ".category", onNavigationCategoryClick);
+    $(document).click(function(event) {
+        $("#navigation_menu .active", document).removeClass("active");
+    });
+
+    function onNavigationCategoryClick(event) {
+        function recalcItemPadding() {
+            var $nav_menu = $("#navigation_menu");
+            var menu_width = $nav_menu.width() + 20;
+            var items_sum_width = 0;
+            var $items = $(".active .item", $nav_menu);
+            $items.each(function() {
+                items_sum_width += $(this).width();
+            });
+            var delta = menu_width - items_sum_width;
+
+            delta /= ($items.size() * 2);
+            delta = Math.max(delta, 20);
+            delta = "" + delta + "px";
+            $items.css({paddingLeft: delta, paddingRight: delta});
+        }
+        if (!$(this).hasClass("active")) {
+            $("#navigation_menu .active", document).removeClass("active");
+            $(this).addClass("active");
+            recalcItemPadding();
+            $(".submenu", this).position({
+                of: $("#navigation_menu"),
+                my: "center top",
+                at: "center bottom",
+                collision: "fit none"
+            });
+            $(".submenu", this).position({
+                of: $("#navigation_menu"),
+                my: "center top",
+                at: "center bottom",
+                collision: "fit none"
+            });
+            event.stopPropagation();
+        }
+    }
+}
+
 
 // показать временное сообщение
 function showMessage(message_text, title_text) {
@@ -672,6 +712,7 @@ function gridDateTable(option) {
         for (var i in content) {
             content[i] = groupObjectsByProperty(content[i], "date");
         }
+        $target.children().remove();
         var $table = $("<table/>").appendTo($target);
         $table.addClass("custom_table");
         var $tr = $("<tr><th/></tr>").appendTo($table);

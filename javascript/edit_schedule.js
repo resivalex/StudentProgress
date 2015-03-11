@@ -7,6 +7,26 @@ $(document).ready(function() {
         }
         return $select.css("width", "100px");
     }
+
+    function loadSchedule() {
+        query =
+            "SELECT groups.name AS group_name, subjects.name AS subject_name, " +
+            "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id " +
+            "FROM lessons " +
+            "JOIN groups ON (group_id = groups.id) " +
+            "JOIN subjects ON (subject_id = subjects.id) " +
+            "JOIN auditories ON (auditory_id = auditories.id) " +
+            "JOIN users ON (teacher_id = users.id) " +
+            "ORDER BY lessons.id";
+        gridDateTable({
+            targetId: "schedule",
+            query: query,
+            groupProperty: "group_name",
+            dateProperty: "time",
+            infoHeaderNames: ["Дисциплина", "Аудитория", "Преподаватель", "Время", "ID"]
+        });
+    }
+
     var query =
         "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) " +
         "FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
@@ -42,16 +62,8 @@ $(document).ready(function() {
     $("#select_minute").append($select_minute);
     $select_minute.selectmenu().selectmenu("menuWidget").css("height", "150px");
 
-    query =
-        "SELECT groups.name AS groups_name, subjects.name AS subject_name, " +
-        "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id " +
-        "FROM lessons " +
-        "JOIN groups ON (group_id = groups.id) " +
-        "JOIN subjects ON (subject_id = subjects.id) " +
-        "JOIN auditories ON (auditory_id = auditories.id) " +
-        "JOIN users ON (teacher_id = users.id) " +
-        "ORDER BY lessons.id";
-    loadRemovableTable('lessons', 'schedule', query);
+    loadSchedule();
+    //loadRemovableTable('lessons', 'schedule', query);
 
     $("#add_lesson").button().click(function() {
         var group_id = $("#group_id").val();
@@ -72,16 +84,7 @@ $(document).ready(function() {
                 showJSON(query, "Неудача");
             } else {
                 showMessage("Добавлено");
-                var select_query =
-                    "SELECT groups.name AS groups_name, subjects.name AS subject_name, " +
-                    "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id " +
-                    "FROM lessons " +
-                    "JOIN groups ON (group_id = groups.id) " +
-                    "JOIN subjects ON (subject_id = subjects.id) " +
-                    "JOIN auditories ON (auditory_id = auditories.id) " +
-                    "JOIN users ON (teacher_id = users.id) " +
-                    "ORDER BY lessons.id";
-                loadRemovableTable('lessons', 'schedule', select_query);
+                loadSchedule();
             }
         });
     });

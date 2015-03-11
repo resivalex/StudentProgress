@@ -1,2 +1,3 @@
-<div id="select_group" style="width: 40%; margin-left: auto; margin-right: auto;"></div>
+<div id="select_group" class="auto_margin_40"></div>
 <br><div id="schedule_table"></div>
+<div id="schedule_subtable"></div>

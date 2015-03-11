@@ -1,4 +1,4 @@
-<div style="width: 40%; margin-left: auto; margin-right: auto">
+<div class="auto_margin_40">
     <div id="select_teacher"></div>
     <br>
     <div id="select_subject"></div>
