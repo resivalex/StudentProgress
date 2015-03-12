@@ -1,5 +1,9 @@
 @CHARSET "UTF-8";
 
+body {
+    margin: 0;
+}
+
 .grid_table {
 	border-collapse: collapse;
 	border-style: solid;
@@ -192,30 +196,6 @@
     border-style: solid;
 }
 
-.calendar-toolbar input[type="radio"] {
-    display: none;
-}
-
-.calendar-toolbar label {
-    display: inline-block;
-    background-color: #CCCCFF;
-    padding: 4px 4px;
-    width: 20px;
-}
-
-.calendar-toolbar label:hover {
-    display: inline-block;
-    background-color: #BBBBFF;
-    padding: 4px 4px;
-    width: 20px;
-}
-
-.calendar-toolbar input[type="radio"]:checked + label {
-    background-color: #AAAAFF;
-    color: black;
-    font-weight: bold;
-}
-
 .align_td_to_top td {
     vertical-align: top;
 }
@@ -313,7 +293,7 @@
 .navigation_menu .submenu {
     position: absolute;
     margin: 0 auto;
-    z-index: 1;
+    z-index: 3;
 }
 
 .navigation_menu .item {
@@ -344,16 +324,102 @@
 
 .navigation_menu .item:hover {
     background-color: #66f;
-    /*border-left: solid 2px white;*/
-    /*border-right: solid 2px white;*/
     padding: 2px 20px;
     position: relative;
     top: -2px;
     color: black;
 }
 
+/* csv button */
 #csv_div {
     display: table;
     position: absolute;
     right: 10px;
+}
+
+/* log table */
+.log_table {
+    font-size: small;
+    border-collapse: collapse;
+    background-color: #eed;
+    margin: 0 auto;
+}
+
+.log_table div {
+    width: 720px;
+}
+
+.log_table tr:hover {
+    background-color: white;
+}
+
+.log_table td, .log_table th {
+    border: dotted 1px gray;
+    padding: 5px;
+}
+
+/* good scroll */
+.test_background {
+    background-image: url("images/test.png");
+    background-repeat: repeat;
+}
+
+.clear_table, .clear_table * {
+    border-collapse: collapse;
+    padding: 0;
+}
+
+.clear_table tr, .clear_table td {
+    margin: 0;
+    padding: 0;
+}
+
+.clear_table * {
+    overflow: hidden;
+}
+
+.test_table {
+    outline: dashed 1px blue;
+}
+
+.test_table * {
+    overflow: hidden;
+}
+
+.test_div1 {
+    width: 200px;
+    height: 350px;
+}
+
+.test_div2 {
+    width: 500px;
+    height: 350px;
+}
+
+.test_table .container1 {
+    height: 200px;
+    width: 200px;
+}
+
+.test_table .container2 {
+    height: 200px;
+    width: 400px;
+}
+
+.test_table .test_dates {
+    height: 50px;
+    width: 500px;
+}
+
+.test_table .dates {
+    height: 50px;
+    width: 400px;
+}
+
+#h_slider {
+    width: 396px;
+}
+
+#v_slider {
+    height: 196px;
 }

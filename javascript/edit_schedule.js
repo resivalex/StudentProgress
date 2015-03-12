@@ -50,11 +50,12 @@ $(document).ready(function() {
         $("#auditory_id").selectmenu();
     });
     $("#day_select_tool").datepicker({
+        dateFormat: "d MM yy",
         dayNamesMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
         monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
             "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
         firstDay: 1
-    });
+    }).datepicker("setDate", new Date());
     var $select_hour = simpleProgressionSelect(7, 18, 1);
     $("#select_hour").append($select_hour);
     $select_hour.selectmenu().selectmenu("menuWidget").css("height", "150px");
@@ -90,3 +91,18 @@ $(document).ready(function() {
     });
 });
 
+$(document).ready(function() {
+    var kasha = [];
+    for (i = 0; i < 15; i++) {
+        kasha[i] = [];
+        for (j = 0; j < 15; j++) {
+            kasha[i][j] = "kasha";
+        }
+    }
+    scrollableTable({
+        target: $("#test"),
+        content: kasha,
+        topHeaderHeight: 50
+    });
+    $("#test").children().addClass("auto_margin");
+});
