@@ -777,17 +777,17 @@ function gridDateTable(option) {
     });
 }
 
+// All numeric values in pixels
 // target jQuery - parent. default: body
-// rowHeaders[] - row names. default: "row#N"
-// columnHeaders[] - column names. default: "col#N"
-// content[][] - content. default: [["no content"]]
-// all values in pixels
+//
+// content[][] - content: strings or elements. default: [["no content"]]
 // contentWidth. default: 400
 // contentHeight. default: 200
-// leftHeaderWidth. default: 200
-// rowHeight. default: 30
-// topHeaderHeight. default: 30
-// columnWidth. default: 100
+//
+// rowHeaders[] - row names: strings or elements. default: "row#N"
+// columnHeaders[] - column names: strings or elements. default: "col#N"
+//
+// cornerElement jQuery - any. default: nothing
 function scrollableTable(option) {
     function getOption(name, init) {
         var val = option[name];
@@ -795,8 +795,10 @@ function scrollableTable(option) {
         return val;
     }
 
-    function div(width, height) {
-        return $("<div/>").width(width).height(height);
+    function boxDiv(className) {
+        var $div = $("<div/>");
+        if (className != undefined) $div.addClass(className);
+        return $div;
     }
 
     if (option == undefined) option = [];
@@ -806,10 +808,7 @@ function scrollableTable(option) {
     var content = getOption("content", [["no content"]]);
     var contentWidth = getOption("contentWidth", 400);
     var contentHeight = getOption("contentHeight", 200);
-    var leftHeaderWidth = getOption("leftHeaderWidth", 200);
-    var rowHeight = getOption("rowHeight", 30);
-    var topHeaderHeigth = getOption("topHeaderHeight", 30);
-    var columnWidth = getOption("columnWidth", 100);
+    var $cornerElement = getOption("cornerElement", undefined);
 
     var $table = $("<table/>").appendTo($target);
     $table.addClass("clear_table");
@@ -822,11 +821,23 @@ function scrollableTable(option) {
         }
     }
 
-    var $left_slider = div(8, contentHeight - 4).appendTo($skel[2][0]);
-    var $top_slider = div(contentWidth - 4, 8).appendTo($skel[0][2]);
-    var $left_headers = div(leftHeaderWidth, contentHeight).appendTo($skel[2][1]);
-    var $top_headers = div(contentWidth, topHeaderHeigth).appendTo($skel[1][2]);
-    var $content = div(contentWidth, contentHeight).appendTo($skel[2][2]);
+    // binding to main table
+    var $vertical_slider = boxDiv().appendTo($skel[1][0]);
+    var $horizontal_slider = boxDiv().appendTo($skel[2][2]);
+    var $left_headers = boxDiv().appendTo($skel[1][1]);
+    var $top_headers = boxDiv().appendTo($skel[0][2]);
+    var $content = boxDiv().appendTo($skel[1][2]);
+    var $corner = boxDiv().appendTo($skel[0][1]);
+    if ($cornerElement != undefined) $cornerElement.appendTo($corner);
+
+    // colors
+    const far = "#ddf", near = "#eef", below = "#fff";
+    // styles
+    $corner.addClass("corner");
+    $corner.css({backgroundColor: far});
+    $top_headers.addClass("top_header");
+    $left_headers.addClass("left_header");
+    $content.addClass("content");
 
     // jQuery arrays for thin setting
     var $row_header = [];
@@ -840,9 +851,14 @@ function scrollableTable(option) {
         var $tr = $("<tr/>").appendTo($content_table);
         for (j = 0; j < content[i].length; j++) {
             var $td = $("<td/>").appendTo($tr);
-            var $div = div(columnWidth, rowHeight).appendTo($td);
-            $div.text(content[i][j]);
-            $cell[i][j] = $div;
+            var $div = boxDiv().appendTo($td);
+            var $in_div = boxDiv("cell").appendTo($div);
+            if (typeof content[i][j] == "string") {
+                $in_div.text(content[i][j]);
+            } else {
+                $in_div.append(content[i][j]);
+            }
+            $cell[i][j] = $td;
         }
     }
 
@@ -851,9 +867,18 @@ function scrollableTable(option) {
     for (i = 0; i < content.length; i++) {
         var $tr = $("<tr/>").appendTo($left_table);
         var $td = $("<td/>").appendTo($tr);
-        var $div = div(leftHeaderWidth, rowHeight).appendTo($td);
-        $div.text(i < rowHeaders.length? rowHeaders[i] : "row"+i);
-        $row_header[i] = $div;
+        var $div = boxDiv().appendTo($td);
+        var $in_div = boxDiv("row_header").appendTo($div);
+        if (i < rowHeaders.length) {
+            if (typeof rowHeaders[i] == "string") {
+                $in_div.text(rowHeaders[i]);
+            } else {
+                $in_div.append(rowHeaders[i]);
+            }
+        } else {
+            $in_div.text("row#"+i);
+        }
+        $row_header[i] = $td;
     }
 
     // top headers
@@ -861,17 +886,180 @@ function scrollableTable(option) {
     var $tr = $("<tr/>").appendTo($top_table);
     for (i = 0; i < content[0].length; i++) {
         var $td = $("<td/>").appendTo($tr);
-        var $div = div(columnWidth, topHeaderHeigth).appendTo($td);
-        $div.text(i < columnHeaders.length? columnHeaders[i] : "header"+i);
-        $col_header[i] = $div;
+        var $div = boxDiv().appendTo($td);
+        var $in_div = boxDiv("col_header").appendTo($div);
+        if (i < columnHeaders.length) {
+            if (typeof columnHeaders[i] == "string") {
+                $in_div.text(columnHeaders[i]);
+            } else {
+                $in_div.append(columnHeaders[i]);
+            }
+        } else {
+            $in_div.text("row#"+i);
+        }
+        $col_header[i] = $td;
     }
 
-    var content_element = $content.get(0);
+    var silverTables = [$content_table, $left_table, $top_table];
+    for (i = 0; i < silverTables.length; i++) {
+        $("td", silverTables[i]).addClass("silver_border");
+    }
+    var grayCells = [$skel[1][1], $skel[0][2], $skel[1][2]];
+    for (i = 0; i < grayCells.length; i++) {
+        grayCells[i].addClass("gray_border");
+    }
 
-    var left_interval = content_element.scrollHeight - content_element.clientHeight;
+    $table.data("row_header", $row_header);
+    $table.data("col_header", $col_header);
+    $table.data("cell", $cell);
+    for (i = 0; i < $row_header.length; i++) {
+        $row_header[i].data("row_index", i);
+        for (j = 0; j < $col_header.length; j++) {
+            if (i == 0) {
+                $col_header[j].data("col_index", j);
+            }
+            $cell[i][j].data("row_index", i).data("col_index", j);
+        }
+    }
+
+    function lightRow(num, color) {
+        $row_header[num].css({backgroundColor: color});
+        for (j = 0; j < $col_header.length; j++) {
+            $cell[num][j].css({backgroundColor: color});
+        }
+    }
+
+    function lightCol(num, color) {
+        $col_header[num].css({backgroundColor: color});
+        for (j = 0; j < $row_header.length; j++) {
+            $cell[j][num].css({backgroundColor: color});
+        }
+    }
+
+    for (i = 0; i < $row_header.length; i++) {
+        lightRow(i, far);
+        $row_header[i].hover(function() {
+            var $table = $(this).closest(".clear_table");
+            var $row_header = $table.data("row_header");
+            var $col_header = $table.data("col_header");
+            var $cell = $table.data("cell");
+
+            lightRow($(this).data("row_index"), near);
+        }, function() {
+            var $table = $(this).closest(".clear_table");
+            var $row_header = $table.data("row_header");
+            var $col_header = $table.data("col_header");
+            var $cell = $table.data("cell");
+
+            lightRow($(this).data("row_index"), far);
+        });
+    }
+    for (i = 0; i < $col_header.length; i++) {
+        lightCol(i, far);
+        $col_header[i].hover(function() {
+            var $table = $(this).closest(".clear_table");
+            var $row_header = $table.data("row_header");
+            var $col_header = $table.data("col_header");
+            var $cell = $table.data("cell");
+
+            lightCol($(this).data("col_index"), near);
+        }, function() {
+            var $table = $(this).closest(".clear_table");
+            var $row_header = $table.data("row_header");
+            var $col_header = $table.data("col_header");
+            var $cell = $table.data("cell");
+
+            lightCol($(this).data("col_index"), far);
+        });
+    }
+    for (i = 0; i < $row_header.length; i++) {
+        for (j = 0; j < $col_header.length; j++) {
+            $cell[i][j].hover(function() {
+                var $table = $(this).closest(".clear_table");
+                var $row_header = $table.data("row_header");
+                var $col_header = $table.data("col_header");
+                var $cell = $table.data("cell");
+
+                lightRow($(this).data("row_index"), near);
+                lightCol($(this).data("col_index"), near);
+                $(this).css({backgroundColor: below});
+            }, function() {
+                var $table = $(this).closest(".clear_table");
+                var $row_header = $table.data("row_header");
+                var $col_header = $table.data("col_header");
+                var $cell = $table.data("cell");
+
+                lightRow($(this).data("row_index"), far);
+                lightCol($(this).data("col_index"), far);
+            });
+        }
+    }
+
+    // correct row heights
+    for (i = 0; i < $row_header.length; i++) {
+        var maxHeight = $row_header[i].children().height();
+        for (j = 0; j < $col_header.length; j++) {
+            maxHeight = Math.max(maxHeight, $cell[i][j].children().height());
+        }
+        $row_header[i].children().height(maxHeight);
+        for (j = 0; j < $col_header.length; j++) {
+            $cell[i][j].children().height(maxHeight);
+        }
+    }
+
+    // correct column width
+    for (i = 0; i < $col_header.length; i++) {
+        var maxWidth = $col_header[i].children().width();
+        for (j = 0; j < $row_header.length; j++) {
+            maxWidth = Math.max(maxWidth, $cell[j][i].children().width());
+        }
+        $col_header[i].children().width(maxWidth);
+        for (j = 0; j < $row_header.length; j++) {
+            $cell[j][i].children().width(maxWidth);
+        }
+    }
+
+    // correct left header
+    maxWidth = $corner.width();
+    for (i = 0; i < $row_header.length; i++) {
+        maxWidth = Math.max(maxWidth, $row_header[i].children().width());
+    }
+    $corner.width(maxWidth);
+    for (i = 0; i < $row_header.length; i++) {
+        $row_header[i].children().width(maxWidth);
+    }
+    
+    // correct top header
+    maxHeight = $corner.height();
+    for (i = 0; i < $col_header.length; i++) {
+        maxHeight = Math.max(maxHeight, $col_header[i].children().height());
+    }
+    $corner.height(maxHeight);
+    for (i = 0; i < $col_header.length; i++) {
+        $col_header[i].children().height(maxHeight);
+    }
+
+    // correct content sizes
+    maxHeight = $content_table.height();
+    maxHeight = Math.min(maxHeight, contentHeight);
+    $vertical_slider.height(maxHeight);
+    $left_headers.height(maxHeight);
+    $content.height(maxHeight);
+
+    maxWidth = $content_table.width();
+    maxWidth = Math.min(maxWidth, contentWidth);
+    $horizontal_slider.width(maxWidth);
+    $top_headers.width(maxWidth);
+    $content.width(maxWidth);
+
+    // set sliders
+    var left_interval = $content.get(0).scrollHeight - $content.get(0).clientHeight;
     if (left_interval < 1) left_interval = 1;
-    $left_slider.slider({
-        range: "max",
+    $table.data("content", $content);
+    $table.data("leftHeader", $left_headers);
+    $table.data("topHeader", $top_headers);
+    $vertical_slider.slider({
+        //range: "max",
         animate: "fast",
         orientation: "vertical",
         min: 0,
@@ -879,16 +1067,20 @@ function scrollableTable(option) {
         value: left_interval,
         disabled: left_interval == 1,
         slide: function() {
-            var val = $left_slider.slider("option", "max") - $left_slider.slider("option", "value");
-            content_element.scrollTop = val;
-            $left_headers.get(0).scrollTop = val;
+            var val = $vertical_slider.slider("option", "max") - $vertical_slider.slider("option", "value");
+            $table = $(this).closest(".clear_table");
+            $table.data("content").scrollTop(val);
+            $table.data("leftHeader").scrollTop(val);
         }
     });
+    $vertical_slider.addClass("slider_div");
+    $skel[1][0].addClass("dont_cut");
+    $vertical_slider.addClass("dont_cut");
 
-    var top_interval = content_element.scrollWidth - content_element.clientWidth;
+    var top_interval = $content.get(0).scrollWidth - $content.get(0).clientWidth;
     if (top_interval < 1) top_interval = 1;
-    $top_slider.slider({
-        range: "min",
+    $horizontal_slider.slider({
+        //range: "min",
         animate: "fast",
         orientation: "horizontal",
         min: 0,
@@ -896,69 +1088,13 @@ function scrollableTable(option) {
         value: 0,
         disabled: top_interval == 1,
         slide: function() {
-            var val = $top_slider.slider("option", "value");
-            content_element.scrollLeft = val;
-            $top_headers.get(0).scrollLeft = val;
+            var val = $horizontal_slider.slider("option", "value");
+            $table = $(this).closest(".clear_table");
+            //showMessage($table.data("content").scrollLeft());
+            $table.data("content").scrollLeft(val);
+            $table.data("topHeader").scrollLeft(val);
         }
     });
-
-    function lightRow(num, color) {
-        $($row_header.get(num)).css({backgroundColor: color});
-        for (i = 0; i < $col_header.size(); i++) {
-            //$cell[num][i].css({backgroundColor: color});
-        }
-    }
-
-    function lightCol(num, color) {
-        $($col_header.get(num)).css({backgroundColor: color});
-        for (i = 0; i < $row_header.size(); i++) {
-            //$cell[i][num].css({backgroundColor: color});
-        }
-    }
-
-    var far = "#ddf", near = "#eef", below = "#fff";
-
-    function onRowAction(i, color) {
-        return function() {
-            lightRow(i, color);
-        }
-    }
-
-    function onColAction(i, color) {
-        return function() {
-            lightCol(i, color);
-        }
-    }
-
-    $row_header = $("div", $left_table);
-    $col_header = $("div", $top_table);
-
-    for (i = 0; i < $row_header.size(); i++) {
-        onRowAction(i, far)();
-        //if (i != 0) lightRow(i, far);
-        $($row_header.get(i)).mouseover(onRowAction(i, near)).mouseout(onRowAction(i, far));
-    }
-    for (i = 0; i < $col_header.size(); i++) {
-        //lightCol(i, far);
-        $($col_header.get(i)).mouseover(onColAction(i, near)).mouseout(onColAction(i, far));
-        //$col_header[i].mouseover(function() {
-        //    lightCol(i, near);
-        //}).mouseout(function() {
-        //    lightCol(i, far);
-        //});
-    }
-
-    function onCellAction(i, j, color, color2) {
-        return function() {
-            lightRow(i, color);
-            lightCol(j, color);
-            $cell[i][j].css({backgroundColor: color2});
-        }
-    }
-
-    for (i = 0; i < $row_header.size(); i++) {
-        for (j = 0; j < $col_header.size(); j++) {
-            $cell[i][j].mouseover(onCellAction(i, j, near, below)).mouseout(onCellAction(i, j, far, far));
-        }
-    }
+    $skel[2][2].addClass("dont_cut");
+    $horizontal_slider.addClass("dont_cut");
 }

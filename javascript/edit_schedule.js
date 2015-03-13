@@ -93,16 +93,20 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     var kasha = [];
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < 25; i++) {
         kasha[i] = [];
-        for (j = 0; j < 15; j++) {
-            kasha[i][j] = "kasha";
+        for (j = 0; j < 25; j++) {
+            kasha[i][j] = "+";
         }
+    }
+    var h = [];
+    for (i = 10; i <= 25; i++) {
+        h.push(dateToDiv("2015-02-"+i));
     }
     scrollableTable({
         target: $("#test"),
         content: kasha,
-        topHeaderHeight: 50
+        columnHeaders: h
     });
     $("#test").children().addClass("auto_margin");
 });
