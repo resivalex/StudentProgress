@@ -25,7 +25,12 @@ function onMarksForStudentLoad() {
             query: query,
             groupProperty: "subject_name",
             dateProperty: "time",
-            infoHeaderNames: ["Преподаватель", "Время", "Отметка", "Комментарий"]
+            infoHeaderNamesMap: {
+                "teacher_name": "Преподаватель",
+                "time": "Время",
+                "short_name": "Отметка",
+                "comment": "Комментарий"
+            }
         });
         //sqlQuery(query, function(response) {
         //    var $marks_talbe = $("#marks_table");

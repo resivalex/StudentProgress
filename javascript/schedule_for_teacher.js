@@ -18,7 +18,11 @@ function onScheduleForTeacherLoad() {
             query: query,
             groupProperty: "subject_name",
             dateProperty: "lesson_time",
-            infoHeaderNames: ["Группа", "Аудитория", "Время"]
+            infoHeaderNamesMap: {
+                "group_name": "Группа",
+                "auditory_name": "Аудитория",
+                "lesson_time": "Время"
+            }
         });
     }
 

@@ -13,39 +13,7 @@ $(document).ready(function() {
         $(this).html(text);
     });
     navigationPrepare();
-    test();
 });
-
-function test() {
-    if ($("#container2").size() == 0) return;
-    var cont = $("#container2").get(0);
-    var stud = $("#container1").get(0);
-    var dates = $("#dates").get(0);
-    $("#h_slider").slider({
-        animate: "fast",
-        range: "min",
-        min: 0,
-        max: Math.max(0, cont.scrollWidth - cont.clientWidth),
-        slide: function() {
-            var val = $("#h_slider").slider("option", "value");
-            cont.scrollLeft = val;
-            dates.scrollLeft = val;
-        }
-    });
-    $("#v_slider").slider({
-        range: "max",
-        animate: "fast",
-        orientation: "vertical",
-        min: 0,
-        max: Math.max(0, cont.scrollHeight - cont.clientHeight),
-        value: Math.max(0, cont.scrollHeight - cont.clientHeight),
-        slide: function() {
-            var val = $("#v_slider").slider("option", "max") - $("#v_slider").slider("value");
-            cont.scrollTop = val;
-            stud.scrollTop = val;
-        }
-    });
-}
 
 function navigationPrepare() {
     $("#navigation_menu").on("click", ".category", onNavigationCategoryClick);
@@ -131,10 +99,12 @@ function showJSON(val, title_text) {
 
 function getTable(text, with_header) {
     var $table = $("<table/>");
-    if (with_header) {
+    if (with_header !== undefined) {
         var $tr = $("<tr/>");
         for (i in text) {
-            $("<th/>").text(i).appendTo($tr);
+            var val = with_header[i];
+            if (val === undefined) val = i;
+            $("<th/>").text(val).appendTo($tr);
         }
         $tr.appendTo($table);
     }
@@ -510,134 +480,13 @@ function objectsToArrays(val) {
     return res;
 }
 
-function navigationMenu() {
-    var menu_structure = {
-        "categories": [
-            {
-                "title": "Администрирование",
-                "content": [
-                    {
-                        "title": "Учётные записи",
-                        "url": "accounts.php"
-                    },
-                    {
-                        "title": "Редактировать таблицы",
-                        "url": "edit_tables.php"
-                    },
-                    {
-                        "title": "Резервирование",
-                        "url": "reservation.php"
-                    },
-                    {
-                        "title": "Все таблицы",
-                        "url": "all_tables.php"
-                    },
-                    {
-                        "title": "Лог",
-                        "url": "log.php"
-                    }
-                ]
-            },
-            {
-                "title": "Расписание",
-                "content": [
-                    {
-                        "title": "Для преподавателя",
-                        "url": "schedule_for_teacher.php"
-                    },
-                    {
-                        "title": "Для студента",
-                        "url": "schedule_for_student.php"
-                    },
-                    {
-                        "title": "Редактировать расписание",
-                        "url": "edit_schedule.php"
-                    }
-                ]
-            },
-            {
-                "title": "Отметки",
-                "content": [
-                    {
-                        "title": "Для преподавателя",
-                        "url": "marks_for_teacher.php"
-                    },
-                    {
-                        "title": "Для студента",
-                        "url": "marks_for_student.php"
-                    }
-                ]
-            },
-            {
-                "title": "Отчёты",
-                "content": [
-                    {
-                        "title": "Количество отметок",
-                        "url": "reports.php"
-                    }
-                ]
-            },
-            {
-                "title": "Пользователь",
-                "content": [
-                    {
-                        "title": "Выйти",
-                        "url": "logout.php"
-                    },
-                    {
-                        "title": "*",
-                        "url": "cards.php"
-                    }
-                ]
-            }
-        ]
-    };
-
-    var div = document.createElement("div");
-    div.className = "navigation_div";
-    var menu = document.createElement("ul");
-    div.appendChild(menu);
-    menu.className = "navigation_menu";
-    $(menu).mouseenter(function() {$(menu).data("over_menu", true)});
-    $(menu).mouseleave(function() {$(menu).data("over_menu", false)});
-    $(menu).on("click", ">li", function() {
-        if ($(this).hasClass("active")) {
-            $(".navigation_menu li li").css("display", "none");
-            $(".navigation_menu > li").removeClass("active");
-        } else {
-            $(".navigation_menu li li").css("display", "none");
-            $(".navigation_menu > li").removeClass("active");
-            $("li", this).css("display", "block");
-            $(this).addClass("active");
-        }
-    });
-    $(document).click(function () {
-        if (!$(menu).data("over_menu")) {
-            $(".navigation_menu li li").css("display", "none");
-            $(".navigation_menu > li").removeClass("active");
-        }
-    });
-    for (var i = 0; i < menu_structure.categories.length; i++) {
-        var category = menu_structure.categories[i];
-        var cat_li = document.createElement("li");
-        menu.appendChild(cat_li);
-        var p = document.createElement("p");
-        p.textContent = category.title;
-        cat_li.appendChild(p);
-        var cat_ul = document.createElement("ul");
-        cat_li.appendChild(cat_ul);
-        for (var j = 0; j < category.content.length; j++) {
-            var content = category.content[j];
-            var a = document.createElement("a");
-            a.textContent = content.title;
-            a.href = content.url;
-            var link = document.createElement("li");
-            link.appendChild(a);
-            cat_ul.appendChild(link);
-        }
+function toIndexArray(val) {
+    var ind = 0;
+    for (var i in val) {
+        val[ind++] = val[i];
+        delete val[i];
     }
-
-    return div;
+    return val;
 }
 
 // return div 40x57 year, month, day from top to bottom
@@ -674,7 +523,7 @@ function dateToDiv(date) {
 // query - to get set
 // groupProperty - field name to group
 // dateProperty - where is date
-// infoHeaderNames - header names for subsets
+// infoHeaderNamesMap - header names for subsets
 function gridDateTable(option) {
     function getWithCheck(param) {
         if (option[param] == undefined) showMessage("gridDateTable need in '"+param+"' param");
@@ -684,24 +533,19 @@ function gridDateTable(option) {
     var query = getWithCheck("query");
     var groupProperty = getWithCheck("groupProperty");
     var dateProperty = getWithCheck("dateProperty");
-    var infoHeaderNames = getWithCheck("infoHeaderNames");
+    var infoHeaderNamesMap = getWithCheck("infoHeaderNamesMap");
     var $target = $("#"+targetId);
-    function setCell($td, content, row_key, date) {
-        function thTextReplace($table, hnames) {
-            $("th", $table).each(function (ind) {
-                if (ind < hnames.length) {
-                    $(this).text(hnames[ind]);
-                }
-            });
-        }
+    function setCell($cell, $for_text, content, row_key, date) {
         var info = content[row_key][date];
-        $td.text(info.length).css({cursor: "pointer", textAlign: "center"});
-        $td.hover(function (event) {
+        if (info === undefined) return;
+        $cell.css({cursor: "pointer", textAlign: "center"});
+        $for_text.text(info.length);
+        $cell.hover(function () {
             $("#info").remove();
-            var $info = $(getTable(objectsToArrays(info), true)).appendTo($target);
-            $info.addClass("tip_table").css({position: "absolute"});
+            var $info = $(getTable(objectsToArrays(info), infoHeaderNamesMap)).appendTo($target);
+            $info.addClass("tip_table");
+            $info.css({position: "absolute"});
             $info.attr("id", "info");
-            thTextReplace($info, infoHeaderNames);
             var $tr = $("<tr/>").prependTo($info);
             var $info_title = $("<td/>").text(row_key + " " + date).appendTo($tr);
             $info_title.attr("colspan", allProperties(info[0]).length);
@@ -709,8 +553,8 @@ function gridDateTable(option) {
 
             $info.css({
                 position: "absolute",
-                left: $(this).offset().left + 40,
-                top: $(this).offset().top - $info.height()
+                left: $(this).offset().left + $(this).width() + "px",
+                top: $(this).offset().top - $info.height() + "px"
             });
         }, function () {
             $("#info").remove();
@@ -756,22 +600,23 @@ function gridDateTable(option) {
             content[i] = groupObjectsByProperty(content[i], "date");
         }
         $target.children().remove();
-        var $table = $("<table/>").appendTo($target);
-        $table.addClass("custom_table");
-        var $tr = $("<tr><th/></tr>").appendTo($table);
-        for (i = 0; i < dates.length; i++) {
-            $td = $("<td/>").append(dateToDiv(dates[i])).css("padding", "0").appendTo($tr);
-        }
-        for (i = 0; i < row_keys.length; i++) {
-            var row_key = row_keys[i];
-            $tr = $("<tr/>").appendTo($table);
-            $("<th/>").text(row_key).appendTo($tr);
-            for (j = 0; j < dates.length; j++) {
-                var date = dates[j];
-                var $td = $("<td/>").appendTo($tr);
-                if (content[row_key][date] != undefined) {
-                    setCell($td, content, row_key, date);
-                }
+        var tableData = scrollableTable({
+            target: $target,
+            classes: ["auto_margin", "progress_table"],
+            contentHeight: 300,
+            contentWidth: 500,
+            columnHeaders: dates.map(function(date) {return dateToDiv(date);}),
+            rowHeaders: row_keys,
+            content: row_keys.map(function(row_key) {
+                return dates.map(function(date) {
+                    if (content[row_key][date] == undefined) return "";
+                    return content[row_key][date].length;
+                });
+            })
+        });
+        for (i = 0; i < tableData.cellOutDivs.length; i++) {
+            for (j = 0; j < tableData.cellOutDivs[i].length; j++) {
+                setCell(tableData.cellOutDivs[i][j], tableData.cellDivs[i][j], content, row_keys[i], dates[j]);
             }
         }
     });
@@ -779,6 +624,8 @@ function gridDateTable(option) {
 
 // All numeric values in pixels
 // target jQuery - parent. default: body
+//
+// classes string or string array. default: []
 //
 // content[][] - content: strings or elements. default: [["no content"]]
 // contentWidth. default: 400
@@ -795,14 +642,19 @@ function scrollableTable(option) {
         return val;
     }
 
-    function boxDiv(className) {
-        var $div = $("<div/>");
-        if (className != undefined) $div.addClass(className);
-        return $div;
-    }
+    var result = {
+        table: null,
+        rowOutDivs: [],
+        colOutDivs: [],
+        cellOutDivs: [],
+        rowDivs: [],
+        colDivs: [],
+        cellDivs: []
+    };
 
     if (option == undefined) option = [];
     var $target = getOption("target", $("body"));
+    var classes = getOption("classes", []);
     var rowHeaders = getOption("rowHeaders", []);
     var columnHeaders = getOption("columnHeaders", []);
     var content = getOption("content", [["no content"]]);
@@ -810,97 +662,124 @@ function scrollableTable(option) {
     var contentHeight = getOption("contentHeight", 200);
     var $cornerElement = getOption("cornerElement", undefined);
 
+    // local variables
+    var $tr, $td, $div, $inDiv;
+    var i, j;
+
     var $table = $("<table/>").appendTo($target);
+    result.table = $table;
     $table.addClass("clear_table");
+    if (typeof classes == "string") classes = [classes];
+    classes.forEach(function(el) {$table.addClass(el)});
+
+    // skeleton
     var $skel = [];
     for (i = 0; i < 3; i++) {
         $skel[i] = [];
-        var $tr = $("<tr/>").appendTo($table);
+        $tr = $("<tr/>").appendTo($table);
         for (j = 0; j < 3; j++) {
             $skel[i][j] = $("<td/>").appendTo($tr);
         }
     }
 
-    // binding to main table
-    var $vertical_slider = boxDiv().appendTo($skel[1][0]);
-    var $horizontal_slider = boxDiv().appendTo($skel[2][2]);
-    var $left_headers = boxDiv().appendTo($skel[1][1]);
-    var $top_headers = boxDiv().appendTo($skel[0][2]);
-    var $content = boxDiv().appendTo($skel[1][2]);
-    var $corner = boxDiv().appendTo($skel[0][1]);
+    // binding to skeleton
+    var $verticalSlider = $("<div/>").appendTo($skel[1][0]);
+    var $horizontalSlider = $("<div/>").appendTo($skel[2][2]);
+    var $leftHeaders = $("<div/>").appendTo($skel[1][1]);
+    var $topHeaders = $("<div/>").appendTo($skel[0][2]);
+    var $content = $("<div/>").appendTo($skel[1][2]);
+    var $corner = $("<div/>").appendTo($skel[0][1]);
     if ($cornerElement != undefined) $cornerElement.appendTo($corner);
 
     // colors
-    const far = "#ddf", near = "#eef", below = "#fff";
+    farColor = "#ddf";
+    nearColor = "#eef";
+    belowColor = "#fff";
     // styles
     $corner.addClass("corner");
-    $corner.css({backgroundColor: far});
-    $top_headers.addClass("top_header");
-    $left_headers.addClass("left_header");
+    $corner.css({backgroundColor: farColor});
+    $topHeaders.addClass("top_header");
+    $leftHeaders.addClass("left_header");
     $content.addClass("content");
 
-    // jQuery arrays for thin setting
-    var $row_header = [];
-    var $col_header = [];
+    // jQuery arrays for events
+    var $rowHeader = [];
+    var $colHeader = [];
     var $cell = [];
+    $table.data("rowHeader", $rowHeader);
+    $table.data("colHeader", $colHeader);
+    $table.data("cell", $cell);
 
     // data table
-    var $content_table = $("<table/>").appendTo($content);
+    var $contentTable = $("<table/>").appendTo($content);
     for (i = 0; i < content.length; i++) {
         $cell[i] = [];
-        var $tr = $("<tr/>").appendTo($content_table);
+        $tr = $("<tr/>").appendTo($contentTable);
         for (j = 0; j < content[i].length; j++) {
-            var $td = $("<td/>").appendTo($tr);
-            var $div = boxDiv().appendTo($td);
-            var $in_div = boxDiv("cell").appendTo($div);
+            $td = $("<td/>").appendTo($tr);
+            $div = $("<div/>").appendTo($td);
+            $inDiv = $("<div/>").appendTo($div);
+            $inDiv.addClass("cell");
             if (typeof content[i][j] == "string") {
-                $in_div.text(content[i][j]);
+                $inDiv.text(content[i][j]);
             } else {
-                $in_div.append(content[i][j]);
+                $inDiv.append(content[i][j]);
             }
+            if (j == 0) {
+                result.cellDivs.push([]);
+                result.cellOutDivs.push([]);
+            }
+            result.cellOutDivs[i].push($div);
+            result.cellDivs[i].push($inDiv);
             $cell[i][j] = $td;
         }
     }
 
     // left headers
-    var $left_table = $("<table/>").appendTo($left_headers);
+    var $leftTable = $("<table/>").appendTo($leftHeaders);
     for (i = 0; i < content.length; i++) {
-        var $tr = $("<tr/>").appendTo($left_table);
-        var $td = $("<td/>").appendTo($tr);
-        var $div = boxDiv().appendTo($td);
-        var $in_div = boxDiv("row_header").appendTo($div);
+        $tr = $("<tr/>").appendTo($leftTable);
+        $td = $("<td/>").appendTo($tr);
+        $div = $("<div/>").appendTo($td);
+        $inDiv = $("<div/>").appendTo($div);
+        $inDiv.addClass("row_header");
         if (i < rowHeaders.length) {
             if (typeof rowHeaders[i] == "string") {
-                $in_div.text(rowHeaders[i]);
+                $inDiv.text(rowHeaders[i]);
             } else {
-                $in_div.append(rowHeaders[i]);
+                $inDiv.append(rowHeaders[i]);
             }
         } else {
-            $in_div.text("row#"+i);
+            $inDiv.text("row#"+i);
         }
-        $row_header[i] = $td;
+        result.rowOutDivs.push($div);
+        result.rowDivs.push($inDiv);
+        $rowHeader[i] = $td;
     }
 
     // top headers
-    var $top_table = $("<table/>").appendTo($top_headers);
-    var $tr = $("<tr/>").appendTo($top_table);
+    var $topTable = $("<table/>").appendTo($topHeaders);
+    $tr = $("<tr/>").appendTo($topTable);
     for (i = 0; i < content[0].length; i++) {
-        var $td = $("<td/>").appendTo($tr);
-        var $div = boxDiv().appendTo($td);
-        var $in_div = boxDiv("col_header").appendTo($div);
+        $td = $("<td/>").appendTo($tr);
+        $div = $("<div/>").appendTo($td);
+        $inDiv = $("<div/>").appendTo($div);
+        $inDiv.addClass("col_header");
         if (i < columnHeaders.length) {
             if (typeof columnHeaders[i] == "string") {
-                $in_div.text(columnHeaders[i]);
+                $inDiv.text(columnHeaders[i]);
             } else {
-                $in_div.append(columnHeaders[i]);
+                $inDiv.append(columnHeaders[i]);
             }
         } else {
-            $in_div.text("row#"+i);
+            $inDiv.text("row#"+i);
         }
-        $col_header[i] = $td;
+        result.colOutDivs.push($div);
+        result.colDivs.push($inDiv);
+        $colHeader[i] = $td;
     }
 
-    var silverTables = [$content_table, $left_table, $top_table];
+    var silverTables = [$contentTable, $leftTable, $topTable];
     for (i = 0; i < silverTables.length; i++) {
         $("td", silverTables[i]).addClass("silver_border");
     }
@@ -909,156 +788,133 @@ function scrollableTable(option) {
         grayCells[i].addClass("gray_border");
     }
 
-    $table.data("row_header", $row_header);
-    $table.data("col_header", $col_header);
-    $table.data("cell", $cell);
-    for (i = 0; i < $row_header.length; i++) {
-        $row_header[i].data("row_index", i);
-        for (j = 0; j < $col_header.length; j++) {
+    for (i = 0; i < $rowHeader.length; i++) {
+        $rowHeader[i].data("row_index", i);
+        for (j = 0; j < $colHeader.length; j++) {
             if (i == 0) {
-                $col_header[j].data("col_index", j);
+                $colHeader[j].data("col_index", j);
             }
             $cell[i][j].data("row_index", i).data("col_index", j);
         }
     }
 
     function lightRow(num, color) {
-        $row_header[num].css({backgroundColor: color});
-        for (j = 0; j < $col_header.length; j++) {
+        $rowHeader[num].css({backgroundColor: color});
+        for (j = 0; j < $colHeader.length; j++) {
             $cell[num][j].css({backgroundColor: color});
         }
     }
 
     function lightCol(num, color) {
-        $col_header[num].css({backgroundColor: color});
-        for (j = 0; j < $row_header.length; j++) {
+        $colHeader[num].css({backgroundColor: color});
+        for (j = 0; j < $rowHeader.length; j++) {
             $cell[j][num].css({backgroundColor: color});
         }
     }
 
-    for (i = 0; i < $row_header.length; i++) {
-        lightRow(i, far);
-        $row_header[i].hover(function() {
-            var $table = $(this).closest(".clear_table");
-            var $row_header = $table.data("row_header");
-            var $col_header = $table.data("col_header");
-            var $cell = $table.data("cell");
-
-            lightRow($(this).data("row_index"), near);
+    for (i = 0; i < $rowHeader.length; i++) {
+        lightRow(i, farColor);
+        $rowHeader[i].hover(function() {
+            lightRow($(this).data("row_index"), nearColor);
         }, function() {
-            var $table = $(this).closest(".clear_table");
-            var $row_header = $table.data("row_header");
-            var $col_header = $table.data("col_header");
-            var $cell = $table.data("cell");
-
-            lightRow($(this).data("row_index"), far);
+            lightRow($(this).data("row_index"), farColor);
         });
     }
-    for (i = 0; i < $col_header.length; i++) {
-        lightCol(i, far);
-        $col_header[i].hover(function() {
-            var $table = $(this).closest(".clear_table");
-            var $row_header = $table.data("row_header");
-            var $col_header = $table.data("col_header");
-            var $cell = $table.data("cell");
-
-            lightCol($(this).data("col_index"), near);
+    for (i = 0; i < $colHeader.length; i++) {
+        lightCol(i, farColor);
+        $colHeader[i].hover(function() {
+            lightCol($(this).data("col_index"), nearColor);
         }, function() {
-            var $table = $(this).closest(".clear_table");
-            var $row_header = $table.data("row_header");
-            var $col_header = $table.data("col_header");
-            var $cell = $table.data("cell");
-
-            lightCol($(this).data("col_index"), far);
+            lightCol($(this).data("col_index"), farColor);
         });
     }
-    for (i = 0; i < $row_header.length; i++) {
-        for (j = 0; j < $col_header.length; j++) {
+    for (i = 0; i < $rowHeader.length; i++) {
+        for (j = 0; j < $colHeader.length; j++) {
             $cell[i][j].hover(function() {
                 var $table = $(this).closest(".clear_table");
                 var $row_header = $table.data("row_header");
                 var $col_header = $table.data("col_header");
                 var $cell = $table.data("cell");
 
-                lightRow($(this).data("row_index"), near);
-                lightCol($(this).data("col_index"), near);
-                $(this).css({backgroundColor: below});
+                lightRow($(this).data("row_index"), nearColor);
+                lightCol($(this).data("col_index"), nearColor);
+                $(this).css({backgroundColor: belowColor});
             }, function() {
                 var $table = $(this).closest(".clear_table");
                 var $row_header = $table.data("row_header");
                 var $col_header = $table.data("col_header");
                 var $cell = $table.data("cell");
 
-                lightRow($(this).data("row_index"), far);
-                lightCol($(this).data("col_index"), far);
+                lightRow($(this).data("row_index"), farColor);
+                lightCol($(this).data("col_index"), farColor);
             });
         }
     }
 
     // correct row heights
-    for (i = 0; i < $row_header.length; i++) {
-        var maxHeight = $row_header[i].children().height();
-        for (j = 0; j < $col_header.length; j++) {
+    for (i = 0; i < $rowHeader.length; i++) {
+        var maxHeight = $rowHeader[i].children().height();
+        for (j = 0; j < $colHeader.length; j++) {
             maxHeight = Math.max(maxHeight, $cell[i][j].children().height());
         }
-        $row_header[i].children().height(maxHeight);
-        for (j = 0; j < $col_header.length; j++) {
+        $rowHeader[i].children().height(maxHeight);
+        for (j = 0; j < $colHeader.length; j++) {
             $cell[i][j].children().height(maxHeight);
         }
     }
 
     // correct column width
-    for (i = 0; i < $col_header.length; i++) {
-        var maxWidth = $col_header[i].children().width();
-        for (j = 0; j < $row_header.length; j++) {
+    for (i = 0; i < $colHeader.length; i++) {
+        var maxWidth = $colHeader[i].children().width();
+        for (j = 0; j < $rowHeader.length; j++) {
             maxWidth = Math.max(maxWidth, $cell[j][i].children().width());
         }
-        $col_header[i].children().width(maxWidth);
-        for (j = 0; j < $row_header.length; j++) {
+        $colHeader[i].children().width(maxWidth);
+        for (j = 0; j < $rowHeader.length; j++) {
             $cell[j][i].children().width(maxWidth);
         }
     }
 
     // correct left header
     maxWidth = $corner.width();
-    for (i = 0; i < $row_header.length; i++) {
-        maxWidth = Math.max(maxWidth, $row_header[i].children().width());
+    for (i = 0; i < $rowHeader.length; i++) {
+        maxWidth = Math.max(maxWidth, $rowHeader[i].children().width());
     }
     $corner.width(maxWidth);
-    for (i = 0; i < $row_header.length; i++) {
-        $row_header[i].children().width(maxWidth);
+    for (i = 0; i < $rowHeader.length; i++) {
+        $rowHeader[i].children().width(maxWidth);
     }
     
     // correct top header
     maxHeight = $corner.height();
-    for (i = 0; i < $col_header.length; i++) {
-        maxHeight = Math.max(maxHeight, $col_header[i].children().height());
+    for (i = 0; i < $colHeader.length; i++) {
+        maxHeight = Math.max(maxHeight, $colHeader[i].children().height());
     }
     $corner.height(maxHeight);
-    for (i = 0; i < $col_header.length; i++) {
-        $col_header[i].children().height(maxHeight);
+    for (i = 0; i < $colHeader.length; i++) {
+        $colHeader[i].children().height(maxHeight);
     }
 
     // correct content sizes
-    maxHeight = $content_table.height();
+    maxHeight = $contentTable.height();
     maxHeight = Math.min(maxHeight, contentHeight);
-    $vertical_slider.height(maxHeight);
-    $left_headers.height(maxHeight);
+    $verticalSlider.height(maxHeight);
+    $leftHeaders.height(maxHeight);
     $content.height(maxHeight);
 
-    maxWidth = $content_table.width();
+    maxWidth = $contentTable.width();
     maxWidth = Math.min(maxWidth, contentWidth);
-    $horizontal_slider.width(maxWidth);
-    $top_headers.width(maxWidth);
+    $horizontalSlider.width(maxWidth);
+    $topHeaders.width(maxWidth);
     $content.width(maxWidth);
 
     // set sliders
     var left_interval = $content.get(0).scrollHeight - $content.get(0).clientHeight;
     if (left_interval < 1) left_interval = 1;
     $table.data("content", $content);
-    $table.data("leftHeader", $left_headers);
-    $table.data("topHeader", $top_headers);
-    $vertical_slider.slider({
+    $table.data("leftHeader", $leftHeaders);
+    $table.data("topHeader", $topHeaders);
+    $verticalSlider.slider({
         //range: "max",
         animate: "fast",
         orientation: "vertical",
@@ -1067,19 +923,19 @@ function scrollableTable(option) {
         value: left_interval,
         disabled: left_interval == 1,
         slide: function() {
-            var val = $vertical_slider.slider("option", "max") - $vertical_slider.slider("option", "value");
+            var val = $verticalSlider.slider("option", "max") - $verticalSlider.slider("option", "value");
             $table = $(this).closest(".clear_table");
             $table.data("content").scrollTop(val);
             $table.data("leftHeader").scrollTop(val);
         }
     });
-    $vertical_slider.addClass("slider_div");
+    $verticalSlider.addClass("slider_div");
     $skel[1][0].addClass("dont_cut");
-    $vertical_slider.addClass("dont_cut");
+    $verticalSlider.addClass("dont_cut");
 
     var top_interval = $content.get(0).scrollWidth - $content.get(0).clientWidth;
     if (top_interval < 1) top_interval = 1;
-    $horizontal_slider.slider({
+    $horizontalSlider.slider({
         //range: "min",
         animate: "fast",
         orientation: "horizontal",
@@ -1088,13 +944,14 @@ function scrollableTable(option) {
         value: 0,
         disabled: top_interval == 1,
         slide: function() {
-            var val = $horizontal_slider.slider("option", "value");
+            var val = $horizontalSlider.slider("option", "value");
             $table = $(this).closest(".clear_table");
-            //showMessage($table.data("content").scrollLeft());
             $table.data("content").scrollLeft(val);
             $table.data("topHeader").scrollLeft(val);
         }
     });
     $skel[2][2].addClass("dont_cut");
-    $horizontal_slider.addClass("dont_cut");
+    $horizontalSlider.addClass("dont_cut");
+
+    return result;
 }

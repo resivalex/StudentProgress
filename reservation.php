@@ -4,8 +4,8 @@ include_once("template.php");
 
 $title = $document->createElement("title", "Резервирование");
 $head->appendChild($title);
+$head->appendChild(scriptfs("javascript/reservation.js"));
 
-$body->appendChild(fs("h1", "Создать копию"));
-$body->appendChild(fs("h1", "Восстановить из копии"));
+loadfs($body, "templates/reservation_base.php");
 
 out_page();

@@ -23,7 +23,13 @@ $(document).ready(function() {
             query: query,
             groupProperty: "group_name",
             dateProperty: "time",
-            infoHeaderNames: ["Дисциплина", "Аудитория", "Преподаватель", "Время", "ID"]
+            infoHeaderNamesMap: {
+                "subject_name": "Дисциплина",
+                "auditory_name": "Аудитория",
+                "user_name": "Преподаватель",
+                "time": "Время",
+                "id": "ID"
+            }
         });
     }
 
@@ -89,24 +95,4 @@ $(document).ready(function() {
             }
         });
     });
-});
-
-$(document).ready(function() {
-    var kasha = [];
-    for (i = 0; i < 25; i++) {
-        kasha[i] = [];
-        for (j = 0; j < 25; j++) {
-            kasha[i][j] = "+";
-        }
-    }
-    var h = [];
-    for (i = 10; i <= 25; i++) {
-        h.push(dateToDiv("2015-02-"+i));
-    }
-    scrollableTable({
-        target: $("#test"),
-        content: kasha,
-        columnHeaders: h
-    });
-    $("#test").children().addClass("auto_margin");
 });

@@ -22,7 +22,11 @@ function onScheduleForStudentLoad() {
             query: query,
             groupProperty: "subject_name",
             dateProperty: "lesson_time",
-            infoHeaderNames: ["Преподаватель", "Аудитория", "Время"]
+            infoHeaderNamesMap: {
+                "teacher_name": "Преподаватель",
+                "auditory_name": "Аудитория",
+                "lesson_time": "Время"
+            }
         });
     }
 
