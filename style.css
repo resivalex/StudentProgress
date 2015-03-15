@@ -372,8 +372,8 @@ body {
 .clear_table .corner {
     border-left: solid 3px gray;
     border-top: solid 3px gray;
-    border-right: solid 1px silver;
-    border-bottom: solid 1px silver;
+    border-right: solid 2px silver;
+    border-bottom: solid 2px silver;
 }
 
 .clear_table .left_header {
@@ -416,3 +416,16 @@ body {
     padding: 10px;
     font-weight: bold;
 }
+
+/* for students on marks_for_teacher.php */
+.top_padding div.col_header, .top_padding div.corner_div  {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* melting element on hover to 60% */
+.melting:hover {
+    opacity: 0.6;
+}
+

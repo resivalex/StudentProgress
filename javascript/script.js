@@ -10,7 +10,9 @@ $(document).ready(function() {
         text = text.replace(/SELECT /g, "SELECT<br>");
         text = text.replace(/ SELECT/g, "<br>SELECT");
         text = text.replace(/ VALUES/g, "<br>VALUES");
-        $(this).html(text);
+        if (text != $(this).html()) {
+            $(this).html(text);
+        }
     });
     navigationPrepare();
 });
@@ -482,11 +484,22 @@ function objectsToArrays(val) {
 
 function toIndexArray(val) {
     var ind = 0;
+    var arr = [];
     for (var i in val) {
-        val[ind++] = val[i];
-        delete val[i];
+        arr.push(val[i])
     }
-    return val;
+    return arr;
+}
+
+function rotable2DArray(arr) {
+    var res = [];
+    for (i = 0; i < arr.length; i++) {
+        for (j = 0; j < arr[i].length; j++) {
+            if (i == 0) res.push([]);
+            res[j][i] = arr[i][j];
+        }
+    }
+    return res;
 }
 
 // return div 40x57 year, month, day from top to bottom
@@ -635,6 +648,14 @@ function gridDateTable(option) {
 // columnHeaders[] - column names: strings or elements. default: "col#N"
 //
 // cornerElement jQuery - any. default: nothing
+//
+// result.table - table
+// result.rowOutDivs,
+// result.colOutDivs,
+// result.cellOutDivs - divs with strict sizes
+// result.rowDivs,
+// result.colDivs,
+// result.cellDivs - divs in strict divs, can be smaller
 function scrollableTable(option) {
     function getOption(name, init) {
         var val = option[name];
@@ -647,9 +668,11 @@ function scrollableTable(option) {
         rowOutDivs: [],
         colOutDivs: [],
         cellOutDivs: [],
+        cornerOut: null,
         rowDivs: [],
         colDivs: [],
-        cellDivs: []
+        cellDivs: [],
+        corner: null
     };
 
     if (option == undefined) option = [];
@@ -689,7 +712,11 @@ function scrollableTable(option) {
     var $topHeaders = $("<div/>").appendTo($skel[0][2]);
     var $content = $("<div/>").appendTo($skel[1][2]);
     var $corner = $("<div/>").appendTo($skel[0][1]);
-    if ($cornerElement != undefined) $cornerElement.appendTo($corner);
+    var $cornerDiv = $("<div/>").appendTo($corner);
+    $cornerDiv.addClass("corner_div");
+    result.cornerOut = $corner;
+    result.corner = $cornerDiv;
+    if ($cornerElement != undefined) $cornerElement.appendTo($cornerDiv);
 
     // colors
     farColor = "#ddf";
@@ -772,7 +799,7 @@ function scrollableTable(option) {
                 $inDiv.append(columnHeaders[i]);
             }
         } else {
-            $inDiv.text("row#"+i);
+            $inDiv.text("col#"+i);
         }
         result.colOutDivs.push($div);
         result.colDivs.push($inDiv);
