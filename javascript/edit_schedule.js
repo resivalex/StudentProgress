@@ -17,7 +17,66 @@ $(document).ready(function() {
             "JOIN subjects ON (subject_id = subjects.id) " +
             "JOIN auditories ON (auditory_id = auditories.id) " +
             "JOIN users ON (teacher_id = users.id) " +
-            "ORDER BY lessons.id";
+            "ORDER BY time";
+        function getTipTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap) {
+            var info = content[row_key][date];
+            if (info === undefined) return undefined;
+            info = objectsToArrays(info);
+            for (var i in info) {
+                info[i].unshift(infoHeaderNamesMap[i]? infoHeaderNamesMap[i] : i);
+            }
+            info = rotable2DArray(toIndexArray(info));
+            var result = devidedTable(info);
+            for (i = 0; i < result.td[0].length; i++) {
+                result.td[0][i].css({fontWeight: "bold"});
+            }
+            for (i = 0; i < result.td.length; i++) {
+                result.td[i][4].remove();
+            }
+            result.table.addClass("tip_table");
+
+            return result.table;
+        }
+        function getNextTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap) {
+            var info = content[row_key][date];
+            if (info === undefined) return undefined;
+            info = objectsToArrays(info);
+            for (var i in info) {
+                info[i].unshift(infoHeaderNamesMap[i]? infoHeaderNamesMap[i] : i);
+            }
+            info = rotable2DArray(toIndexArray(info));
+            var result = devidedTable(info);
+            for (i = 0; i < result.td[0].length; i++) {
+                result.td[0][i].css({fontWeight: "bold"});
+            }
+            result.td[0][4].text("");
+            for (i = 1; i < result.td.length; i++) {
+                var $td = result.td[i][4];
+                var lessonId = $td.text();
+                $td.text("");
+                var $button = $("<button/>").text("Удалить").appendTo($td);
+                $button.click(function() {
+                    var text =
+                        "DELETE FROM lessons WHERE lessons.id = ?";
+                    sqlQuery([text, lessonId], function(response) {
+                        if ($.parseJSON(response) === true) {
+                            showMessage("Удалено");
+                            $("#schedule").children().remove();
+                            loadSchedule();
+                        } else {
+                            showMessage("Неудача");
+                        }
+                    });
+                });
+            }
+            result.table.addClass("custom_table");
+            var $tr = $("<tr/>").prependTo(result.table);
+            var $info_title = $("<td/>").text(row_key + " " + date).appendTo($tr);
+            $info_title.attr("colspan", allProperties(info[0]).length);
+            $info_title.css({textAlign: "center", fontWeight: "bold"});
+
+            return result.table;
+        }
         gridDateTable({
             targetId: "schedule",
             query: query,
@@ -29,7 +88,9 @@ $(document).ready(function() {
                 "user_name": "Преподаватель",
                 "time": "Время",
                 "id": "ID"
-            }
+            },
+            getTipTable: getTipTable,
+            getNextTable: getNextTable
         });
     }
 

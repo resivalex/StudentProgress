@@ -99,6 +99,31 @@ function showJSON(val, title_text) {
     showMessage(JSON.stringify(val), title_text);
 }
 
+function devidedTable(arr) {
+    var i, j;
+    var result = {
+        table: null,
+        tr: [],
+        td: []
+    };
+
+    result.table = $("<table/>");
+    for (i = 0; i < arr.length; i++) {
+        result.tr.push($("<tr/>").appendTo(result.table));
+        result.td.push([]);
+        for (j = 0; j < arr[i].length; j++) {
+            result.td[i].push($("<td/>").appendTo(result.tr[i]));
+            if (typeof arr[i][j] === "string") {
+                result.td[i][j].text(arr[i][j]);
+            } else {
+                result.td[i][j].append(arr[i][j]);
+            }
+        }
+    }
+
+    return result;
+}
+
 function getTable(text, with_header) {
     var $table = $("<table/>");
     if (with_header !== undefined) {
@@ -542,53 +567,82 @@ function gridDateTable(option) {
         if (option[param] == undefined) showMessage("gridDateTable need in '"+param+"' param");
         return option[param];
     }
+    function defaultTipTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap) {
+        var info = content[row_key][date];
+        if (info === undefined) return undefined;
+        var $table = $(getTable(objectsToArrays(info), infoHeaderNamesMap));
+        $table.addClass("tip_table");
+        var $tr = $("<tr/>").prependTo($table);
+
+        return $table;
+    }
+    function defaultNextTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap) {
+        var info = content[row_key][date];
+        if (info === undefined) return undefined;
+        var $table = $(getTable(objectsToArrays(info), infoHeaderNamesMap));
+        $table.addClass("custom_table").addClass("auto_margin");
+        var $tr = $("<tr/>").prependTo($table);
+        var $info_title = $("<td/>").text(row_key + " " + date).appendTo($tr);
+        $info_title.attr("colspan", allProperties(info[0]).length);
+        $info_title.css({textAlign: "center", fontWeight: "bold"});
+
+        return $table;
+    }
     var targetId = getWithCheck("targetId");
     var query = getWithCheck("query");
     var groupProperty = getWithCheck("groupProperty");
     var dateProperty = getWithCheck("dateProperty");
     var infoHeaderNamesMap = getWithCheck("infoHeaderNamesMap");
     var $target = $("#"+targetId);
+    var getTipTable = option["getTipTable"];
+    if (getTipTable === undefined) getTipTable = defaultTipTable;
+    var getNextTable = option["getNextTable"];
+    if (getNextTable === undefined) getNextTable = defaultNextTable;
     function setCell($cell, $for_text, content, row_key, date) {
         var info = content[row_key][date];
         if (info === undefined) return;
         $cell.css({cursor: "pointer", textAlign: "center"});
         $for_text.text(info.length);
         $cell.hover(function () {
-            $("#info").remove();
-            var $info = $(getTable(objectsToArrays(info), infoHeaderNamesMap)).appendTo($target);
-            $info.addClass("tip_table");
-            $info.css({position: "absolute"});
-            $info.attr("id", "info");
-            var $tr = $("<tr/>").prependTo($info);
-            var $info_title = $("<td/>").text(row_key + " " + date).appendTo($tr);
-            $info_title.attr("colspan", allProperties(info[0]).length);
-            $info_title.css("text-align", "center");
-
-            $info.css({
+            var $table = getTipTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap);
+            $table.appendTo($target);
+            $table.css({
                 position: "absolute",
-                left: $(this).offset().left + $(this).width() + "px",
-                top: $(this).offset().top - $info.height() + "px"
+                left: $cell.offset().left + $cell.width() + "px",
+                top: $cell.offset().top - $table.height() + "px"
             });
+            $table.attr("id", "info");
         }, function () {
             $("#info").remove();
         }).click(function() {
             var $info = $("#info");
-            var $res = $info.clone().appendTo($target);
+            var $info_clone = $info.clone();
+            $info_clone.removeAttr("id");
+            $info.remove();
+            var $res = $("#res");
+            if ($res.size()) {
+                $res.before($info_clone);
+            } else {
+                $info_clone.appendTo($target);
+            }
+            //$res.css({display: "none"});
 
             $("*", document).removeClass("selected_cell");
             $(this).addClass("selected_cell");
-            $("#res").remove();
-            $res.attr("id", "res");
-            $res.css({position: "static"});
-            $res.position({
-                of: $info,
-                my: "left top",
-                at: "left top"
-            });
-            $info.remove();
-            $res.animate({left: 0, top: 0}, function () {
-                $res.addClass("custom_table");
-                $res.removeClass("tip_table");
+            $info_clone.css({position: "static"});
+            var offset = $info_clone.offset();
+            $info_clone.css({position: "absolute"});
+            //$info_clone.css({
+            //    position: "absolute",
+            //    left: $cell.offset().left + $cell.width() + "px",
+            //    top: $cell.offset().top - $info_clone.height() + "px"
+            //});
+            //$res.css({display: "table"});
+            $info_clone.animate({left: offset.left, top: offset.top}, function () {
+                $info_clone.remove();
+                var $next = getNextTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap).appendTo($target);
+                $("#res").remove();
+                $next.attr("id", "res");
             });
         });
     }

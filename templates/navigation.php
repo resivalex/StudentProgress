@@ -9,7 +9,7 @@ $json = <<<JS
                 "url": "accounts.php"
             },
             {
-                "title": "Редактировать таблицы",
+                "title": "Редактирование таблиц",
                 "url": "edit_tables.php"
             },
             {

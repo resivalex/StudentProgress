@@ -2,7 +2,7 @@
 
 include_once("template.php");
 
-$head->appendChild(fs("title", "Редактировать таблицы"));
+$head->appendChild(fs("title", "Редактирование таблиц"));
 $head->appendChild(scriptfs("javascript/edit_tables.js"));
 
 $vars["header"] = "Аудитории";
