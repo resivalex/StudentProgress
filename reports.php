@@ -2,20 +2,9 @@
 
 include_once("template.php");
 
-$title = $document->createElement("title", "Отчёты");
-$head->appendChild($title);
+$head->appendChild(fs("title", "Отчёты по количеству студентов"));
+$head->appendChild(scriptfs("javascript/reports.js"));
 
-$query =
-<<<SQL
-SELECT COUNT(*) AS mark_count
-FROM marks
-SQL;
-
-$result = sql_query($query);
-
-$result['mark_count'][0] .= ' (общее количество отметок)';
-
-$body->appendChild(fs('h3', 'Отчёт по количеству отметок'));
-$body->appendChild(custom_grid_table($result));
+loadfs($body, "templates/reports_base.php");
 
 out_page();
