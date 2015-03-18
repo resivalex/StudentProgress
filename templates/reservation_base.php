@@ -3,7 +3,7 @@
         <img class="melting" src="images/backup.png">
     </a>
     <br>
-    <a href="https://ru.wikipedia.org/wiki/JSON">
+    <a target="_blank" href="https://ru.wikipedia.org/wiki/JSON">
         <img class="melting" src="images/json.png">
     </a>
     <br>

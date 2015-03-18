@@ -65,7 +65,7 @@ function navigationPrepare() {
 function showMessage(message_text, title_text) {
     message_text = message_text.toString();
     if (title_text == undefined) {
-        const max_len = 30;
+        var max_len = 30;
         title_text = message_text.substr(0, max_len) + (message_text.length > max_len? "..." : "");
     }
     if (document.getElementById("message_layer") == undefined) {
@@ -174,7 +174,7 @@ function getDeleteQueryById(table_name, id) {
 }
 
 function getDeleteQueryForUser(table_name, id) {
-    const tables = ["students", "teachers", "chiefs", "users"/*must be last*/];
+    var tables = ["students", "teachers", "chiefs", "users"/*must be last*/];
     var query = [];
     for (i = 0; i < tables.length; i++) {
         query.push("DELETE FROM "+tables[i]+" WHERE id = ?", id);
@@ -361,8 +361,8 @@ function groupObjectsByProperty(objects, prop) {
 }
 
 function csvDownloadForm() {
-    const table_selector = "table";
-    const active_table_selector = "table.current";
+    var table_selector = "table";
+    var active_table_selector = "table.current";
 
     function onSelection() {
         var $body = $("body");
@@ -382,7 +382,7 @@ function csvDownloadForm() {
         $body.off("click", active_table_selector, onTableClickInSelection);
     }
 
-    const selection_style = [["border-style", "solid"], ["border-width", "3.013px"], ["border-color", "red"]];
+    var selection_style = [["border-style", "solid"], ["border-width", "3.013px"], ["border-color", "red"]];
 
     function checkCurrent() {
         function changeStyleProperty(el, prop, val) {
@@ -616,6 +616,7 @@ function gridDateTable(option) {
             $("#info").remove();
         }).click(function() {
             var $info = $("#info");
+            if ($info.size() == 0) return;
             var $info_clone = $info.clone();
             $info_clone.removeAttr("id");
             $info.remove();
@@ -657,29 +658,40 @@ function gridDateTable(option) {
         }
         content = arraysToObjects(content);
         var dates = Object();
+        var i, j;
         for (i = 0; i < content.length; i++) {
             dates[content[i]["date"]] = true;
         }
         dates = allProperties(dates).sort();
         content = groupObjectsByProperty(content, groupProperty);
         var row_keys = allProperties(content).sort();
-        for (var i in content) {
+        for (i in content) {
             content[i] = groupObjectsByProperty(content[i], "date");
         }
         $target.children().remove();
+        var tableContent = [];
+        for (i = 0; i < row_keys.length; i++) {
+            tableContent[i] = [];
+            for (j = 0; j < dates.length; j++) {
+                if (content[row_keys[i]][dates[j]] == undefined) {
+                    tableContent[i][j] = "";
+                } else {
+                    tableContent[i][j] = content[row_keys[i]][dates[j]].length;
+                }
+            }
+        }
+        var dateDivs = [];
+        for (i = 0; i < dates.length; i++) {
+            dateDivs[i] = dateToDiv(dates[i]);
+        }
         var tableData = scrollableTable({
             target: $target,
             classes: ["auto_margin", "progress_table"],
             contentHeight: 300,
             contentWidth: 500,
-            columnHeaders: dates.map(function(date) {return dateToDiv(date);}),
+            columnHeaders: dateDivs,
             rowHeaders: row_keys,
-            content: row_keys.map(function(row_key) {
-                return dates.map(function(date) {
-                    if (content[row_key][date] == undefined) return "";
-                    return content[row_key][date].length;
-                });
-            })
+            content: tableContent
         });
         for (i = 0; i < tableData.cellOutDivs.length; i++) {
             for (j = 0; j < tableData.cellOutDivs[i].length; j++) {
@@ -747,7 +759,9 @@ function scrollableTable(option) {
     result.table = $table;
     $table.addClass("clear_table");
     if (typeof classes == "string") classes = [classes];
-    classes.forEach(function(el) {$table.addClass(el)});
+    for (i = 0; i < classes.length; i++) {
+        $table.addClass(classes[i]);
+    }
 
     // skeleton
     var $skel = [];
@@ -965,7 +979,7 @@ function scrollableTable(option) {
     for (i = 0; i < $rowHeader.length; i++) {
         $rowHeader[i].children().width(maxWidth);
     }
-    
+
     // correct top header
     maxHeight = $corner.height();
     for (i = 0; i < $colHeader.length; i++) {

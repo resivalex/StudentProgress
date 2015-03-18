@@ -111,7 +111,7 @@ function onMarksForTeacherLoad() {
     //}
 
     function loadMarks() {
-        const commentLengthLimit = 20;
+        var commentLengthLimit = 20;
         var i;
         $("#marks").children().remove();
         var text =
@@ -163,7 +163,7 @@ function onMarksForTeacherLoad() {
     function loadStudentList(group_id) {
         removeStudentList();
         //additionTable();
-        const commentLengthLimit = 20;
+        var commentLengthLimit = 20;
         $("#students").children().remove();
         var query = [
             "SELECT current_students.id AS student_id, " +
@@ -192,34 +192,40 @@ function onMarksForTeacherLoad() {
             $("#lesson_id").val()
         ];
         sqlQuery(query, function(response) {
+            var i;
             response = $.parseJSON(response);
             response = toIndexArray(response);
             response = rotable2DArray(response);
-            //showMessage(response.length);
+            var tableContent = [];
+            for (i = 0; i < response.length; i++) {
+                var el = response[i][3];
+                tableContent[i] = [response[i][2],
+                    el === null? "" : el.substr(0, commentLengthLimit) +
+                        el.length > commentLengthLimit? "..." : ""
+                ];
+            }
+            var rowHeaders = [];
+            for (i = 0; i < response.length; i++) {
+                rowHeaders[i] = response[i][1];
+            }
             var data = scrollableTable({
                 target: $("#students"),
                 classes: ["auto_margin", "progress_table", "top_padding"],
-                content: response.map(function(el) {
-                    return [el[2],
-                        el[3] === null? "" : el[3].substr(0, commentLengthLimit) +
-                        (el[3].length > commentLengthLimit? "..." : "")
-                    ]
-                }),
-                rowHeaders: response.map(function(el) {return [el[1]]}),
+                content: tableContent,
+                rowHeaders: rowHeaders,
                 columnHeaders: ["Посл.", "Комментарий"],
                 cornerElement: $("<span/>").text("Студенты")
             });
             for (i = 0; i < data.rowOutDivs.length; i++) {
-                data.rowOutDivs[i].data("student_id", response[i][0]);
-            }
-            data.rowOutDivs.forEach(function($el) {
+                var $el = data.rowOutDivs[i];
+                $el.data("student_id", response[i][0]);
                 $el.css({cursor: "pointer"}).click(function() {
                     $(".selected_cell", $(this).closest("table")).removeClass("selected_cell");
                     $(this).addClass("selected_cell");
                     $("#students").data("student_id", $(this).data("student_id"));
                     loadMarks();
                 })
-            })
+            }
         });
         //var query = [
         //    "SELECT students.id AS id, concat(users.surname, ' ', users.name, ' ', users.patronymic) AS name FROM lessons " +

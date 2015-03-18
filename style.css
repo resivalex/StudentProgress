@@ -4,6 +4,10 @@ body {
     margin: 0;
 }
 
+a img {
+    border: none;
+}
+
 .grid_table {
 	border-collapse: collapse;
 	border-style: solid;
@@ -270,6 +274,7 @@ body {
     height: 30px;
     background-color: #eef;
     margin-bottom: 10px;
+    position: relative;
 }
 .navigation_menu, .navigation_menu ul {
     list-style: outside none none;
@@ -335,6 +340,7 @@ body {
     display: table;
     position: absolute;
     right: 10px;
+    top: 3px;
 }
 
 /* log table */
@@ -432,6 +438,7 @@ body {
 /* melting element on hover to 60% */
 .melting:hover {
     opacity: 0.6;
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);
 }
 
 /* for reports */
@@ -455,4 +462,25 @@ body {
 .filter_row {
     background-color: #fff;
     padding: 5px;
+    margin: 2px;
 }
+
+.filter_row .ui-state-active {
+    background: none;
+    background-color: #aaf;
+}
+
+/*.filter_row input[type=checkbox] {*/
+    /*display: none;*/
+/*}*/
+
+/*.filter_row input[type=checkbox] + label {*/
+    /*background-color: #ddf;*/
+    /*padding: 5px;*/
+    /*margin: 3px;*/
+    /*display: block;*/
+/*}*/
+
+/*.filter_row input[type=checkbox]:checked + label {*/
+    /*background-color: #aaf;*/
+/*}*/

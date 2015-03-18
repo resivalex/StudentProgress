@@ -1,10 +1,31 @@
 <fieldset class="filter_group">
     <legend>Группы</legend>
     <div id="courses" class="filter_row">
-        <label><input type="checkbox">Course1</label>
+        <input id="course_all" type="checkbox">
+        <label for="course_all">Любой</label>
+        <input id="course_1" type="checkbox">
+        <label for="course_1">1</label>
+        <input id="course_2" type="checkbox">
+        <label for="course_2">2</label>
+        <input id="course_3" type="checkbox">
+        <label for="course_3">3</label>
+        <input id="course_4" type="checkbox">
+        <label for="course_4">4</label>
+        <input id="course_5" type="checkbox">
+        <label for="course_5">5</label>
     </div>
     <div id="groups" class="filter_row">
-        <label><input type="checkbox">Group1</label>
+        <?php
+        $res = sql_query("SELECT id, name FROM groups");
+        for ($i = 0; $i < count($res["id"]); $i++) {
+            $id = $res["id"][$i];
+            $name = $res["name"][$i];
+            echo <<<HTML
+        <input id="group_$id" type="checkbox">
+        <label for="group_$id">$name</label>
+HTML;
+        }
+        ?>
     </div>
 </fieldset>
 <fieldset class="filter_group">
@@ -19,13 +40,33 @@
 <fieldset class="filter_group">
     <legend>Детали занятия</legend>
     <div id="subjects" class="filter_row">
-        <label><input type="checkbox">Subject1</label>
+        <?php
+        $res = sql_query("SELECT id, name FROM subjects");
+        for ($i = 0; $i < count($res["id"]); $i++) {
+            $id = $res["id"][$i];
+            $name = $res["name"][$i];
+            echo <<<HTML
+        <input id="subject_$id" type="checkbox">
+        <label for="subject_$id">$name</label>
+HTML;
+        }
+        ?>
     </div>
     <div id="teachers" class="filter_row">
         <label><input type="checkbox">Teacher1</label>
     </div>
     <div id="auditories" class="filter_row">
-        <label><input type="checkbox">Auditory1</label>
+        <?php
+        $res = sql_query("SELECT id, name FROM auditories");
+        for ($i = 0; $i < count($res["id"]); $i++) {
+            $id = $res["id"][$i];
+            $name = $res["name"][$i];
+            echo <<<HTML
+        <input id="auditory_$id" type="checkbox">
+        <label for="auditory_$id">$name</label>
+HTML;
+        }
+        ?>
     </div>
 </fieldset>
 <fieldset class="filter_group">

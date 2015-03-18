@@ -80,19 +80,19 @@ if (isset($ok)) {
 //HTML;
     $content = json_decode($content, true);
     echo "<div class=\"auto_margin\" style=\"width: 90%;\">";
+    /** @var mysqli $sql */
+    $sql = $GLOBALS["sql"];
     foreach ($content as $table_name => $table) {
         foreach ($table as $row) {
             $query_left = "INSERT INTO $table_name (";
             $query_right = "VALUES (";
             foreach ($row as $field => $value) {
                 $query_left .= $field . ", ";
-                $query_right .= "'" . $value . "', ";
+                $query_right .= "'" . $sql->escape_string($value) . "', ";
             }
             $query_left = substr($query_left, 0, count($query_left) - 3);
             $query_right = substr($query_right, 0, count($query_right) - 3);
             $query = $query_left . ") " . $query_right . ")";
-            /** @var mysqli $sql */
-            $sql = $GLOBALS["sql"];
             $res = $sql->query($query) ? "OK" : $sql->error;
             $color = $res == "OK" ? "#afa" : "#faa";
             echo "<pre style=\"background-color: $color; overflow: auto;\">$query\n$res</pre>";

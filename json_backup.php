@@ -10,6 +10,7 @@ $tables = [
     "groups",
     "chiefs",
     "teachers",
+    "students",
     "subjects",
     "auditories",
     "lessons",

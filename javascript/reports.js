@@ -1,4 +1,12 @@
 $(document).ready(makeTestReport);
+$(document).ready(makeBeauty);
+
+function makeBeauty() {
+    $("#courses").buttonset();
+    $("#groups").buttonset();
+    $("#subjects").buttonset();
+    $("#auditories").buttonset();
+}
 
 function makeTestReport() {
     var text =
