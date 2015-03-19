@@ -63,6 +63,8 @@ function navigationPrepare() {
 
 // показать временное сообщение
 function showMessage(message_text, title_text) {
+    if (message_text === null) message_text = "showMessage got 'null'";
+    if (message_text === undefined) message_text = "showMessage got 'undefined'";
     message_text = message_text.toString();
     if (title_text == undefined) {
         var max_len = 30;
