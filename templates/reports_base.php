@@ -50,6 +50,18 @@ function auditories() {
     checkbox_set("auditory", $res["id"], $res["name"]);
 }
 
+function mark_options() {
+    $res = sql_query("SELECT id, short_name FROM mark_types");
+    array_unshift($res["id"], 0);
+    array_unshift($res["short_name"], "Любая");
+    for ($i = 0; $i < count($res["id"]); $i++) {
+        echo <<<HTML
+<option value="{$res["id"][$i]}">{$res["short_name"][$i]}</option>
+HTML;
+
+    }
+}
+
 ?>
 
 <fieldset class="filter_group">
@@ -59,11 +71,17 @@ function auditories() {
 </fieldset>
 <fieldset class="filter_group">
     <legend>Отметки</legend>
-    <div id="last_mark" class="filter_row">
-        <label>Last mark</label><select></select>
+    <div class="filter_row">
+        <label style="font-family: Verdana;">Итоговая </label>
+        <select id="is">
+            <?php mark_options(); ?>
+        </select>
     </div>
-    <div id="had_mark" class="filter_row">
-        <label>Had mark<select></select></label>
+    <div class="filter_row">
+        <label style="font-family: Verdana;">Была </label>
+        <select id="was">
+            <?php mark_options(); ?>
+        </select>
     </div>
 </fieldset>
 <fieldset class="filter_group">

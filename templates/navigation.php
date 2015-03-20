@@ -60,7 +60,7 @@ $json = <<<JS
         "title": "Отчёты",
         "content": [
             {
-                "title": "Количество отметок",
+                "title": "Списки студентов",
                 "url": "reports.php"
             }
         ]

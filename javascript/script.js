@@ -10,6 +10,7 @@ $(document).ready(function() {
         text = text.replace(/SELECT /g, "SELECT<br>");
         text = text.replace(/ SELECT/g, "<br>SELECT");
         text = text.replace(/ VALUES/g, "<br>VALUES");
+        text = text.replace(/ ORDER/g, "<br>ORDER");
         if (text != $(this).html()) {
             $(this).html(text);
         }

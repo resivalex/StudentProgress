@@ -1,11 +1,17 @@
 @CHARSET "UTF-8";
 
 body {
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
     margin: 0;
 }
 
 a img {
     border: none;
+}
+
+.ui-widget {
+    font-size: 14px;
 }
 
 .grid_table {
@@ -144,7 +150,7 @@ a img {
 .simple, .unclose {
 	text-align: center;
 	font-weight: 600;
-	font-size: 18pt;
+	font-size: 18px;
 }
 
 .simple {
@@ -345,7 +351,8 @@ a img {
 
 /* log table */
 .log_table {
-    font-size: small;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
     border-collapse: collapse;
     background-color: #eed;
     margin: 0 auto;
@@ -449,6 +456,7 @@ a img {
     width: 600px;
     background-color: #eef;
     border: solid 1px silver;
+    box-shadow: 0 0 5px #aabbff;
 }
 
 .filter_group legend {
@@ -464,23 +472,3 @@ a img {
     padding: 5px;
     margin: 2px;
 }
-
-.filter_row .ui-state-active {
-    background: none;
-    background-color: #aaf;
-}
-
-/*.filter_row input[type=checkbox] {*/
-    /*display: none;*/
-/*}*/
-
-/*.filter_row input[type=checkbox] + label {*/
-    /*background-color: #ddf;*/
-    /*padding: 5px;*/
-    /*margin: 3px;*/
-    /*display: block;*/
-/*}*/
-
-/*.filter_row input[type=checkbox]:checked + label {*/
-    /*background-color: #aaf;*/
-/*}*/
