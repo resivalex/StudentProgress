@@ -565,6 +565,7 @@ function dateToDiv(date) {
 // groupProperty - field name to group
 // dateProperty - where is date
 // infoHeaderNamesMap - header names for subsets
+// cornerElement
 function gridDateTable(option) {
     function getWithCheck(param) {
         if (option[param] == undefined) showMessage("gridDateTable need in '"+param+"' param");
@@ -629,19 +630,12 @@ function gridDateTable(option) {
             } else {
                 $info_clone.appendTo($target);
             }
-            //$res.css({display: "none"});
 
             $("*", document).removeClass("selected_cell");
             $(this).addClass("selected_cell");
             $info_clone.css({position: "static"});
             var offset = $info_clone.offset();
             $info_clone.css({position: "absolute"});
-            //$info_clone.css({
-            //    position: "absolute",
-            //    left: $cell.offset().left + $cell.width() + "px",
-            //    top: $cell.offset().top - $info_clone.height() + "px"
-            //});
-            //$res.css({display: "table"});
             $info_clone.animate({left: offset.left, top: offset.top}, function () {
                 $info_clone.remove();
                 var $next = getNextTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap).appendTo($target);
@@ -694,7 +688,8 @@ function gridDateTable(option) {
             contentWidth: 500,
             columnHeaders: dateDivs,
             rowHeaders: row_keys,
-            content: tableContent
+            content: tableContent,
+            cornerElement: option["cornerElement"]
         });
         for (i = 0; i < tableData.cellOutDivs.length; i++) {
             for (j = 0; j < tableData.cellOutDivs[i].length; j++) {
@@ -726,6 +721,18 @@ function gridDateTable(option) {
 // result.colDivs,
 // result.cellDivs - divs in strict divs, can be smaller
 function scrollableTable(option) {
+    function getScrollLineWidth() {
+        var $div = $("<div/>").css({
+            overflow: "scroll",
+            width: "50px",
+            height: "50px",
+            position: "absolute",
+            visibility: "hidden"
+        }).appendTo($("body"));
+        var res = $div.get(0).offsetWidth - $div.get(0).clientWidth;
+        $div.remove();
+        return res;
+    }
     function getOption(name, init) {
         var val = option[name];
         if (val == undefined) val = init;
@@ -910,6 +917,7 @@ function scrollableTable(option) {
         }
     }
 
+    // mouse over row
     for (i = 0; i < $rowHeader.length; i++) {
         lightRow(i, farColor);
         $rowHeader[i].hover(function() {
@@ -918,6 +926,7 @@ function scrollableTable(option) {
             lightRow($(this).data("row_index"), farColor);
         });
     }
+    // mouse over column
     for (i = 0; i < $colHeader.length; i++) {
         lightCol(i, farColor);
         $colHeader[i].hover(function() {
@@ -926,23 +935,14 @@ function scrollableTable(option) {
             lightCol($(this).data("col_index"), farColor);
         });
     }
+    // mouse over cell
     for (i = 0; i < $rowHeader.length; i++) {
         for (j = 0; j < $colHeader.length; j++) {
             $cell[i][j].hover(function() {
-                var $table = $(this).closest(".clear_table");
-                var $row_header = $table.data("row_header");
-                var $col_header = $table.data("col_header");
-                var $cell = $table.data("cell");
-
                 lightRow($(this).data("row_index"), nearColor);
                 lightCol($(this).data("col_index"), nearColor);
                 $(this).css({backgroundColor: belowColor});
             }, function() {
-                var $table = $(this).closest(".clear_table");
-                var $row_header = $table.data("row_header");
-                var $col_header = $table.data("col_header");
-                var $cell = $table.data("cell");
-
                 lightRow($(this).data("row_index"), farColor);
                 lightCol($(this).data("col_index"), farColor);
             });
@@ -951,105 +951,101 @@ function scrollableTable(option) {
 
     // correct row heights
     for (i = 0; i < $rowHeader.length; i++) {
-        var maxHeight = $rowHeader[i].children().height();
+        var maxHeight = $rowHeader[i].children().outerHeight();
         for (j = 0; j < $colHeader.length; j++) {
-            maxHeight = Math.max(maxHeight, $cell[i][j].children().height());
+            maxHeight = Math.max(maxHeight, $cell[i][j].children().outerHeight());
         }
-        $rowHeader[i].children().height(maxHeight);
+        $rowHeader[i].children().outerHeight(maxHeight);
         for (j = 0; j < $colHeader.length; j++) {
-            $cell[i][j].children().height(maxHeight);
+            $cell[i][j].children().outerHeight(maxHeight);
         }
     }
 
     // correct column width
     for (i = 0; i < $colHeader.length; i++) {
-        var maxWidth = $colHeader[i].children().width();
+        var maxWidth = $colHeader[i].children().outerWidth();
         for (j = 0; j < $rowHeader.length; j++) {
-            maxWidth = Math.max(maxWidth, $cell[j][i].children().width());
+            maxWidth = Math.max(maxWidth, $cell[j][i].children().outerWidth());
         }
-        $colHeader[i].children().width(maxWidth);
+        $colHeader[i].children().outerWidth(maxWidth);
         for (j = 0; j < $rowHeader.length; j++) {
-            $cell[j][i].children().width(maxWidth);
+            $cell[j][i].children().outerWidth(maxWidth);
         }
     }
 
     // correct left header
     maxWidth = $corner.width();
     for (i = 0; i < $rowHeader.length; i++) {
-        maxWidth = Math.max(maxWidth, $rowHeader[i].children().width());
+        maxWidth = Math.max(maxWidth, $rowHeader[i].children().outerWidth());
     }
     $corner.width(maxWidth);
     for (i = 0; i < $rowHeader.length; i++) {
-        $rowHeader[i].children().width(maxWidth);
+        $rowHeader[i].children().outerWidth(maxWidth);
     }
 
     // correct top header
     maxHeight = $corner.height();
     for (i = 0; i < $colHeader.length; i++) {
-        maxHeight = Math.max(maxHeight, $colHeader[i].children().height());
+        maxHeight = Math.max(maxHeight, $colHeader[i].children().outerHeight());
     }
     $corner.height(maxHeight);
     for (i = 0; i < $colHeader.length; i++) {
-        $colHeader[i].children().height(maxHeight);
+        $colHeader[i].children().outerHeight(maxHeight);
     }
 
     // correct content sizes
-    maxHeight = $contentTable.height();
+    maxHeight = $contentTable.outerHeight();
     maxHeight = Math.min(maxHeight, contentHeight);
-    $verticalSlider.height(maxHeight);
-    $leftHeaders.height(maxHeight);
-    $content.height(maxHeight);
+    $verticalSlider.outerHeight(maxHeight);
+    $leftHeaders.outerHeight(maxHeight);
+    $content.outerHeight(maxHeight);
 
-    maxWidth = $contentTable.width();
+    maxWidth = $contentTable.outerWidth();
     maxWidth = Math.min(maxWidth, contentWidth);
-    $horizontalSlider.width(maxWidth);
-    $topHeaders.width(maxWidth);
-    $content.width(maxWidth);
+    $horizontalSlider.outerWidth(maxWidth);
+    $topHeaders.outerWidth(maxWidth);
+    $content.outerWidth(maxWidth);
 
     // set sliders
-    var left_interval = $content.get(0).scrollHeight - $content.get(0).clientHeight;
-    if (left_interval < 1) left_interval = 1;
     $table.data("content", $content);
     $table.data("leftHeader", $leftHeaders);
     $table.data("topHeader", $topHeaders);
-    $verticalSlider.slider({
-        //range: "max",
-        animate: "fast",
-        orientation: "vertical",
-        min: 0,
-        max: left_interval,
-        value: left_interval,
-        disabled: left_interval == 1,
-        slide: function() {
-            var val = $verticalSlider.slider("option", "max") - $verticalSlider.slider("option", "value");
-            $table = $(this).closest(".clear_table");
-            $table.data("content").scrollTop(val);
-            $table.data("leftHeader").scrollTop(val);
-        }
-    });
-    $verticalSlider.addClass("slider_div");
-    $skel[1][0].addClass("dont_cut");
-    $verticalSlider.addClass("dont_cut");
 
-    var top_interval = $content.get(0).scrollWidth - $content.get(0).clientWidth;
-    if (top_interval < 1) top_interval = 1;
-    $horizontalSlider.slider({
-        //range: "min",
-        animate: "fast",
-        orientation: "horizontal",
-        min: 0,
-        max: top_interval,
-        value: 0,
-        disabled: top_interval == 1,
-        slide: function() {
-            var val = $horizontalSlider.slider("option", "value");
-            $table = $(this).closest(".clear_table");
-            $table.data("content").scrollLeft(val);
-            $table.data("topHeader").scrollLeft(val);
-        }
+    var $forVerticalSlider =
+        $("<div/>").width(15).height($content.get(0).scrollHeight).appendTo($verticalSlider);
+    $verticalSlider.scroll(function() {
+        $table.data("content").scrollTop($(this).scrollTop());
+        $table.data("leftHeader").scrollTop($(this).scrollTop());
     });
-    $skel[2][2].addClass("dont_cut");
-    $horizontalSlider.addClass("dont_cut");
+    $verticalSlider.css({overflowY: "scroll"});
+
+    $("<div/>").height(1).width($content.get(0).scrollWidth).appendTo($horizontalSlider);
+    $horizontalSlider.scroll(function() {
+        $table.data("content").scrollLeft($(this).scrollLeft());
+        $table.data("topHeader").scrollLeft($(this).scrollLeft());
+    });
+    $horizontalSlider.css({overflowX: "scroll"});
+
+    // for mobile browsers
+    if (getScrollLineWidth() === 0) {
+        var $info = $("<div/>").text("* не отпускайте палец при прокрутке")
+            .css({color: "grey", textAlign: "center", fontSize: "0.7em"});
+        $table.before($info);
+        $forVerticalSlider.width(1);
+        $([$content[0], $leftHeaders[0], $topHeaders[0]]).css({overflow: "scroll"});
+        $([$leftHeaders[0], $content[0]]).scroll(function() {
+            $([
+                $table.data("leftHeader")[0],
+                $table.data("content")[0]
+            ]).scrollTop($(this).scrollTop());
+        });
+        $([$topHeaders[0], $content[0]]).scroll(function() {
+            $([
+                $table.data("topHeader")[0],
+                $table.data("content")[0]
+            ]).scrollLeft($(this).scrollLeft());
+        });
+    }
 
     return result;
 }

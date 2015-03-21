@@ -383,10 +383,9 @@ a img {
 }
 
 .clear_table .corner {
-    border-left: solid 3px gray;
-    border-top: solid 3px gray;
-    border-right: solid 2px silver;
-    border-bottom: solid 2px silver;
+    border-style: solid;
+    border-color: grey silver silver gray;
+    border-width: 3px 1px 1px 3px;
 }
 
 .clear_table .left_header {
@@ -412,7 +411,7 @@ a img {
 }
 
 .clear_table .gray_border {
-    border: solid 1px #888;
+    /*border: solid 1px #888;*/
 }
 
 .clear_table .dont_cut {

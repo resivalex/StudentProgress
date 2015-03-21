@@ -8,7 +8,7 @@
     </a>
     <br>
         <form id="restore_form" action="json_restore.php" method="post" enctype="multipart/form-data">
-            <input id="file" style="display: none;" type="file" name="backup">
+            <input id="file" style="position: absolute; visibility: hidden;" type="file" name="backup">
             <input type="submit" style="display: none" value="Загрузить">
         </form>
         <img class="melting" id="restore" src="images/restore.png" style="cursor: pointer;" align="right">
