@@ -1,39 +1,45 @@
 
 $(document).ready(function() {
     $(".ajax_div").each(function() {
-        var table_name = $(this).attr("id");
-        var hidden_id = table_name+"_fields";
-        var fields = $.parseJSON($("#"+hidden_id).val());
-        loadRemovableTable(table_name, table_name, splitSelectQueryFromParams(table_name, fields));
+        var tableName = $(this).attr("id");
+        var nameMap = {
+            auditories: "auditory",
+            subjects: "subject",
+            groups: "group"
+        };
+        var query = {
+            name: tableName+" for edition"
+        };
+        loadRemovableTable(tableName, query, "delete "+nameMap[tableName]);
     });
     $(".add_button").click(function () {
         var table_name = $(this).attr("id").substr("add_to_".length);
-        var hidden_id = table_name+"_fields";
-        var fields = $.parseJSON($("#"+hidden_id).val());
-        addToTable(table_name, fields);
+        addToTable(table_name);
     })
 });
 
-function addToTable(table_name, params) {
-    var text = "INSERT INTO " + table_name + " (" + params[0];
-    for (i = 1; i < params.length; i++) {
-        text += ", " + params[i];
-    }
-    text += ") VALUES (?";
-    for (i = 1; i < params.length; i++) {
-        text += ", ?";
-    }
-    text += ")";
-    var query = [text];
-    for (i = 0; i < params.length; i++) {
-        query.push(document.getElementById(table_name + "_" + params[i]).value);
-    }
-    sqlQuery(query, function(response) {
+function addToTable(tableName) {
+    var $inputs = $("input[name^="+tableName+"]");
+    var params = {};
+    $inputs.each(function() {
+        params[$(this).attr("name").substr(tableName.length + 1)] = $(this).val();
+    });
+    var nameMap = {
+        auditories: "auditory",
+        subjects: "subject",
+        groups: "group"
+    };
+    serverQuery("add "+nameMap[tableName], params, function(response) {
         if ($.parseJSON(response) === false) {
             showJSON(response, "Неудача");
         } else {
             showMessage("Добавлено");
-            loadRemovableTable(table_name, table_name, splitSelectQueryFromParams(table_name, params));
+            var nameMap = {
+                auditories: "auditory",
+                subjects: "subject",
+                groups: "group"
+            };
+            loadRemovableTable(tableName, {name: tableName+" for edition"}, "delete "+nameMap[tableName]);
         }
     });
 }

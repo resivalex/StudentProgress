@@ -9,15 +9,6 @@ $(document).ready(function() {
     }
 
     function loadSchedule() {
-        query =
-            "SELECT groups.name AS group_name, subjects.name AS subject_name, " +
-            "auditories.name AS auditory_name, users.surname AS user_name, time, lessons.id AS id " +
-            "FROM lessons " +
-            "JOIN groups ON (group_id = groups.id) " +
-            "JOIN subjects ON (subject_id = subjects.id) " +
-            "JOIN auditories ON (auditory_id = auditories.id) " +
-            "JOIN users ON (teacher_id = users.id) " +
-            "ORDER BY time";
         function getTipTable($cell, $for_text, content, row_key, date, infoHeaderNamesMap) {
             var info = content[row_key][date];
             if (info === undefined) return undefined;
@@ -56,9 +47,7 @@ $(document).ready(function() {
                 $td.text("");
                 var $button = $("<button/>").text("Удалить").appendTo($td);
                 $button.click(function() {
-                    var text =
-                        "DELETE FROM lessons WHERE lessons.id = ?";
-                    sqlQuery([text, lessonId], function(response) {
+                    serverQuery("delete lesson", {id: lessonId}, function(response) {
                         if ($.parseJSON(response) === true) {
                             showMessage("Удалено");
                             $("#schedule").children().remove();
@@ -77,6 +66,9 @@ $(document).ready(function() {
 
             return result.table;
         }
+        var query = {
+            name: "lessons with info"
+        };
         gridDateTable({
             targetId: "schedule",
             query: query,
@@ -94,25 +86,19 @@ $(document).ready(function() {
         });
     }
 
-    var query =
-        "SELECT teachers.id, concat(users.surname, ' ', users.name, ' ', users.patronymic) " +
-        "FROM teachers JOIN users ON (teachers.id = users.id) ORDER BY surname";
-    sqlQuery(query, function(response) {
+    serverQuery("teachers", function(response) {
         $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
         $("#teacher_id").selectmenu();
     });
-    query = "SELECT id, name FROM subjects ORDER BY name";
-    sqlQuery(query, function(response) {
+    serverQuery("subjects", function(response) {
         $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
         $("#subject_id").selectmenu();
     });
-    query = "SELECT id, name FROM groups ORDER BY name";
-    sqlQuery(query, function(response) {
+    serverQuery("groups", function(response) {
         $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
         $("#group_id").selectmenu();
     });
-    query = "SELECT id, name FROM auditories ORDER BY name";
-    sqlQuery(query, function(response) {
+    serverQuery("auditories", function(response) {
         $("#select_auditory").append(slidedSelectTool("Аудитория", "auditory_id", $.parseJSON(response)));
         $("#auditory_id").selectmenu();
     });
@@ -131,25 +117,23 @@ $(document).ready(function() {
     $select_minute.selectmenu().selectmenu("menuWidget").css("height", "150px");
 
     loadSchedule();
-    //loadRemovableTable('lessons', 'schedule', query);
 
     $("#add_lesson").button().click(function() {
-        var group_id = $("#group_id").val();
-        var subject_id = $("#subject_id").val();
-        var auditory_id = $("#auditory_id").val();
-        var teacher_id = $("#teacher_id").val();
+        var date = $("#day_select_tool").datepicker("getDate");
         var month = $("#month").val();
         var hour = $("#select_hour select").val();
         var minute = $("#select_minute select").val();
-        var date = $("#day_select_tool").datepicker("getDate");
         var datetime = "".concat(date.getFullYear(), "-", date.getMonth() + 1, "-", date.getDate(), " ", hour, ":", minute, ":00");
-        var text =
-            "INSERT INTO lessons " +
-            "(group_id, subject_id, auditory_id, teacher_id, time) " +
-            "VALUES (?, ?, ?, ?, ?)";
-        sqlQuery([text, group_id, subject_id, auditory_id, teacher_id, datetime], function(response) {
+        var params = {
+            group_id: $("#group_id").val(),
+            subject_id: $("#subject_id").val(),
+            auditory_id: $("#auditory_id").val(),
+            teacher_id: $("#teacher_id").val(),
+            time: datetime
+        };
+        serverQuery("add lesson", params, function(response) {
             if ($.parseJSON(response) === false) {
-                showJSON(query, "Неудача");
+                showJSON(params, "Неудача");
             } else {
                 showMessage("Добавлено");
                 loadSchedule();

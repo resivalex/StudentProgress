@@ -25,7 +25,7 @@ HTML;
             <div id="select_group"></div>
 HTML;
             ?>
-            <button type="button" id="button_for_student" class="add_button">Добавить пользователя</button>
+            <button type="button" id="button_for_<?php echo $role?>" class="add_button">Добавить пользователя</button>
         </div>
     </div>
 </div>

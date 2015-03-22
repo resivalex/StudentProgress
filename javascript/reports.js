@@ -86,58 +86,8 @@ function makeBeauty() {
                 ids[j] = parseInt(/.+_(.+)/.exec(ids[j])[1]);
             }
         }
-        // construct SQL condition
-        var query = ["Will be replaced below"];
-        var conditions = " TRUE";
-        // course
-        ids = filterIds["course"];
-        if (ids[0] !== 0) {
-            var localConditions = " AND (";
-            for (i = 0; i < ids.length; i++) {
-                if (i != 0) localConditions += " OR";
-                localConditions += " groups.course = ?";
-                query.push(ids[i]);
-            }
-            localConditions += ")";
-            conditions += localConditions;
-        }
-        // other checkboxes
-        for (i = 0; i < sets.length; i++) {
-            if (idMap[sets[i]] === undefined) continue;
-            ids = filterIds[sets[i]];
-            var tableName = idMap[sets[i]];
-            if (ids[0] !== 0) {
-                localConditions = " AND (";
-                for (j = 0; j < ids.length; j++) {
-                    if (j != 0) localConditions += " OR";
-                    localConditions += " " + tableName + ".id = ?";
-                    query.push(ids[j]);
-                }
-                localConditions += ")";
-                conditions += localConditions;
-            }
-        }
-        // mark conditions
-        var studentMustHaveMark = false;
-        var mark_type_id;
-        mark_type_id = parseInt($("#was").val());
-        if (mark_type_id !== 0) {
-            studentMustHaveMark = true;
-            conditions += " AND mark_types.id = ?";
-            query.push(mark_type_id);
-        }
-        mark_type_id = parseInt($("#is").val());
-        if (mark_type_id !== 0) {
-            studentMustHaveMark = true;
-            conditions += " AND students.id IN " +
-                "(SELECT students.id FROM students " +
-                "JOIN marks ON students.id = marks.student_id " +
-                "JOIN (SELECT * FROM (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) AS last_ids " +
-                "       JOIN mark_history USING(id)) AS last_marks " +
-                "   ON marks.id = last_marks.mark_id " +
-                "WHERE last_marks.mark_type_id = ?)";
-            query.push(mark_type_id);
-        }
+        filterIds["was"] = parseInt($("#was").val());
+        filterIds["is"] = parseInt($("#is").val());
         // date interval conditions
         function dateToMySQLFormat(date) {
             return ""+date.getFullYear()+"-"+(date.getMonth() + 1)+"-"+date.getDay();
@@ -145,37 +95,13 @@ function makeBeauty() {
         var from = $("#from").datepicker("getDate");
         var to = $("#to").datepicker("getDate");
         if (from !== null) {
-            conditions += " AND lessons.time >= ?";
-            query.push(dateToMySQLFormat(from));
+            filterIds["from"] = dateToMySQLFormat(from);
         }
         if (to !== null) {
             to.setDate(to.getDate() + 1);
-            conditions += " AND lessons.time < ?";
-            query.push(dateToMySQLFormat(to));
+            filterIds["to"] = dateToMySQLFormat(to);
         }
-
-        query[0] =
-            "SELECT concat(users.surname, ' ', users.name, ' ', users.patronymic) AS student_name, " +
-            "   groups.name AS group_name, groups.course AS course " +
-            "FROM " +
-            "(SELECT DISTINCT students.id AS id " +
-            "FROM students " +
-            "JOIN groups ON students.group_id = groups.id " +
-            "JOIN lessons ON groups.id = lessons.group_id " +
-            "JOIN teachers ON lessons.teacher_id = teachers.id " +
-            "JOIN subjects ON lessons.subject_id = subjects.id " +
-            "JOIN auditories ON lessons.auditory_id = auditories.id " +
-            (studentMustHaveMark?
-                "JOIN marks ON students.id = marks.student_id " +
-                "JOIN mark_history ON marks.id = mark_history.mark_id " +
-                "JOIN mark_types ON mark_history.mark_type_id = mark_types.id " : "") +
-            "WHERE" + conditions +
-            ") AS student_ids " +
-            "JOIN users ON student_ids.id = users.id " +
-            "JOIN students ON student_ids.id = students.id " +
-            "JOIN groups ON students.group_id = groups.id " +
-            "ORDER BY course, group_name, student_name";
-        sqlQuery(query, function(response) {
+        serverQuery("students by filters", filterIds, function(response) {
             function getStudentsString(num) {
                 var res = num + " ";
                 if (res % 100 > 10 && res % 100 < 20) {

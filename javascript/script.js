@@ -4,13 +4,14 @@ $(document).ready(function() {
     $(document).on("click", ".log_table td", function() {
         var text = $(this).html();
         //text = text.replace(/, /g, ",<br>");
-        text = text.replace(/ FROM/g, "<br>FROM");
-        text = text.replace(/ JOIN/g, "<br>JOIN");
-        text = text.replace(/ WHERE/g, "<br>WHERE");
-        text = text.replace(/SELECT /g, "SELECT<br>");
-        text = text.replace(/ SELECT/g, "<br>SELECT");
-        text = text.replace(/ VALUES/g, "<br>VALUES");
-        text = text.replace(/ ORDER/g, "<br>ORDER");
+        //text = text.replace(/ FROM/g, "<br>FROM");
+        //text = text.replace(/ JOIN/g, "<br>JOIN");
+        //text = text.replace(/ WHERE/g, "<br>WHERE");
+        //text = text.replace(/SELECT /g, "SELECT<br>");
+        //text = text.replace(/ SELECT/g, "<br>SELECT");
+        //text = text.replace(/ VALUES/g, "<br>VALUES");
+        //text = text.replace(/ ORDER/g, "<br>ORDER");
+        text = text.replace(/\\r\\n/g, "<br>");
         if (text != $(this).html()) {
             $(this).html(text);
         }
@@ -76,6 +77,10 @@ function showMessage(message_text, title_text) {
     }
     var $layer = $("#message_layer");
     var $message = $("<div/>").prependTo($layer);
+    $message.css({
+        maxHeight: "200px",
+        overflow: "auto"
+    });
     var $title = $("<p/>").css({marginTop: 0, marginBottom: 0, backgroundColor: "#eeeeff"}).text(title_text).appendTo($message);
     $title.append($("<label>&nbsp;&nbsp;x&nbsp;&nbsp;</label>").css({float: "right", backgroundColor: "#ccffcc"}).click(function() {
         $message.slideUp({duration: 300, easing: "easeOutQuart", complete: function() {$message.remove();}});
@@ -158,9 +163,12 @@ function getTableFromJSON(text) {
     return getTable($.parseJSON(text));
 }
 
-function sqlQuery(query, fun) {
-    var temp = document.createElement("div");
-    $(temp).load("sql_query.php", {"query": query}, fun);
+function serverQuery(name, params, fun) {
+    if (typeof params == "function") {
+        fun = params;
+        params = [];
+    }
+    $("<div/>").load("server_query.php", {"name": name, "params": params}, fun);
 }
 
 function splitSelectQueryFromParams(table_name, params) {
@@ -185,46 +193,43 @@ function getDeleteQueryForUser(table_name, id) {
     return query;
 }
 
-// загружает из базы данный ответ на query
-function loadRemovableTable(table_name, id_name, query, get_delete_query) {
-    var el = document.getElementById(id_name);
+// загружает из базы данных ответ на query
+function loadRemovableTable(targetId, getQuery, delQueryName) {
+    var $target = $("#"+targetId);
 
-    if (get_delete_query == undefined) get_delete_query = getDeleteQueryById;
-    sqlQuery(query, function(response) {
-        var table = getTableFromJSON(response);
-        table.className = "custom_table";
-        $("tr", table).each(function(index, element) {
+    serverQuery(getQuery.name, getQuery.params, function(response) {
+        $target.children().remove();
+        var $table = $(getTableFromJSON(response)).appendTo($target);
+        $table.addClass("custom_table");
+        $("tr", $table).each(function(index, element) {
             $(":last", element).each(function(index, element) {
                 var id = element.innerHTML;
                 element.innerHTML = "";
-                var del = document.createElement("input");
-                del.type = "button";
-                del.value = "Удалить";
-                $(del).click(function() {
-                    del.setAttribute("disabled", "true");
-                    var tr = del;
-                    while ((tr.tagName).toUpperCase() != "TR") {
-                        tr = tr.parentNode;
+                var $del = $("<button/>").appendTo($(element));
+                $del.text("Удалить");
+                $del.attr({type: "button"});
+                $del.click(function() {
+                    $del.prop({disabled: true});
+                    var $tr = $del;
+                    while (($tr[0].tagName).toUpperCase() != "TR") {
+                        $tr = $tr.parent();
                     }
-                    $(tr).fadeTo(500, 0.5);
-                    sqlQuery(get_delete_query(table_name, id), function(response) {
-                        del.removeAttribute("disabled");
+                    $tr.fadeTo(500, 0.5);
+                    serverQuery(delQueryName, {id: id}, function(response) {
+                        $del.removeProp("disabled");
                         if ($.parseJSON(response) === false) {
-                            $(tr).fadeTo(500, 1.0);
-                            showJSON(get_delete_query(table_name, id), "Неудача");
-                            del.style.color = "#BBBBBB";
+                            $tr.fadeTo(500, 1.0);
+                            showJSON(delQueryName, "Неудача");
+                            $del.css({color: "#BBBBBB"});
                         } else {
                             showMessage("Удалено");
-                            $(tr).fadeTo(200, 0.0);
-                            loadRemovableTable(table_name, id_name, query, get_delete_query);
+                            $tr.fadeTo(200, 0.0);
+                            loadRemovableTable(targetId, getQuery, delQueryName);
                         }
                     });
                 });
-                element.appendChild(del);
             });
         });
-        $(el).children().remove();
-        $(table).appendTo($(el));
     });
 }
 
@@ -645,7 +650,7 @@ function gridDateTable(option) {
         });
     }
 
-    sqlQuery(query, function(response) {
+    serverQuery(query.name, query.params, function(response) {
         var content = $.parseJSON(response);
         content["date"] = [];
         for (i = 0; i < content[dateProperty].length; i++) {
