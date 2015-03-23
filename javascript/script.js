@@ -1,6 +1,5 @@
 
 $(document).ready(function() {
-    $("#csv_div").append(csvDownloadForm());
     $(document).on("click", ".log_table td", function() {
         var text = $(this).html();
         //text = text.replace(/, /g, ",<br>");
@@ -21,9 +20,25 @@ $(document).ready(function() {
 
 function navigationPrepare() {
     $("#navigation_menu").on("click", ".category", onNavigationCategoryClick);
+    $(".navigation_div .user-title").on("click", onUserTitleClick);
     $(document).click(function(event) {
-        $("#navigation_menu .active", document).removeClass("active");
+        $(".navigation_div .active", document).removeClass("active");
     });
+    $(".navigation_div .user-action-name").on("click", function() {
+        serverQuery("change role", {role: $(this).attr("title")}, function() {
+            document.location.reload();
+        });
+    });
+
+    function onUserTitleClick(event) {
+        var $userActionsDiv = $(".navigation_div .user");
+        if ($userActionsDiv.hasClass("active")) {
+            $userActionsDiv.removeClass("active");
+        } else {
+            $userActionsDiv.addClass("active");
+        }
+        event.stopPropagation();
+    }
 
     function onNavigationCategoryClick(event) {
         function recalcItemPadding() {
@@ -168,36 +183,25 @@ function serverQuery(name, params, fun) {
         fun = params;
         params = [];
     }
-    $("<div/>").load("server_query.php", {"name": name, "params": params}, fun);
-}
-
-function splitSelectQueryFromParams(table_name, params) {
-    var query = "SELECT " + params[0];
-    for (var i = 1; i < params.length; i++) {
-        query += ", " + params[i];
+    if (name.name !== undefined) {
+        params = name.params;
+        name = name.name;
     }
-    query += ", id FROM " + table_name;
-    return query;
+    $.ajax({
+        method: "POST",
+        url: "server_query.php",
+        data: {
+            name: name,
+            params: params
+        }
+    }).done(fun);
 }
 
-function getDeleteQueryById(table_name, id) {
-    return "DELETE FROM "+table_name+" WHERE id = "+id;
-}
-
-function getDeleteQueryForUser(table_name, id) {
-    var tables = ["students", "teachers", "chiefs", "users"/*must be last*/];
-    var query = [];
-    for (i = 0; i < tables.length; i++) {
-        query.push("DELETE FROM "+tables[i]+" WHERE id = ?", id);
-    }
-    return query;
-}
-
-// загружает из базы данных ответ на query
+// таблица с возможностью удаления
 function loadRemovableTable(targetId, getQuery, delQueryName) {
     var $target = $("#"+targetId);
 
-    serverQuery(getQuery.name, getQuery.params, function(response) {
+    serverQuery(getQuery, function(response) {
         $target.children().remove();
         var $table = $(getTableFromJSON(response)).appendTo($target);
         $table.addClass("custom_table");
@@ -366,125 +370,6 @@ function groupObjectsByProperty(objects, prop) {
         res[key].push(val);
     }
     return res;
-}
-
-function csvDownloadForm() {
-    var table_selector = "table";
-    var active_table_selector = "table.current";
-
-    function onSelection() {
-        var $body = $("body");
-        $body.data("table_selection", true);
-        $("#download_button").val("Выберите таблицу");
-        $body.on("mouseenter", table_selector, onMouseEnter);
-        $body.on("mouseleave", table_selector, onMouseLeave);
-        $body.on("click", active_table_selector, onTableClickInSelection);
-    }
-
-    function offSelection() {
-        var $body = $("body");
-        $body.data("table_selection", false);
-        $("#download_button").val("Сохранить в .csv");
-        $body.off("mouseenter", table_selector, onMouseEnter);
-        $body.off("mouseleave", table_selector, onMouseLeave);
-        $body.off("click", active_table_selector, onTableClickInSelection);
-    }
-
-    var selection_style = [["border-style", "solid"], ["border-width", "3.013px"], ["border-color", "red"]];
-
-    function checkCurrent() {
-        function changeStyleProperty(el, prop, val) {
-            $(el).data(prop, el.style.getPropertyValue(prop));
-            $(el).css(prop, val);
-        }
-        function restoreStyleProperty(el, prop) {
-            var val = $(el).data(prop);
-            if (val == undefined) {
-                el.style.removeProperty(prop);
-            } else {
-                $(el).css(prop, $(el).data(prop));
-            }
-        }
-        $(".current").each(function() {
-            if ($(this).data("stored")) {
-                for (var i = 0; i < selection_style.length; i++) {
-                    restoreStyleProperty(this, selection_style[i][0]);
-                }
-                $(this).data("stored", false);
-            }
-        }).removeClass("current");
-        $(".mouse_over:last").addClass("current");
-        $(".current").each(function() {
-            if (!$(this).data("stored")) {
-                for (var i = 0; i < selection_style.length; i++) {
-                    changeStyleProperty(this, selection_style[i][0], selection_style[i][1]);
-                }
-                $(this).data("stored", true);
-            }
-        });
-    }
-
-    function onMouseEnter() {
-        $(this).addClass("mouse_over");
-        checkCurrent();
-    }
-
-    function onMouseLeave() {
-        $(this).removeClass("mouse_over");
-        checkCurrent();
-    }
-
-    function onTableClickInSelection() {
-        offSelection();
-
-        function restoreStyleProperty(el, prop) {
-            var val = $(el).data(prop);
-            if (val == undefined) {
-                el.style.removeProperty(prop);
-            } else {
-                $(el).css(prop, $(el).data(prop));
-            }
-        }
-        restoreStyleProperty(this, "border-style");
-        restoreStyleProperty(this, "border-width");
-        restoreStyleProperty(this, "border-color");
-
-        var tab_array = [];
-        $(".current tr").filter(function(index, el) {return $(el).closest("table").hasClass("current");}).each(function () {
-            tab_array.push([]);
-            var row = this;
-            var tds = $("td, th", this).filter(function(index, el) {return $(el).closest("table").hasClass("current");}).get();
-            for (var i = 0; i < tds.length; i++) {
-                tab_array[tab_array.length - 1].push($(tds[i]).text());
-            }
-        });
-        $("#json_container").val("{\"table\":"+JSON.stringify(tab_array)+"}");
-        $("#csv_form").submit();
-    }
-    var form = document.createElement("form");
-    form.id = "csv_form";
-    form.acceptCharset = "utf-8";
-    form.method = "post";
-    form.action = "download_csv.php";
-    var hidden = document.createElement("input");
-    hidden.type = "hidden";
-    hidden.name = "table";
-    hidden.id = "json_container";
-    form.appendChild(hidden);
-    var download = document.createElement("input");
-    download.id = "download_button";
-    download.type = "button";
-    download.value = "Сохранить в .csv";
-    $(download).click(function () {
-        if ($("body").data("table_selection")) {
-            offSelection();
-        } else {
-            onSelection();
-        }
-    });
-    form.appendChild(download);
-
-    return form;
 }
 
 function arraysToObjects(val) {
@@ -795,6 +680,7 @@ function scrollableTable(option) {
     var $topHeaders = $("<div/>").appendTo($skel[0][2]);
     var $content = $("<div/>").appendTo($skel[1][2]);
     var $corner = $("<div/>").appendTo($skel[0][1]);
+    var $csvDiv = $("<div/>").appendTo($skel[2][1].css({verticalAlign: "top"}));
     var $cornerDiv = $("<div/>").appendTo($corner);
     $cornerDiv.addClass("corner_div");
     result.cornerOut = $corner;
@@ -888,6 +774,38 @@ function scrollableTable(option) {
         result.colDivs.push($inDiv);
         $colHeader[i] = $td;
     }
+
+    // csv save
+    $csvDiv.addClass("csv-div");
+    var $csvButtonDiv = $("<div/>").appendTo($csvDiv);
+    $csvButtonDiv.attr({title: "Сохранить таблицу в формате .csv"});
+    var $csvForm = $("<form/>").appendTo($csvDiv);
+    $csvForm.attr({
+        action: "download_csv.php",
+        method: "post",
+        acceptCharset: "utf-8"
+    });
+    var $hidden = $("<input/>").appendTo($csvForm);
+    $hidden.attr({
+        type: "hidden",
+        name: "table"
+    });
+    $csvButtonDiv.click(function() {
+        var data = [[$corner.text()]];
+        var i, j;
+
+        for (i = 0; i < $colHeader.length; i++) {
+            data[0].push($colHeader[i].text());
+        }
+        for (i = 0; i < $rowHeader.length; i++) {
+            data.push([$rowHeader[i].text()]);
+            for (j = 0; j < $colHeader.length; j++) {
+                data[i + 1].push($cell[i][j].text());
+            }
+        }
+        $hidden.val(JSON.stringify({table: data}));
+        $csvForm[0].submit();
+    });
 
     var silverTables = [$contentTable, $leftTable, $topTable];
     for (i = 0; i < silverTables.length; i++) {
@@ -1017,7 +935,7 @@ function scrollableTable(option) {
     $table.data("topHeader", $topHeaders);
 
     var $forVerticalSlider =
-        $("<div/>").width(15).height($content.get(0).scrollHeight).appendTo($verticalSlider);
+        $("<div/>").width(1).height($content.get(0).scrollHeight).appendTo($verticalSlider);
     $verticalSlider.scroll(function() {
         $table.data("content").scrollTop($(this).scrollTop());
         $table.data("leftHeader").scrollTop($(this).scrollTop());
@@ -1035,7 +953,7 @@ function scrollableTable(option) {
     if (getScrollLineWidth() === 0) {
         var $info = $("<div/>").text("* не отпускайте палец при прокрутке")
             .css({color: "grey", textAlign: "center", fontSize: "0.7em"});
-        $table.before($info);
+        $table.after($info);
         $forVerticalSlider.width(1);
         $([$content[0], $leftHeaders[0], $topHeaders[0]]).css({overflow: "scroll"});
         $([$leftHeaders[0], $content[0]]).scroll(function() {

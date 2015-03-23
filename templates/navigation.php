@@ -64,15 +64,6 @@ $json = <<<JS
                 "url": "reports.php"
             }
         ]
-    },
-    {
-        "title": "Пользователь",
-        "content": [
-            {
-                "title": "Выйти",
-                "url": "logout.php"
-            }
-        ]
     }
 ]
 JS;
@@ -81,14 +72,7 @@ if (isset($vars["hide_menu"])) $categories = [];
 ?>
 <div style="height: 5px; background-color: #aaf;"></div>
 <div class="navigation_div">
-    <?php
-    if (!isset($vars["hide_menu"])) {
-        echo <<<HTML
-    <div id="csv_div"></div>
-HTML;
-    }
-    ?>
-<ul id="navigation_menu" class="navigation_menu">
+    <ul id="navigation_menu" class="navigation_menu">
     <?php
     foreach ($categories as $category) {
         $title = $category["title"];
@@ -115,5 +99,23 @@ HTML;
 HTML;
     }
     ?>
-</ul>
+    </ul>
+    <?php
+    if (!isset($vars["hide_menu"])) {
+        echo <<<HTML
+    <div class="user" >
+        <div class="user-title">{$_SESSION["username"]}[{$_SESSION["role"]}]</div>
+        <div class="user-actions">
+            <a href="logout.php">
+                <div class="user-action"><div class="user-action-name">Выйти</div></div>
+            </a>
+            <div class="user-action"><div title="student" class="user-action-name">в роли "student"</div></div>
+            <div class="user-action"><div title="teacher" class="user-action-name">в роли "teacher"</div></div>
+            <div class="user-action"><div title="chief" class="user-action-name">в роли "chief"</div></div>
+            <div class="user-action"><div title="admin" class="user-action-name">в роли "admin"</div></div>
+        </div>
+    </div >
+HTML;
+    }
+    ?>
 </div>

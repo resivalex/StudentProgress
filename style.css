@@ -14,6 +14,19 @@ a img {
     font-size: 14px;
 }
 
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
 .grid_table {
 	border-collapse: collapse;
 	border-style: solid;
@@ -282,6 +295,68 @@ a img {
     margin-bottom: 10px;
     position: relative;
 }
+
+.navigation_div .user {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.navigation_div .user-title {
+    margin: 0 0 0 auto;
+    height: 30px;
+    padding: 0 25px;
+    line-height: 30px;
+    background-color: #aaf;
+}
+
+.navigation_div .user-title:hover {
+    background-color: #88f;
+}
+
+.navigation_div .user-actions {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    display: none;
+}
+
+.navigation_div .active .user-actions {
+    display: block;
+}
+
+.navigation_div .active .user-title {
+    background-color: #88f;
+}
+
+.navigation_div .user-action {
+    position: relative;
+    height: 30px;
+}
+
+.navigation_div .user-action-name {
+    position: absolute;
+    margin: 0 0 0 auto;
+    padding: 0 25px;
+    line-height: 30px;
+    background-color: #88f;
+    font-weight: bold;
+    color: #445;
+    white-space: nowrap;
+    top: 0;
+    right: 0;
+}
+
+.navigation_div .user-action-name:hover {
+    top: -2px;
+    right: 0;
+    background-color: #66f;
+    color: black;
+    line-height: 34px;
+    padding-left: 27px;
+    z-index: 3;
+}
+
 .navigation_menu, .navigation_menu ul {
     list-style: outside none none;
     padding: 0;
@@ -299,6 +374,13 @@ a img {
 
 .navigation_menu .category:hover {
     background-color: #88f;
+}
+
+.navigation_menu .category,
+.navigation_menu .category_label,
+.navigation_div .user-title,
+.navigation_div .user-action-name {
+    cursor: pointer;
 }
 
 .navigation_menu .submenu {
@@ -339,14 +421,6 @@ a img {
     position: relative;
     top: -2px;
     color: black;
-}
-
-/* csv button */
-#csv_div {
-    display: table;
-    position: absolute;
-    right: 10px;
-    top: 3px;
 }
 
 /* log table */
@@ -416,6 +490,35 @@ a img {
 
 .clear_table .dont_cut {
     overflow: visible;
+}
+
+/* csv button */
+
+.csv-div {
+    position: relative;
+    left: 0;
+    top: 0;
+    height: 16px;
+}
+
+.csv-div div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 34px;
+    height: 16px;
+    background-image: url("images/csv.png");
+    cursor: pointer;
+}
+
+.csv-div div:hover {
+    position: absolute;
+    left: -17px;
+    top: -8px;
+    height: 32px;
+    width: 69px;
+    background-image: url("images/csv_big.png");
+    box-shadow: 0 0 3px black;
 }
 
 /* for gridDateTable */

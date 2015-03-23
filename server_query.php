@@ -4,6 +4,14 @@ include_once("queries.php");
 $query_functions = [];
 include_once("query_functions.php");
 
+// only for testing
+$query_functions["change role"] = function($pm) {
+    session_start();
+    $_SESSION["role"] = $pm["role"];
+    return true;
+};
+//////////////////////////
+
 $name = $_POST["name"];
 if (!isset($_POST["params"])) {
     $params = null;

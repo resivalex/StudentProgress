@@ -1,4 +1,4 @@
-<div style="width: 60%; margin: 0 auto; font-size:18pt; font-style: italic; text-indent: 5%; text-align: justify;">
+<div style="width: 60%; margin: 0 auto; font-size:14pt; line-height: 28px; font-style: italic; text-indent: 5%; text-align: justify;">
     <h4 style="text-align: center; text-indent: 0;">Введение</h4>
     <p>
         В соответствии с концепцией развития уголовно-исполнительной системы Российской Федерации до 2020 года,
