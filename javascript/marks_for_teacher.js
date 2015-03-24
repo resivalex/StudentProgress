@@ -38,7 +38,6 @@ function onMarksForTeacherLoad() {
             lesson_id: $("#lesson_id").val()
         };
         serverQuery("student lesson marks", params, function(response) {
-            response = $.parseJSON(response);
             response = rotable2DArray(toIndexArray(response));
             if (response.length > 0) {
                 var data = scrollableTable({
@@ -66,7 +65,7 @@ function onMarksForTeacherLoad() {
             var $select_mark_type = $("#select_mark_type");
             $select_mark_type.children().remove();
             $("#comment").val("без комментариев");
-            $select_mark_type.append(slidedSelectTool("Отметка", "mark_type_id", $.parseJSON(response)));
+            $select_mark_type.append(slidedSelectTool("Отметка", "mark_type_id", response));
             $("#mark_type_id").selectmenu();
         })
     }
@@ -81,7 +80,6 @@ function onMarksForTeacherLoad() {
         };
         serverQuery("lesson students with info", params, function(response) {
             var i;
-            response = $.parseJSON(response);
             response = toIndexArray(response);
             response = rotable2DArray(response);
             var tableContent = [];
@@ -126,7 +124,7 @@ function onMarksForTeacherLoad() {
         };
         serverQuery("lessons by parameters", params, function(response) {
             removeAuditoryTime();
-            $("#select_auditory_time").append(slidedSelectTool("Аудитория | Время", "lesson_id", $.parseJSON(response)));
+            $("#select_auditory_time").append(slidedSelectTool("Аудитория | Время", "lesson_id", response));
             $("#lesson_id").selectmenu({change: function() {
                 loadStudentList($("#lesson_id").val());
             }}).ready(function() {
@@ -143,7 +141,7 @@ function onMarksForTeacherLoad() {
         };
         serverQuery("groups by subject and teacher", param, function(response) {
             removeGroups();
-            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)))
+            $("#select_group").append(slidedSelectTool("Группа", "group_id", response));
             $("#group_id").selectmenu({change: function() {
                 loadLessons($("#group_id").val());
             }}).ready(function() {
@@ -159,7 +157,7 @@ function onMarksForTeacherLoad() {
         };
         serverQuery("subjects by teacher", params, function(response) {
             removeSubjects();
-            $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
+            $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", response));
             $("#subject_id").selectmenu({change: function() {
                 loadGroups($("#subject_id").val());
             }}).ready(function() {
@@ -170,7 +168,7 @@ function onMarksForTeacherLoad() {
 
     function loadTeachers() {
         serverQuery("involved teachers", function(response) {
-            $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
+            $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", response));
             $("#teacher_id").selectmenu({change: function() {
                 loadSubjects($("#teacher_id").val());
             }}).ready(function() {
@@ -190,7 +188,7 @@ function onMarksForTeacherLoad() {
                 comment: $("#comment").val()
             };
             serverQuery("add mark", params, function(response) {
-                if ($.parseJSON(response) == true) {
+                if (response === true) {
                     showMessage("Добавлено");
                 } else {
                     showMessage("Неудача");

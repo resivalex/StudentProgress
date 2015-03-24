@@ -25,7 +25,7 @@ function onScheduleForTeacherLoad() {
 
     $(document).ready(function () {
         serverQuery("involved teachers", function(response) {
-            $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
+            $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", response));
             $("#teacher_id").selectmenu({change: loadSchedule}).ready(loadSchedule);
         });
     });

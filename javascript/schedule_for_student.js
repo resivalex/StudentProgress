@@ -27,7 +27,7 @@ function onScheduleForStudentLoad() {
         var query =
 
         serverQuery("involved groups", function (response) {
-            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
+            $("#select_group").append(slidedSelectTool("Группа", "group_id", response));
             $("#group_id").selectmenu({change: loadSchedule}).ready(loadSchedule);
         })
     });

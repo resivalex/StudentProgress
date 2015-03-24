@@ -3,12 +3,11 @@ $(document).ready(function () {
     serverQuery("groups", function(response) {
         var $table = $("#student + div table");
         $table.append("<tr><td colspan='2'/></tr>");
-        response = $.parseJSON(response);
-        var $select = $("<select/>").attr("id", "group_id").css("width", "100%");
+        var $select = $("<select/>").attr("id", "group_id").css("width", "80%");
         for (i = 0; i < response.id.length; i++) {
             $("<option/>").text(response.name[i]).val(response.id[i]).appendTo($select);
         }
-        $select.appendTo($("td:last", $table)).selectmenu().selectmenu("menuWidget").css("height", "150px");
+        $select.appendTo($("td:last", $table)).selectmenu().selectmenu("menuWidget");
     });
     $(".ajax_div").each(function () {
         var role = $(this).attr("id");
@@ -39,7 +38,7 @@ function addToUsers(role_name) {
         group_id: $("#group_id").val()
     };
     serverQuery("add user", params, function(response) {
-        if ($.parseJSON(response) === false) {
+        if (response === false) {
             showJSON(response, "Неудача");
         } else {
             showMessage("Добавлено");

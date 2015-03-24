@@ -25,9 +25,11 @@ function navigationPrepare() {
         $(".navigation_div .active", document).removeClass("active");
     });
     $(".navigation_div .user-action-name").on("click", function() {
-        serverQuery("change role", {role: $(this).attr("title")}, function() {
-            document.location.reload();
-        });
+        if (this.hasAttribute("title")) {
+            serverQuery("change role", {role: $(this).attr("title")}, function () {
+                document.location.reload();
+            });
+        }
     });
 
     function onUserTitleClick(event) {
@@ -194,7 +196,19 @@ function serverQuery(name, params, fun) {
             name: name,
             params: params
         }
-    }).done(fun);
+    }).done(function(response) {
+        var goodJSON = true;
+        try {
+            response = $.parseJSON(response);
+        } catch (e) {
+            showMessage(e);
+            showMessage(response, name);
+            goodJSON = false;
+        }
+        if (goodJSON) {
+            fun(response);
+        }
+    });
 }
 
 // таблица с возможностью удаления
@@ -203,37 +217,75 @@ function loadRemovableTable(targetId, getQuery, delQueryName) {
 
     serverQuery(getQuery, function(response) {
         $target.children().remove();
-        var $table = $(getTableFromJSON(response)).appendTo($target);
-        $table.addClass("custom_table");
-        $("tr", $table).each(function(index, element) {
-            $(":last", element).each(function(index, element) {
-                var id = element.innerHTML;
-                element.innerHTML = "";
-                var $del = $("<button/>").appendTo($(element));
-                $del.text("Удалить");
-                $del.attr({type: "button"});
-                $del.click(function() {
-                    $del.prop({disabled: true});
-                    var $tr = $del;
-                    while (($tr[0].tagName).toUpperCase() != "TR") {
-                        $tr = $tr.parent();
+        var handler = scrollableTable({
+            target: $target,
+            classes: ["progress_table", "auto_margin", "top_padding"],
+            contentWidth: 900,
+            contentHeight: 500,
+            content: rotable2DArray(toIndexArray(response))
+        });
+        for (i = 0; i < handler.cellDivs.length; i++) {
+            var cell = handler.cellDivs[i];
+            cell = cell[cell.length - 1];
+            var id = cell.text();
+            cell.text("");
+            cell.css({padding: "5px"});
+            var $del = $("<button/>").appendTo(cell);
+            $del.css({padding: "3px"});
+            $del.text("Удалить");
+            $del.attr({type: "button"});
+            $del.click(function() {
+                $del.prop({disabled: true});
+                var $tr = $del;
+                while (($tr[0].tagName).toUpperCase() != "TR") {
+                    $tr = $tr.parent();
+                }
+                $tr.fadeTo(500, 0.5);
+                serverQuery(delQueryName, {id: id}, function(response) {
+                    $del.removeProp("disabled");
+                    if (response === false) {
+                        $tr.fadeTo(500, 1.0);
+                        showJSON(delQueryName, "Неудача");
+                        $del.css({color: "#bbb"});
+                    } else {
+                        showMessage("Удалено");
+                        $tr.fadeTo(200, 0.0);
+                        loadRemovableTable(targetId, getQuery, delQueryName);
                     }
-                    $tr.fadeTo(500, 0.5);
-                    serverQuery(delQueryName, {id: id}, function(response) {
-                        $del.removeProp("disabled");
-                        if ($.parseJSON(response) === false) {
-                            $tr.fadeTo(500, 1.0);
-                            showJSON(delQueryName, "Неудача");
-                            $del.css({color: "#BBBBBB"});
-                        } else {
-                            showMessage("Удалено");
-                            $tr.fadeTo(200, 0.0);
-                            loadRemovableTable(targetId, getQuery, delQueryName);
-                        }
-                    });
                 });
             });
-        });
+        }
+        handler.refresh();
+        //$table.addClass("custom_table");
+        //$("tr", $table).each(function(index, element) {
+        //    $(":last", element).each(function(index, element) {
+        //        var id = element.innerHTML;
+        //        element.innerHTML = "";
+        //        var $del = $("<button/>").appendTo($(element));
+        //        $del.text("Удалить");
+        //        $del.attr({type: "button"});
+        //        $del.click(function() {
+        //            $del.prop({disabled: true});
+        //            var $tr = $del;
+        //            while (($tr[0].tagName).toUpperCase() != "TR") {
+        //                $tr = $tr.parent();
+        //            }
+        //            $tr.fadeTo(500, 0.5);
+        //            serverQuery(delQueryName, {id: id}, function(response) {
+        //                $del.removeProp("disabled");
+        //                if (response === false) {
+        //                    $tr.fadeTo(500, 1.0);
+        //                    showJSON(delQueryName, "Неудача");
+        //                    $del.css({color: "#BBBBBB"});
+        //                } else {
+        //                    showMessage("Удалено");
+        //                    $tr.fadeTo(200, 0.0);
+        //                    loadRemovableTable(targetId, getQuery, delQueryName);
+        //                }
+        //            });
+        //        });
+        //    });
+        //});
     });
 }
 
@@ -535,8 +587,8 @@ function gridDateTable(option) {
         });
     }
 
-    serverQuery(query.name, query.params, function(response) {
-        var content = $.parseJSON(response);
+    serverQuery(query, function(response) {
+        var content = response;
         content["date"] = [];
         for (i = 0; i < content[dateProperty].length; i++) {
             var time = content[dateProperty][i];
@@ -598,7 +650,7 @@ function gridDateTable(option) {
 // contentWidth. default: 400
 // contentHeight. default: 200
 //
-// rowHeaders[] - row names: strings or elements. default: "row#N"
+// rowHeaders[] - row names: strings or elements. default: numbering from 1
 // columnHeaders[] - column names: strings or elements. default: "col#N"
 //
 // cornerElement jQuery - any. default: nothing
@@ -746,7 +798,7 @@ function scrollableTable(option) {
                 $inDiv.append(rowHeaders[i]);
             }
         } else {
-            $inDiv.text("row#"+i);
+            $inDiv.text(i + 1);
         }
         result.rowOutDivs.push($div);
         result.rowDivs.push($inDiv);
@@ -768,7 +820,7 @@ function scrollableTable(option) {
                 $inDiv.append(columnHeaders[i]);
             }
         } else {
-            $inDiv.text("col#"+i);
+            $inDiv.text("col#" + (i + 1));
         }
         result.colOutDivs.push($div);
         result.colDivs.push($inDiv);
@@ -785,11 +837,7 @@ function scrollableTable(option) {
         method: "post",
         acceptCharset: "utf-8"
     });
-    var $hidden = $("<input/>").appendTo($csvForm);
-    $hidden.attr({
-        type: "hidden",
-        name: "table"
-    });
+    var $hidden = $("<input type=\"hidden\" name=\"table\"/>").appendTo($csvForm);
     $csvButtonDiv.click(function() {
         var data = [[$corner.text()]];
         var i, j;
@@ -871,63 +919,84 @@ function scrollableTable(option) {
             });
         }
     }
-
-    // correct row heights
-    for (i = 0; i < $rowHeader.length; i++) {
-        var maxHeight = $rowHeader[i].children().outerHeight();
-        for (j = 0; j < $colHeader.length; j++) {
-            maxHeight = Math.max(maxHeight, $cell[i][j].children().outerHeight());
+    result.refresh = function() {
+        // reset fixed sizes
+        for (i = 0; i < $rowHeader.length; i++) {
+            $rowHeader[i].children().css({width: "auto", height: "auto"});
         }
-        $rowHeader[i].children().outerHeight(maxHeight);
-        for (j = 0; j < $colHeader.length; j++) {
-            $cell[i][j].children().outerHeight(maxHeight);
+        for (i = 0; i < $colHeader.length; i++) {
+            $colHeader[i].children().css({width: "auto", height: "auto"});
+            for (j = 0; j < $rowHeader.length; j++) {
+                $cell[j][i].children().css({width: "auto", height: "auto"});
+            }
         }
-    }
+        $corner.css({width: "auto", height: "auto"});
+        $leftHeaders.css({width: "auto", height: "auto"});
+        $topHeaders.css({width: "auto", height: "auto"});
+        $content.css({width: "auto", height: "auto"});
+        $verticalSlider.css({height: "auto"});
+        $verticalSlider.children().css({height: "auto"});
+        $horizontalSlider.css({width: "auto"});
+        $horizontalSlider.children().css({width: "auto"});
 
-    // correct column width
-    for (i = 0; i < $colHeader.length; i++) {
-        var maxWidth = $colHeader[i].children().outerWidth();
-        for (j = 0; j < $rowHeader.length; j++) {
-            maxWidth = Math.max(maxWidth, $cell[j][i].children().outerWidth());
+        // correct row heights
+        for (i = 0; i < $rowHeader.length; i++) {
+            var maxHeight = $rowHeader[i].children().outerHeight();
+            for (j = 0; j < $colHeader.length; j++) {
+                maxHeight = Math.max(maxHeight, $cell[i][j].children().outerHeight());
+            }
+            $rowHeader[i].children().outerHeight(maxHeight);
+            for (j = 0; j < $colHeader.length; j++) {
+                $cell[i][j].children().outerHeight(maxHeight);
+            }
         }
-        $colHeader[i].children().outerWidth(maxWidth);
-        for (j = 0; j < $rowHeader.length; j++) {
-            $cell[j][i].children().outerWidth(maxWidth);
+        // correct column width
+        for (i = 0; i < $colHeader.length; i++) {
+            var maxWidth = $colHeader[i].children().outerWidth();
+            for (j = 0; j < $rowHeader.length; j++) {
+                maxWidth = Math.max(maxWidth, $cell[j][i].children().outerWidth());
+            }
+            $colHeader[i].children().outerWidth(maxWidth);
+            for (j = 0; j < $rowHeader.length; j++) {
+                $cell[j][i].children().outerWidth(maxWidth);
+            }
         }
-    }
 
-    // correct left header
-    maxWidth = $corner.width();
-    for (i = 0; i < $rowHeader.length; i++) {
-        maxWidth = Math.max(maxWidth, $rowHeader[i].children().outerWidth());
-    }
-    $corner.width(maxWidth);
-    for (i = 0; i < $rowHeader.length; i++) {
-        $rowHeader[i].children().outerWidth(maxWidth);
-    }
+        // correct left header
+        maxWidth = $corner.width();
+        for (i = 0; i < $rowHeader.length; i++) {
+            maxWidth = Math.max(maxWidth, $rowHeader[i].children().outerWidth());
+        }
+        $corner.width(maxWidth);
+        for (i = 0; i < $rowHeader.length; i++) {
+            $rowHeader[i].children().outerWidth(maxWidth);
+        }
 
-    // correct top header
-    maxHeight = $corner.height();
-    for (i = 0; i < $colHeader.length; i++) {
-        maxHeight = Math.max(maxHeight, $colHeader[i].children().outerHeight());
-    }
-    $corner.height(maxHeight);
-    for (i = 0; i < $colHeader.length; i++) {
-        $colHeader[i].children().outerHeight(maxHeight);
-    }
+        // correct top header
+        maxHeight = $corner.height();
+        for (i = 0; i < $colHeader.length; i++) {
+            maxHeight = Math.max(maxHeight, $colHeader[i].children().outerHeight());
+        }
+        $corner.height(maxHeight);
+        for (i = 0; i < $colHeader.length; i++) {
+            $colHeader[i].children().outerHeight(maxHeight);
+        }
 
-    // correct content sizes
-    maxHeight = $contentTable.outerHeight();
-    maxHeight = Math.min(maxHeight, contentHeight);
-    $verticalSlider.outerHeight(maxHeight);
-    $leftHeaders.outerHeight(maxHeight);
-    $content.outerHeight(maxHeight);
+        // correct content sizes
+        maxHeight = $contentTable.outerHeight();
+        maxHeight = Math.min(maxHeight, contentHeight);
+        $verticalSlider.outerHeight(maxHeight);
+        $forVerticalSlider.height($content.get(0).scrollHeight);
+        $leftHeaders.outerHeight(maxHeight);
+        $content.outerHeight(maxHeight);
 
-    maxWidth = $contentTable.outerWidth();
-    maxWidth = Math.min(maxWidth, contentWidth);
-    $horizontalSlider.outerWidth(maxWidth);
-    $topHeaders.outerWidth(maxWidth);
-    $content.outerWidth(maxWidth);
+        maxWidth = $contentTable.outerWidth();
+        maxWidth = Math.min(maxWidth, contentWidth);
+        $horizontalSlider.outerWidth(maxWidth);
+        $forHorizontalSlider.width($content.get(0).scrollWidth);
+        $topHeaders.outerWidth(maxWidth);
+        $content.outerWidth(maxWidth);
+    };
 
     // set sliders
     $table.data("content", $content);
@@ -935,19 +1004,23 @@ function scrollableTable(option) {
     $table.data("topHeader", $topHeaders);
 
     var $forVerticalSlider =
-        $("<div/>").width(1).height($content.get(0).scrollHeight).appendTo($verticalSlider);
+        $("<div/>").width(15).appendTo($verticalSlider);
     $verticalSlider.scroll(function() {
         $table.data("content").scrollTop($(this).scrollTop());
         $table.data("leftHeader").scrollTop($(this).scrollTop());
     });
     $verticalSlider.css({overflowY: "scroll"});
 
-    $("<div/>").height(1).width($content.get(0).scrollWidth).appendTo($horizontalSlider);
+    var $forHorizontalSlider =
+        $("<div/>").height(1).appendTo($horizontalSlider);
     $horizontalSlider.scroll(function() {
         $table.data("content").scrollLeft($(this).scrollLeft());
         $table.data("topHeader").scrollLeft($(this).scrollLeft());
     });
     $horizontalSlider.css({overflowX: "scroll"});
+
+    // resize table
+    result.refresh();
 
     // for mobile browsers
     if (getScrollLineWidth() === 0) {

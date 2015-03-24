@@ -151,5 +151,32 @@ function loadfs($element, $filename, $vars = "") {
             }
         }
     }
+}
 
+function is_access($path) {
+    $access_map = [
+        "/accounts.php" => "a",
+        "/all_tables.php" => "a",
+        "/cards.php" => "acst",
+        "/edit_schedule.php" => "a",
+        "/edit_tables.php" => "a",
+        "/good.php" => "acst",
+        "/index.php" => "acst",
+        "/json_restore.php" => "a",
+        "/log.php" => "a",
+        "/logout.php" => "acst",
+        "/marks_for_student.php" => "acs",
+        "/marks_for_teacher.php" => "t",
+        "/reports.php" => "ac",
+        "/reservation.php" => "a",
+        "/schedule_for_student.php" => "acs",
+        "/schedule_for_teacher.php" => "act"
+    ];
+    $short_role = [
+        "admin" => "a",
+        "chief" => "c",
+        "student" => "s",
+        "teacher" => "t"
+    ];
+    return isset($access_map[$path]) && strpos($access_map[$path], $short_role[$_SESSION["role"]]) !== false;
 }

@@ -30,6 +30,14 @@ loadfs($head, "templates/template_base.php");
 
 loadfs($body, "templates/navigation.php", isset($_SESSION["username"])? "" : ["hide_menu" => true]);
 
+to_log(["URL request", $_SERVER["SCRIPT_NAME"], isset($_SESSION["username"])? $_SESSION["username"] : "not in system"]);
+if (!is_access($_SERVER["SCRIPT_NAME"]) && !isset($login_page)) {
+    $p = fs("p", "Нет прав для доступа к этой странице");
+    $p->setAttribute("style", "color: red; text-align: center;");
+    $body->appendChild($p);
+    out_page();
+    exit;
+}
 
 function out_page() {
     echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- <!DOCTYPE html> -->';

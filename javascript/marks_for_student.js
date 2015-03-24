@@ -33,7 +33,7 @@ function onMarksForStudentLoad() {
         serverQuery("students from group", params, function(response) {
             var $select_student = $("#select_student");
             $select_student.children().remove();
-            var select_student = slidedSelectTool("Студенты", "student_id", $.parseJSON(response));
+            var select_student = slidedSelectTool("Студенты", "student_id", response);
             $select_student.append(select_student);
             $("#student_id").selectmenu({change: loadMarks}).ready(loadMarks);
         });
@@ -41,7 +41,7 @@ function onMarksForStudentLoad() {
 
     $(document).ready(function () {
         serverQuery("non-empty groups", function (response) {
-            $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
+            $("#select_group").append(slidedSelectTool("Группа", "group_id", response));
             $("#group_id").selectmenu({change: loadStudents}).ready(loadStudents);
         });
     });

@@ -6,22 +6,27 @@ $json = <<<JS
         "content": [
             {
                 "title": "Учётные записи",
+                "access": ["admin"],
                 "url": "accounts.php"
             },
             {
                 "title": "Редактирование таблиц",
+                "access": ["admin"],
                 "url": "edit_tables.php"
             },
             {
                 "title": "Резервирование",
+                "access": ["admin"],
                 "url": "reservation.php"
             },
             {
                 "title": "Все таблицы",
+                "access": ["admin"],
                 "url": "all_tables.php"
             },
             {
                 "title": "Лог",
+                "access": ["admin"],
                 "url": "log.php"
             }
         ]
@@ -31,14 +36,17 @@ $json = <<<JS
         "content": [
             {
                 "title": "Для преподавателя",
+                "access": ["admin", "chief", "teacher"],
                 "url": "schedule_for_teacher.php"
             },
             {
                 "title": "Для студента",
+                "access": ["admin", "chief", "student"],
                 "url": "schedule_for_student.php"
             },
             {
                 "title": "Редактировать расписание",
+                "access": ["admin"],
                 "url": "edit_schedule.php"
             }
         ]
@@ -48,10 +56,12 @@ $json = <<<JS
         "content": [
             {
                 "title": "Для преподавателя",
+                "access": ["teacher"],
                 "url": "marks_for_teacher.php"
             },
             {
                 "title": "Для студента",
+                "access": ["admin", "chief", "student"],
                 "url": "marks_for_student.php"
             }
         ]
@@ -61,14 +71,37 @@ $json = <<<JS
         "content": [
             {
                 "title": "Списки студентов",
+                "access": ["admin", "chief"],
                 "url": "reports.php"
             }
         ]
     }
 ]
 JS;
-$categories = json_decode($json, true);
 if (isset($vars["hide_menu"])) $categories = [];
+if (isset($_SESSION["username"])) {
+    $role = $_SESSION["role"];
+    $categories = json_decode($json, true);
+    $categories_count = count($categories);
+    for ($i = 0; $i < $categories_count; $i++) {
+        $content = $categories[$i]["content"];
+        $content_count = count($content);
+        for ($j = 0; $j < $content_count; $j++) {
+            $link = $content[$j];
+            if (array_search($role, $link["access"]) === false) {
+                unset($content[$j]);
+            }
+        }
+        $content = array_values($content);
+        $categories[$i]["content"] = $content;
+        if (count($content) == 0) {
+            unset($categories[$i]);
+        }
+    }
+    $categories = array_values($categories);
+} else {
+    $categories = [];
+}
 ?>
 <div style="height: 5px; background-color: #aaf;"></div>
 <div class="navigation_div">
@@ -101,7 +134,7 @@ HTML;
     ?>
     </ul>
     <?php
-    if (!isset($vars["hide_menu"])) {
+    if (isset($_SESSION["username"]) && !isset($vars["hide_menu"])) {
         echo <<<HTML
     <div class="user" >
         <div class="user-title">{$_SESSION["username"]}[{$_SESSION["role"]}]</div>

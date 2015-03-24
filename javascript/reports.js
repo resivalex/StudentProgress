@@ -115,7 +115,6 @@ function makeBeauty() {
                 }
                 return res;
             }
-            response = $.parseJSON(response);
             response = toIndexArray(response);
             var rowHeaders = $.extend(true, [], response[0]);
             var cornerElement = $("<div/>").text(getStudentsString(rowHeaders.length));

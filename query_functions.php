@@ -183,7 +183,7 @@ SQL;
 
 $query_functions["users in role"] = function($pm) {
     $text = <<<SQL
-SELECT surname, users.name AS name, patronymic, login, password, email, phone, users.id AS id
+SELECT concat(surname, ' ', users.name, ' ', patronymic) AS name, login, password, email, phone, users.id AS id
 FROM users
 JOIN roles ON users.role_id = roles.id
 WHERE roles.name = ?

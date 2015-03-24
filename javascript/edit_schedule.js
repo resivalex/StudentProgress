@@ -48,7 +48,7 @@ $(document).ready(function() {
                 var $button = $("<button/>").text("Удалить").appendTo($td);
                 $button.click(function() {
                     serverQuery("delete lesson", {id: lessonId}, function(response) {
-                        if ($.parseJSON(response) === true) {
+                        if (response === true) {
                             showMessage("Удалено");
                             $("#schedule").children().remove();
                             loadSchedule();
@@ -87,19 +87,19 @@ $(document).ready(function() {
     }
 
     serverQuery("teachers", function(response) {
-        $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", $.parseJSON(response)));
+        $("#select_teacher").append(slidedSelectTool("Преподаватель", "teacher_id", response));
         $("#teacher_id").selectmenu();
     });
     serverQuery("subjects", function(response) {
-        $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", $.parseJSON(response)));
+        $("#select_subject").append(slidedSelectTool("Дисциплина", "subject_id", response));
         $("#subject_id").selectmenu();
     });
     serverQuery("groups", function(response) {
-        $("#select_group").append(slidedSelectTool("Группа", "group_id", $.parseJSON(response)));
+        $("#select_group").append(slidedSelectTool("Группа", "group_id", response));
         $("#group_id").selectmenu();
     });
     serverQuery("auditories", function(response) {
-        $("#select_auditory").append(slidedSelectTool("Аудитория", "auditory_id", $.parseJSON(response)));
+        $("#select_auditory").append(slidedSelectTool("Аудитория", "auditory_id", response));
         $("#auditory_id").selectmenu();
     });
     $("#day_select_tool").datepicker({
@@ -132,7 +132,7 @@ $(document).ready(function() {
             time: datetime
         };
         serverQuery("add lesson", params, function(response) {
-            if ($.parseJSON(response) === false) {
+            if (response === false) {
                 showJSON(params, "Неудача");
             } else {
                 showMessage("Добавлено");

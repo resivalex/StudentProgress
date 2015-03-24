@@ -2,7 +2,7 @@
 include_once("template.php");
 
 unset($_SESSION["username"]);
-unset($_SESSION["roles"]);
+unset($_SESSION["role"]);
 header("Location: index.php");
 
 //out_page();

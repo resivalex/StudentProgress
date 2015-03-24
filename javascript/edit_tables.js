@@ -30,7 +30,7 @@ function addToTable(tableName) {
         groups: "group"
     };
     serverQuery("add "+nameMap[tableName], params, function(response) {
-        if ($.parseJSON(response) === false) {
+        if (response === false) {
             showJSON(response, "Неудача");
         } else {
             showMessage("Добавлено");
