@@ -212,17 +212,25 @@ function serverQuery(name, params, fun) {
 }
 
 // таблица с возможностью удаления
-function loadRemovableTable(targetId, getQuery, delQueryName) {
+function loadRemovableTable(targetId, getQuery, delQueryName, option) {
     var $target = $("#"+targetId);
 
     serverQuery(getQuery, function(response) {
+        var i;
         $target.children().remove();
+        var columnHeaders = allProperties(response);
+        for (i = 0; i < columnHeaders.length; i++) {
+            if (option && option.columnNameMap && option.columnNameMap[columnHeaders[i]]) {
+                columnHeaders[i] = option.columnNameMap[columnHeaders[i]];
+            }
+        }
         var handler = scrollableTable({
             target: $target,
             classes: ["progress_table", "auto_margin", "top_padding"],
             contentWidth: 900,
             contentHeight: 500,
-            content: rotable2DArray(toIndexArray(response))
+            content: rotable2DArray(toIndexArray(response)),
+            columnHeaders: columnHeaders
         });
         for (i = 0; i < handler.cellDivs.length; i++) {
             var cell = handler.cellDivs[i];
@@ -250,42 +258,12 @@ function loadRemovableTable(targetId, getQuery, delQueryName) {
                     } else {
                         showMessage("Удалено");
                         $tr.fadeTo(200, 0.0);
-                        loadRemovableTable(targetId, getQuery, delQueryName);
+                        loadRemovableTable(targetId, getQuery, delQueryName, option);
                     }
                 });
             });
         }
         handler.refresh();
-        //$table.addClass("custom_table");
-        //$("tr", $table).each(function(index, element) {
-        //    $(":last", element).each(function(index, element) {
-        //        var id = element.innerHTML;
-        //        element.innerHTML = "";
-        //        var $del = $("<button/>").appendTo($(element));
-        //        $del.text("Удалить");
-        //        $del.attr({type: "button"});
-        //        $del.click(function() {
-        //            $del.prop({disabled: true});
-        //            var $tr = $del;
-        //            while (($tr[0].tagName).toUpperCase() != "TR") {
-        //                $tr = $tr.parent();
-        //            }
-        //            $tr.fadeTo(500, 0.5);
-        //            serverQuery(delQueryName, {id: id}, function(response) {
-        //                $del.removeProp("disabled");
-        //                if (response === false) {
-        //                    $tr.fadeTo(500, 1.0);
-        //                    showJSON(delQueryName, "Неудача");
-        //                    $del.css({color: "#BBBBBB"});
-        //                } else {
-        //                    showMessage("Удалено");
-        //                    $tr.fadeTo(200, 0.0);
-        //                    loadRemovableTable(targetId, getQuery, delQueryName);
-        //                }
-        //            });
-        //        });
-        //    });
-        //});
     });
 }
 
@@ -470,6 +448,23 @@ function rotable2DArray(arr) {
         }
     }
     return res;
+}
+
+function filledArray(size, val) {
+    var res = [];
+    var i;
+    for (i = 0; i < size; i++) {
+        res.push(val);
+    }
+    return res;
+}
+
+function filled2DArray(height, width, val) {
+    var res = [];
+    var i;
+    for (i = 0; i < height; i++) {
+        res.push(width, val);
+    }
 }
 
 // return div 40x57 year, month, day from top to bottom

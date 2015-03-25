@@ -17,7 +17,17 @@ $(document).ready(function () {
                 role_name: role
             }
         };
-        loadRemovableTable(role, query, "delete "+role);
+        var option = {
+            columnNameMap: {
+                "name": "ФИО",
+                "login": "логин",
+                "password": "пароль",
+                "email": "e-mail",
+                "phone": "тел.",
+                "id": " "
+            }
+        };
+        loadRemovableTable(role, query, "delete "+role, option);
     });
     $(".add_button").click(function () {
         addToUsers($(this).attr("id").substr("button_for_".length));
@@ -48,7 +58,17 @@ function addToUsers(role_name) {
                     role_name: role_name
                 }
             };
-            loadRemovableTable(role_name, query, "delete "+role_name);
+            var option = {
+                columnNameMap: {
+                    "name": "ФИО",
+                    "login": "логин",
+                    "password": "пароль",
+                    "email": "e-mail",
+                    "phone": "тел.",
+                    "id": " "
+                }
+            };
+            loadRemovableTable(role_name, query, "delete "+role_name, option);
         }
     });
 }

@@ -10,7 +10,15 @@ $(document).ready(function() {
         var query = {
             name: tableName+" for edition"
         };
-        loadRemovableTable(tableName, query, "delete "+nameMap[tableName]);
+        var option = {
+            columnNameMap: {
+                "name": "Название",
+                "description": "Описание",
+                "course": "Курс",
+                "id": " "
+            }
+        };
+        loadRemovableTable(tableName, query, "delete "+nameMap[tableName], option);
     });
     $(".add_button").click(function () {
         var table_name = $(this).attr("id").substr("add_to_".length);
@@ -39,7 +47,15 @@ function addToTable(tableName) {
                 subjects: "subject",
                 groups: "group"
             };
-            loadRemovableTable(tableName, {name: tableName+" for edition"}, "delete "+nameMap[tableName]);
+            var option = {
+                columnNameMap: {
+                    "name": "Название",
+                    "description": "Описание",
+                    "course": "Курс",
+                    "id": " "
+                }
+            };
+            loadRemovableTable(tableName, {name: tableName+" for edition"}, "delete "+nameMap[tableName], option);
         }
     });
 }
