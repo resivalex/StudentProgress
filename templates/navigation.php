@@ -73,6 +73,11 @@ $json = <<<JS
                 "title": "Списки студентов",
                 "access": ["admin", "chief"],
                 "url": "reports.php"
+            },
+            {
+                "title": "Статистика",
+                "access": ["admin", "chief"],
+                "url": "stat_report.php"
             }
         ]
     }

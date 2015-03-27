@@ -170,7 +170,8 @@ function is_access($path) {
         "/reports.php" => "ac",
         "/reservation.php" => "a",
         "/schedule_for_student.php" => "acs",
-        "/schedule_for_teacher.php" => "act"
+        "/schedule_for_teacher.php" => "act",
+        "/stat_report.php" => "ac"
     ];
     $short_role = [
         "admin" => "a",

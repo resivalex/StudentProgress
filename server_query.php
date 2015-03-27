@@ -50,6 +50,8 @@ $accsess_map = [
     "lessons by group" => "acst",
     "lessons by teacher" => "acst",
     "students by filters" => "acst",
+    "average statistics" => "ac",
+    "absent statistics" => "ac"
 ];
 
 // only for testing
