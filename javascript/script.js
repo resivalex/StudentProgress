@@ -241,7 +241,8 @@ function loadRemovableTable(targetId, getQuery, delQueryName, option) {
             var $del = $("<button/>").appendTo(cell);
             $del.css({padding: "3px"});
             $del.text("Удалить");
-            $del.attr({type: "button"});
+            $del.attr({ type: "button" });
+            $del.data("id", id);
             $del.click(function() {
                 $del.prop({disabled: true});
                 var $tr = $del;
@@ -249,12 +250,12 @@ function loadRemovableTable(targetId, getQuery, delQueryName, option) {
                     $tr = $tr.parent();
                 }
                 $tr.fadeTo(500, 0.5);
-                serverQuery(delQueryName, {id: id}, function(response) {
-                    $del.removeProp("disabled");
+                serverQuery(delQueryName, {id: $(this).data("id")}, function(response) {
+                    $(this).removeProp("disabled");
                     if (response === false) {
                         $tr.fadeTo(500, 1.0);
                         showJSON(delQueryName, "Неудача");
-                        $del.css({color: "#bbb"});
+                        $(this).css({color: "#bbb"});
                     } else {
                         showMessage("Удалено");
                         $tr.fadeTo(200, 0.0);
