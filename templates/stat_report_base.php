@@ -15,18 +15,35 @@ HTML;
 HTML;
 }
 
+function radio_set($prefix, $id, $name) {
+    echo <<<HTML
+<div id="$prefix" class="filter_row">
+HTML;
+    for ($i = 0; $i < count($id); $i++) {
+        $cur_id = $prefix."_".$id[$i];
+        echo <<<HTML
+    <input id="$cur_id" name="$prefix" type="radio" value="{$id[$i]}">
+    <label for="$cur_id">$name[$i]</label>
+HTML;
+    }
+    echo <<<HTML
+</div>
+HTML;
+
+}
+
 function report_types() {
     $id = [0, 1];
     $types = [
         "Средний балл",
         "Прогулы"
     ];
-    checkbox_set("report_type", $id, $types);
+    radio_set("report_type", $id, $types);
 }
 
 function groups() {
     $res = sql_query("SELECT id, name FROM groups");
-    checkbox_set("group", $res["id"], $res["name"]);
+    radio_set("group", $res["id"], $res["name"]);
 }
 
 function subjects() {

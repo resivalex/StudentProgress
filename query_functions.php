@@ -561,23 +561,23 @@ SQL;
     return sql_query($query);
 };
 
-$query_functions["average statistic"] = function($pm) {
+$query_functions["mark statistics by group"] = function($pm) {
     $sets = [
-        "group",
         "subject",
         "teacher",
         "auditory"
     ];
     $id_map = [
-        "group" => "groups",
         "subject" => "subjects",
         "teacher" => "teachers",
         "auditory" => "auditories"
     ];
 
+    $group_id = $pm["group"];
+
     // construct SQL condition
     $query = ["Will be replaced below"];
-    $conditions = " TRUE";
+    $conditions = " students.group_id = $group_id";
     // checkboxes
     for ($i = 0; $i < count($sets); $i++) {
         if (!isset($id_map[$sets[$i]])) continue;
@@ -606,24 +606,96 @@ $query_functions["average statistic"] = function($pm) {
 
     $text = <<<SQL
 SELECT concat(users.surname, ' ', users.name, ' ', users.patronymic) AS student_name,
-   groups.name AS group_name, groups.course AS course
-FROM students
-(SELECT DISTINCT students.id AS id
-FROM students
-JOIN groups ON students.group_id = groups.id
-JOIN lessons ON groups.id = lessons.group_id
-JOIN teachers ON lessons.teacher_id = teachers.id
+  mark_types.short_name AS mark
+FROM lessons
 JOIN subjects ON lessons.subject_id = subjects.id
+JOIN teachers ON lessons.teacher_id = teachers.id
 JOIN auditories ON lessons.auditory_id = auditories.id
-JOIN marks ON students.id = marks.student_id
+JOIN groups ON lessons.group_id = groups.id
+JOIN marks ON lessons.id = marks.lesson_id
+JOIN mark_history ON marks.id = mark_history.mark_id
+JOIN (SELECT max(id) AS id FROM mark_history GROUP BY mark_id) AS last
+  ON mark_history.id = last.id
+JOIN mark_types ON mark_history.mark_type_id = mark_types.id
+JOIN students ON marks.student_id = students.id
+JOIN users ON students.id = users.id
+WHERE $conditions
+UNION ALL
+SELECT concat(users.surname, ' ', users.name, ' ', users. patronymic) AS student_name,
+  'no-mark' AS mark
+FROM students
+JOIN users ON students.id = users.id
+WHERE group_id = $group_id
+ORDER BY student_name
+SQL;
+    $query[0] = $text;
+    return sql_query($query);
+};
+
+$query_functions["absent statistics by group"] = function($pm) {
+    $sets = [
+        "subject",
+        "teacher",
+        "auditory"
+    ];
+    $id_map = [
+        "subject" => "subjects",
+        "teacher" => "teachers",
+        "auditory" => "auditories"
+    ];
+
+    $group_id = $pm["group"];
+
+    // construct SQL condition
+    $query = ["Will be replaced below"];
+    $conditions = " students.group_id = $group_id";
+    // checkboxes
+    for ($i = 0; $i < count($sets); $i++) {
+        if (!isset($id_map[$sets[$i]])) continue;
+        $ids = $pm[$sets[$i]];
+        $table_name = $id_map[$sets[$i]];
+        if ($ids[0]) {
+            $local_condition = " AND (";
+            for ($j = 0; $j < count($ids); $j++) {
+                if ($j != 0) $local_condition .= " OR";
+                $local_condition .= " " . $table_name . ".id = ?";
+                array_push($query, $ids[$j]);
+            }
+            $local_condition .= ")";
+            $conditions .= $local_condition;
+        }
+    }
+    // date interval conditions
+    if (isset($pm["from"])) {
+        $conditions .= " AND lessons.time >= ?";
+        array_push($query, $pm["from"]);
+    }
+    if (isset($pm["to"])) {
+        $conditions .= " AND lessons.time < ?";
+        array_push($query, $pm["to"]);
+    }
+
+    $text = <<<SQL
+SELECT concat(users.surname, ' ', users.name, ' ', users.patronymic) AS student_name,
+  mark_types.short_name AS mark
+FROM lessons
+JOIN subjects ON lessons.subject_id = subjects.id
+JOIN teachers ON lessons.teacher_id = teachers.id
+JOIN auditories ON lessons.auditory_id = auditories.id
+JOIN groups ON lessons.group_id = groups.id
+JOIN marks ON lessons.id = marks.lesson_id
 JOIN mark_history ON marks.id = mark_history.mark_id
 JOIN mark_types ON mark_history.mark_type_id = mark_types.id
+JOIN students ON marks.student_id = students.id
+JOIN users ON students.id = users.id
 WHERE $conditions
-) AS student_ids
-JOIN users ON student_ids.id = users.id
-JOIN students ON student_ids.id = students.id
-JOIN groups ON students.group_id = groups.id
-ORDER BY course, group_name, student_name
+UNION ALL
+SELECT concat(users.surname, ' ', users.name, ' ', users. patronymic) AS student_name,
+  'no-mark' AS mark
+FROM students
+JOIN users ON students.id = users.id
+WHERE group_id = $group_id
+ORDER BY student_name
 SQL;
     $query[0] = $text;
     return sql_query($query);
